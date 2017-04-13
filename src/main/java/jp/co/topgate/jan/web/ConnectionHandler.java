@@ -1,6 +1,5 @@
 package jp.co.topgate.jan.web;
-
-
+import org.junit.Test;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -28,7 +27,7 @@ public class ConnectionHandler  extends Thread {
 
 
     @Override
-     public void run(){       //Threadのstart()メソッドにより呼び出されるメソッド
+     @Test public void run(){       //Threadのstart()メソッドにより呼び出されるメソッド
 
         try {
 
@@ -41,7 +40,7 @@ public class ConnectionHandler  extends Thread {
 
            HttpRequest request = new HttpRequest(ReQ);
 
-            HttpResponse response = new HttpResponse(request);
+           HttpResponse response = new HttpResponse(request);
 
 
 
