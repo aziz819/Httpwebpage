@@ -9,7 +9,7 @@ import java.net.Socket;
  * Created by aizijiang.aerken on 2017/04/13.
  */
 public class Main {
-    int SERVER_PORT= 1989 ;         //サーバポート番号
+    int SERVER_PORT= 8080 ;         //サーバポート番号
 
     ServerSocket serversocket = null ;
 
@@ -19,7 +19,7 @@ public class Main {
 
     }
 
-     public void runserver() throws IOException {
+     @Test public void runserver() throws IOException {
 
         serversocket = new  ServerSocket(SERVER_PORT);      //サーバソケットのインスタンスを生成、ポート番号セット
 
@@ -27,7 +27,7 @@ public class Main {
     }
 
 
-     private void acceptClient() throws IOException {
+     @Test private void acceptClient() throws IOException {
 
         while(true) {
             Socket clientsocket = serversocket.accept();        //クライアント側からの接続待ち
