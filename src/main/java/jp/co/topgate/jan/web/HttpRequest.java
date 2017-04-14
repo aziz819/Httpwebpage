@@ -9,9 +9,9 @@ public class HttpRequest {
 
     public HttpRequest(String reQ) {
 
-        String lines[] = reQ.split("¥n");
+        String lines[] = reQ.split("1");
 
-        filemae = lines[0].split(" ")[1];
+
 
     }
 }
