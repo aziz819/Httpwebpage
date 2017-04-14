@@ -5,6 +5,13 @@ package jp.co.topgate.jan.web;
  */
 public class HttpRequest {
 
+    String filemae ;
+
     public HttpRequest(String reQ) {
+
+        String lines[] = reQ.split("¥n");
+
+        filemae = lines[0].split(" ")[1];
+
     }
 }
