@@ -1,7 +1,6 @@
 package jp.co.topgate.jan.web;
 import org.junit.Test;
 import java.io.BufferedReader;
-import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
@@ -17,7 +16,7 @@ public class ConnectionHandler  extends Thread {
 
     BufferedReader br = null ;
 
-    public ConnectionHandler(Socket clientsocket) throws IOException {
+    public ConnectionHandler(Socket clientsocket) throws Exception {
 
         socket = clientsocket;
 
@@ -26,7 +25,7 @@ public class ConnectionHandler  extends Thread {
     }
 
 
-    @Override
+     @Override
      @Test public void run(){       //Threadのstart()メソッドにより呼び出されるメソッド
 
         try {
@@ -38,12 +37,15 @@ public class ConnectionHandler  extends Thread {
            System.out.println(ReQ);
 
 
-           HttpRequest request = new HttpRequest(ReQ);
+           HttpRequest req = new HttpRequest(ReQ);
 
-           HttpResponse response = new HttpResponse(request);
+           HttpResponse res  = new HttpResponse(req);
 
+           pr.write(res.response.toCharArray());
 
-
+           socket.close();
+           br.close();
+           pr.close();
 
        }catch(Exception e){
 
