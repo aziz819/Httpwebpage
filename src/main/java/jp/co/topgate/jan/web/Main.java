@@ -1,5 +1,6 @@
 package jp.co.topgate.jan.web;
 import org.junit.Test;
+
 import java.net.ServerSocket;
 import java.net.Socket;
 /**
@@ -17,6 +18,8 @@ public class Main {
     }
 
      @Test public void runserver() throws Exception {
+
+        System.out.println("Server is started");
 
         serversocket = new  ServerSocket(SERVER_PORT);      //サーバソケットのインスタンスを生成、ポート番号セット
 
