@@ -1,5 +1,4 @@
 package jp.co.topgate.jan.web;
-import org.junit.Test;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
@@ -25,8 +24,8 @@ public class ConnectionHandler  extends Thread {
     }
 
 
-     @Override
-     @Test public void run(){       //Threadのstart()メソッドにより呼び出されるメソッド
+
+     public void run(){       //Threadのstart()メソッドにより呼び出されるメソッド
 
         try {
 

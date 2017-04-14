@@ -1,6 +1,4 @@
 package jp.co.topgate.jan.web;
-import org.junit.Test;
-
 import java.net.ServerSocket;
 import java.net.Socket;
 /**
@@ -17,7 +15,7 @@ public class Main {
 
     }
 
-     @Test public void runserver() throws Exception {
+     public void runserver() throws Exception {
 
         System.out.println("Server is started");
 
@@ -27,7 +25,7 @@ public class Main {
     }
 
 
-     @Test private void acceptClient() throws Exception {
+     private void acceptClient() throws Exception {
 
         while(true) {
             Socket clientsocket = serversocket.accept();        //クライアント側からの接続待ち
