@@ -28,5 +28,9 @@ dependencies {
 }
 
 // Define the main class for the application
-mainClassName = 'App'
+//下面的意思就是，让gradle运行的packege里面的class
+mainClassName = 'jp.co.topgate.jan.web.Main'
 
+jar{
+    manifest.attributes"Main-class":"jp.co.topgate.jan.web.Main"
+}
