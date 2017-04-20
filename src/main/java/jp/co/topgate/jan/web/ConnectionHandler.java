@@ -1,7 +1,5 @@
 package jp.co.topgate.jan.web;
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
-import java.io.PrintWriter;
+import java.io.*;
 import java.net.Socket;
 
 /**
@@ -9,47 +7,55 @@ import java.net.Socket;
  */
 public class ConnectionHandler  extends Thread {
 
-    private Socket socket = null;
+    Socket clientsocket = null;
 
     PrintWriter  pr = null ;
+
+    OutputStreamWriter or = null ;
 
     BufferedReader br = null ;
 
     public ConnectionHandler(Socket clientsocket) throws Exception {
 
-        socket = clientsocket;
+        this.clientsocket = clientsocket;
 
-        br = new BufferedReader(new InputStreamReader(socket.getInputStream()));            //入力ストリーム
-        pr = new PrintWriter(socket.getOutputStream());         //出力ストリーム
+       br = new BufferedReader(new InputStreamReader(this.clientsocket.getInputStream()));     //リクエスト入力をバイト形式で取得して文字ストリームに変換して
+                                                                                                // バッファリングしています。
+        //this.clientsocket.getOutputStream().write();
+       // pr = new PrintWriter(this.clientsocket.getOutputStream(),true);         //リクエスト出力をバイト形式で取得して、
+                                                                                        // フォーマットされたオブジェクトの表現を文字ストリームに出力
+
+
+
     }
 
 
 
-     public void run(){       //Threadのstart()メソッドにより呼び出されるメソッド
+    public void run(){       //Threadのstart()メソッドにより呼び出されるメソッド
 
         try {
 
-           String ReQ = " ";
-
-           while (br.ready()) ReQ += (char) br.read();
-
-           System.out.println(ReQ);
+            String reQ = "";
 
 
-           HttpRequest req = new HttpRequest(ReQ);
+            while (br.ready()|| reQ.length() == 0) //ここではリクエスト読み込んでいます  GET /index.html HTTP/1.1 を一文字ずつ読み込んでいます。
+                reQ += (char) br.read();
 
-           HttpResponse res  = new HttpResponse(req);
+            System.out.println(reQ);
 
-           pr.write(res.response.toCharArray());
 
-           socket.close();
-           br.close();
-           pr.close();
+            HttpRequest req = new HttpRequest(reQ);
 
-       }catch(Exception e){
+            HttpResponse res  = new HttpResponse(req,clientsocket);
 
-           e.printStackTrace();
 
-       }
+            br.close();
+           clientsocket.close();
+
+        }catch(Exception e){
+
+            e.printStackTrace();
+
+        }
     }
 }

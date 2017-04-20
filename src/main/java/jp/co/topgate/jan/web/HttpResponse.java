@@ -1,61 +1,108 @@
 package jp.co.topgate.jan.web;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
+import java.io.*;
+import java.net.Socket;
 
 /**
  * Created by aizijiang.aerken on 2017/04/13.
  */
 public class HttpResponse {
 
-    HttpRequest request ;
 
+    HttpRequest reqs;
+    Socket clientsocket;
+    BufferedReader br = null;
     String response ;
+    String rootpath = "/Users/aizijiang.aerken/Sites";
+    PrintWriter pr ;
 
-    String rootpath = "//Users/aizijiang.aerken/jan.html";
+    public HttpResponse(HttpRequest request, Socket clientsocket) throws IOException {
+        reqs = request;
 
-    public HttpResponse(HttpRequest request)  {
+        this.clientsocket = clientsocket;
 
-        this.request = request ;
+        File file = new File(rootpath + reqs.filename);
 
-        File file = new File(rootpath + request.filename);
+        if(file.exists()){
 
 
-        try {
-            /**
-             * HTTP/1.1 200 OK
-             Date: Fri, 14 Apr 2017 07:10:57 GMT
-             Server: Apache/2.4.23 (Unix) PHP/5.6.25
-             Content-Location: index.html.en
-             Vary: negotiate
-             TCN: choice
-             X-Powered-By: PHP/5.6.25
-             Content-Length: 108
-             Content-Type: text/html; charset=UTF-8
-             *
-             * **/
 
-            response = "HTTP/1.1 200 OK ¥r¥n";
-            response ="Content-Length: " + rootpath.length();
-            response ="Content-Type: text/html; charset=UTF-8";
-            response ="¥r¥n";
+        String[] url = request.filename.split("\\.",0);
+        switch (url[1]){
+            case "html":
+                //System.out.println("HTTP/1.1 200 OK \r\nContent-Length: " + file.length() + "\r\nContent-Type: text/html; charset=utf-8" + "\r\n");
+                response = "HTTP/1.1 200 OK \r\n";
+                response += "Content-Length: " + file.length() + "\r\n";
+                response += "Content-Type: text/html; charset=utf-8" + "\r\n";
+                response += "\r\n";
+                break;
+            case "css":
+                response = "HTTP/1.1 200 OK \r\n";
+                response += "Content-Length: " + file.length() + "\r\n";
+                response += "Content-Type: text/css; charset=utf-8" + "\r\n";
+                response += "\r\n";
+                break;
+            case "js":
+                response = "HTTP/1.1 200 OK \r\n";
+                response += "Content-Length: " + file.length() + "\r\n";
+                response += "Content-Type: text/javascript; charset=utf-8" + "\r\n";
+                response += "\r\n";
+                break;
+            case "png":
+                response = "HTTP/1.1 200 OK \r\n";
+                response += "Content-Length: " + file.length() + "\r\n";
+                response += "Content-Type: text/png;" + "\r\n";
+                response += "\r\n";
+                break;
+            case "jpg":
+            case  "jpeg":
+                response = "HTTP/1.1 200 OK \r\n";
+                response += "Content-Length: " + file.length() + "\r\n";
+                response += "Content-Type: text/jpeg;" + "\r\n";
+                response += "\r\n";
+                break;
 
-            FileInputStream finput = new FileInputStream(file);
+                default://ここはまだ使っていません。またちょっと改良してから使います。
+                    response = "HTTP/1.1 404 Bad Request \r\n";
+                    response += "Content-Type: text/html; charset=utf-8" + "\r\n";
+                    response += "<html><head><title>Not Found</title></head><body><h1>Not Found</h1><p>タイプミス等、リクエストにエラーがあります。\n</p></body></html>";
+                    response += "\r\n";
+                    break;
+        }
 
-            int s ;
+       this.clientsocket.getOutputStream().write(response.getBytes());
 
-            while((s = finput.read()) != -1){
-                response += (char) s;
+
+        BufferedReader bfr = new BufferedReader(new InputStreamReader(new FileInputStream(file))); //テキストは文字化けにならないが画像がなる。
+        String line;       //读取html code暂时放入到这个变数里然后添加在response变数后面
+        while ((line = bfr.readLine()) != null) {
+            response += line + "\n";
+        }
+        System.out.println(response);  //在这里显示包括正确访问的句子和html code**/
+
+        FileInputStream fin = new FileInputStream(file);
+        byte[] bytes = new byte[1024];
+        while(true){
+            int r = fin.read(bytes);
+            if(r == -1){
+                break;
             }
 
-            finput.close();
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-            response = response.replace("200","404");
-        }catch(Exception e){
-            response = response.replace("200","500");
+            this.clientsocket.getOutputStream().write(bytes,0,r);
+        }
 
+        this.clientsocket.close();
+        fin.close();
+
+       } else {
+            String[] nofound = request.filename.split("/");
+            response = "HTTP/1.1 404 Not Found \r\n";
+            // response += "Content-Length: " + file.length() + "\r\n";
+            response += "Content-Type: text/html; charset=utf-8" + "\r\n";
+            response += "\r\n";
+            response += "<html><head><title>Not Found</title></head><body><h1>Not Found</h1><p>hhtp://www." + nofound[1] + "のサーバーの DNS アドレスが見つかりませんでした。\n</p></body></html>";
+            System.out.println(response);
+            this.clientsocket.getOutputStream().write(response.getBytes());
         }
 
     }
