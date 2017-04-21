@@ -1,0 +1,13 @@
+@charset "UTF-8";
+
+.one{
+  text-align: center;
+}
+.one img{
+  border-radius: 50%;
+}
+.one p{
+  margin-left: 10px;
+  font-weight: bold;
+}
+.three{}

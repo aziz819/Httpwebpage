@@ -12,9 +12,11 @@ public class HttpResponse {
     HttpRequest reqs;
     Socket clientsocket;
     BufferedReader br = null;
+    InputStreamReader inp = null ;
     String response ;
-    String rootpath = "/Users/aizijiang.aerken/Sites";
+    String rootpath = "/Users/aizijiang.aerken/homepage/src/main/java/jp/co/topgate/jan/web";
     PrintWriter pr ;
+    String badR ;
 
     public HttpResponse(HttpRequest request, Socket clientsocket) throws IOException {
         reqs = request;
@@ -51,48 +53,62 @@ public class HttpResponse {
             case "png":
                 response = "HTTP/1.1 200 OK \r\n";
                 response += "Content-Length: " + file.length() + "\r\n";
-                response += "Content-Type: text/png;" + "\r\n";
+                response += "Content-Type: image/png;" + "\r\n";
                 response += "\r\n";
                 break;
             case "jpg":
             case  "jpeg":
                 response = "HTTP/1.1 200 OK \r\n";
                 response += "Content-Length: " + file.length() + "\r\n";
-                response += "Content-Type: text/jpeg;" + "\r\n";
+                response += "Content-Type: image/jpeg;" + "\r\n";
                 response += "\r\n";
                 break;
 
                 default://ここはまだ使っていません。またちょっと改良してから使います。
-                    response = "HTTP/1.1 404 Bad Request \r\n";
+                    badR = "bad";
+                    /**response = "HTTP/1.1 404 Bad Request \r\n";
                     response += "Content-Type: text/html; charset=utf-8" + "\r\n";
                     response += "<html><head><title>Not Found</title></head><body><h1>Not Found</h1><p>タイプミス等、リクエストにエラーがあります。\n</p></body></html>";
-                    response += "\r\n";
+                    response += "\r\n";**/
                     break;
         }
 
-       this.clientsocket.getOutputStream().write(response.getBytes());
+       if(!("bad".equals(badR))){
+
+           this.clientsocket.getOutputStream().write(response.getBytes());
+
+          BufferedReader bfr = new BufferedReader(new InputStreamReader(new FileInputStream(file))); //テキストは文字化けにならないが画像がなる。
+            String line;       //读取html code暂时放入到这个变数里然后添加在response变数后面
+            while ((line = bfr.readLine()) != null) {
+                response += line + "\n";
+            }
+            System.out.println(response);  //在这里显示包括正确访问的句子和html code**/
 
 
-        BufferedReader bfr = new BufferedReader(new InputStreamReader(new FileInputStream(file))); //テキストは文字化けにならないが画像がなる。
-        String line;       //读取html code暂时放入到这个变数里然后添加在response变数后面
-        while ((line = bfr.readLine()) != null) {
-            response += line + "\n";
-        }
-        System.out.println(response);  //在这里显示包括正确访问的句子和html code**/
+            FileInputStream fin = new FileInputStream(file);
+            byte[] bytes = new byte[1024];
+            while(true){
+                int r = fin.read(bytes);
+                if(r == -1){
+                    break;
+                }
 
-        FileInputStream fin = new FileInputStream(file);
-        byte[] bytes = new byte[1024];
-        while(true){
-            int r = fin.read(bytes);
-            if(r == -1){
-                break;
+                this.clientsocket.getOutputStream().write(bytes,0,r); //通信ソケットに送信するバイトストリームを取得(浏览器显示)
             }
 
-            this.clientsocket.getOutputStream().write(bytes,0,r);
+
+            this.clientsocket.close();
+            fin.close();
+        }else{
+            response = "HTTP/1.1 404 Bad Request \r\n";
+            response += "Content-Type: text/html; charset=utf-8" + "\r\n";
+            response += "<html><head><title>Not Found</title></head><body><h1>Bad_Request</h1><p>タイプミス等、リクエストにエラーがあります。\n</p></body></html>";
+            response += "\r\n";
+            System.out.println(response);
+            this.clientsocket.getOutputStream().write(response.getBytes());
         }
 
-        this.clientsocket.close();
-        fin.close();
+
 
        } else {
             String[] nofound = request.filename.split("/");
@@ -100,7 +116,7 @@ public class HttpResponse {
             // response += "Content-Length: " + file.length() + "\r\n";
             response += "Content-Type: text/html; charset=utf-8" + "\r\n";
             response += "\r\n";
-            response += "<html><head><title>Not Found</title></head><body><h1>Not Found</h1><p>hhtp://www." + nofound[1] + "のサーバーの DNS アドレスが見つかりませんでした。\n</p></body></html>";
+            response += "<html><head><title>Not Found</title></head><body><h1>Not_Found</h1><p>http://www." + nofound[1] + "のサーバーの DNS アドレスが見つかりませんでした。\n</p></body></html>";
             System.out.println(response);
             this.clientsocket.getOutputStream().write(response.getBytes());
         }
