@@ -1,60 +1,56 @@
 package jp.co.topgate.jan.web;
 
 import java.io.BufferedReader;
-import java.io.InputStreamReader;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.net.ServerSocket;
-import java.net.Socket;
 
 /**
  * Created by aizijiang.aerken on 2017/04/13.
  */
-public class ConnectionHandler  extends Thread {
+public class ConnectionHandler{
+    private ServerSocket serversocket;
 
-    ServerSocket serverSocket = null ;
-    Socket clientsocket = null;
-    BufferedReader br = null ;
-    public ConnectionHandler(ServerSocket sercersocket) throws Exception {
+    HttpFile resource = new HttpFile();
 
-        this.serverSocket = sercersocket;
+    private BufferedReader br = null;
 
-        this.start(); // run()メソッドを呼び出す
-    }
+    String method;
 
+    String uri ;
 
+    String version ;
 
-    public void run(){       //start()メソッドにより呼び出されるメソッド
+    static final int OK = 200 ;
 
-        try {
+    static final int BAD = 400 ;
 
-            while(true) {
+    static final int NOT = 404 ;
 
-                clientsocket = serverSocket.accept();
-
-
-                br = new BufferedReader(new InputStreamReader(this.clientsocket.getInputStream()));     //在这行把从客户端发来的
-
-                String reQ = "";
+    static int statuscode ;
 
 
-                while (br.ready() || reQ.length() == 0) //ここではリクエスト読み込んでいます  GET /index.html HTTP/1.1 を一文字ずつ読み込んでいます。
-                    reQ += (char) br.read();
+    public ConnectionHandler(InputStream in , OutputStream ot) throws Exception {
 
-                System.out.println(reQ);
-
-
-                HttpRequest req = new HttpRequest(reQ);
-
-                HttpResponse res = new HttpResponse(req, clientsocket);
+                HttpRequest req = new HttpRequest(in);
 
 
-                br.close();
-                clientsocket.close();
-            }
+               // if(req.statuscode != 400){
 
-        }catch(Exception e){
+                    method = req.method ;
+                    uri = req.uri;
+                    version = req.version;
 
-            e.printStackTrace();
+                    HttpResponse res = new HttpResponse(req,ot);
 
-        }
+
+              //  }
+
+
+
+
+
+
+
     }
 }

@@ -1,30 +1,50 @@
 package jp.co.topgate.jan.web;
 
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.net.ServerSocket;
+import java.net.Socket;
 
 /**
  * Created by aizijiang.aerken on 2017/04/13.  クライアントからのアクセスを受け取る
  */
-public class Main {
+public class Main extends  Thread{
 
-    final int SERVER_PORT= 8080 ;         //サーバポート番号
+    final int SERVER_PORT = 8080;         // サーバポート番号
 
-    ServerSocket serversocket = null ;
+    ServerSocket serversocket = null;
+
+    Socket client = null ;
+
+    ConnectionHandler handler = null ;
 
     public static void main(String[] args) throws Exception {
 
-        new Main().runserver();        //Mainクラスのインスタンス作成,当時にrunserver()メソッドを呼び出す
+        new Main().runserver();        // Mainクラスのインスタンス作成,当時にrunserver()メソッドを呼び出す
 
     }
 
     public void runserver() throws Exception {
 
-        System.out.println("Server is started •••••••••");
+        System.out.println("Server is started •••••••••\r\n");
 
-        serversocket = new  ServerSocket(SERVER_PORT);      //サーバソケットのインスタンスを生成、ポート番号セット
+        serversocket = new ServerSocket(SERVER_PORT);      // サーバソケットのインスタンスを生成、ポート番号セット
 
-        ConnectionHandler handler = new ConnectionHandler(serversocket); //ポート番号セットされた参照変数serversocketをConnectionHandler
-                                                                         //クラスのコンストラクタに引数として渡す
+        this.start();
+    }
 
+
+    public void run(){
+        while(true){
+            try {
+                client = serversocket.accept();
+                InputStream in = client.getInputStream();
+                OutputStream ot = client.getOutputStream();
+                handler = new ConnectionHandler(in,ot); // ポート番号セットされた参照変数serversocketをConnectionHandler
+                client.close();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
     }
 }
