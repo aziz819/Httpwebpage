@@ -34,11 +34,7 @@ public class HttpRequest {
 
     String version ; // HTTPバージョン
 
-    static final int OK = 200 ;
-
-    static final int BAD = 400 ;
-
-    static final int NOT = 404 ;
+    static final int BAD_REQUEST = 400 ;
 
     int statuscode ;
 
@@ -55,65 +51,66 @@ public class HttpRequest {
 
         String requestLine = bfin.readLine();   // 取り敢えずリクエストの一行目を読み取る
 
-        System.out.println(requestLine);
-
-        String[] str1 = requestLine.split(" "); // 一行目を空白のところから三つに分ける
+        if(requestLine != null) {
 
 
-        if(str1.length == 3) {
+            System.out.println(requestLine);
 
-            method = str1[0];       // GET　か　POSTか
-            uri = str1[1];         // URI 例：/index.html か　/index.html?name=jan&sex=man
-            version = str1[2];     // HTTPバージョン　の　HTTP/1.1
+            String[] str1 = requestLine.split(" "); // 一行目を空白のところから三つに分ける
 
-            while ((HEADER_LINE = bfin.readLine()) != null && !HEADER_LINE.equals("")) { // 二行目からヘッダーフィールドと値を読み取る
 
-                String[] header = HEADER_LINE.split(":");
+            if (str1.length == 3) {
 
-                if (header.length == 2) {
+                method = str1[0];       // GET　か　POSTか
+                uri = str1[1];         // URI 例：/index.html か　/index.html?name=jan&sex=man
+                version = str1[2];     // HTTPバージョン　の　HTTP/1.1
 
-                    header[1] = header[1].trim();
+                while ((HEADER_LINE = bfin.readLine()) != null && !HEADER_LINE.equals("")) { // 二行目からヘッダーフィールドと値を読み取る
 
-                    HAEDER_FIELD_VALUE.put(header[0], header[1]);
+                    String[] header = HEADER_LINE.split(":");
 
-                } else if (header.length > 2) {
+                    if (header.length == 2) {
 
-                    header[1] = header[1].trim();
+                        header[1] = header[1].trim();
 
-                    HAEDER_FIELD_VALUE.put(header[0], header[1] + ":" + header[2]); // ヘッダーに　”：”コロンが多かったら
+                        HAEDER_FIELD_VALUE.put(header[0], header[1]);
 
-                }
+                    } else if (header.length > 2) {
 
-                System.out.println(HEADER_LINE); // ヘッダーフィールドと値
-            }
+                        header[1] = header[1].trim();
 
-            if (("GET".equals(method))) {
-                if (uri.matches(".*" + "\\?" + ".*")) { // 疑問符があるかどうかの判断
-                    String[] get1 = uri.split("\\?");
-                    method = get1[0];
-                    String[] get2 = get1[1].split("&");
-                    for (String get3 : get2) {
-                        String[] get4 = get3.split("=");
-                        GET_PARAMETER_EQUAL_SEPARATE.put(get4[0], get4[1]);
-                    }
-                }
-            } else if (("POST".equals(method))) {
-                String parameterLine;
-                while ((parameterLine = bfin.readLine()) != null) { // ボディーメッセージを読み取り
-                    String[] post1 = parameterLine.split("&");
-                    for (String post2 : post1) {
-                        String[] post3 = post2.split("=");
-                        POST_REQUEST_PARAMETER_EQUAL_SEPARATE.put(post3[0], post3[1]);
+                        HAEDER_FIELD_VALUE.put(header[0], header[1] + ":" + header[2]); // ヘッダーに　”：”コロンが多かったら
+
                     }
 
+                    System.out.println(HEADER_LINE); // ヘッダーフィールドと値
                 }
-            } else {
-                statuscode = 404 ;
+
+                if (("GET".equals(method))) {
+                    if (uri.matches(".*" + "\\?" + ".*")) { // 疑問符があるかどうかの判断
+                        String[] get1 = uri.split("\\?");
+                        method = get1[0];
+                        String[] get2 = get1[1].split("&");
+                        for (String get3 : get2) {
+                            String[] get4 = get3.split("=");
+                            GET_PARAMETER_EQUAL_SEPARATE.put(get4[0], get4[1]);
+                        }
+                    }
+                } else if (("POST".equals(method))) {
+                    String parameterLine;
+                    while ((parameterLine = bfin.readLine()) != null) { // ボディーメッセージを読み取り
+                        String[] post1 = parameterLine.split("&");
+                        for (String post2 : post1) {
+                            String[] post3 = post2.split("=");
+                            POST_REQUEST_PARAMETER_EQUAL_SEPARATE.put(post3[0], post3[1]);
+                        }
+
+                    }
+                }
             }
+        }else {
+
+            statuscode = BAD_REQUEST;
         }
-    }
-
-    public String getUri(){
-        return uri;
     }
 }
