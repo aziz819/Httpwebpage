@@ -9,23 +9,23 @@ import java.net.Socket;
 /**
  * Created by aizijiang.aerken on 2017/04/13.  クライアントからのアクセスを受け取る
  */
-public class Main extends  Thread{
+public class Main extends Thread {
 
     final int SERVER_PORT = 8080;         // ポート番号
 
     ServerSocket serversocket = null;
 
-    Socket client = null ;
+    Socket client = null;
 
-    ConnectionHandler handler = null ;
+    ConnectionHandler handler = null;
 
     public static void main(String[] args) throws Exception {
 
-        new Main().runserver();        // Mainクラスのインスタンス作成,当時にrunserver()メソッドを呼び出す
+        new Main().runServer();        // Mainクラスのインスタンス作成,当時にrunserver()メソッドを呼び出す
 
     }
 
-    public void runserver() throws Exception {
+    public void runServer() throws Exception {
 
         System.out.println("Server is started •••••••••\r\n");
 
@@ -35,18 +35,16 @@ public class Main extends  Thread{
     }
 
 
-    public void run(){
-        while(true){
+    public void run() {
+        while (true) {
             try {
                 client = serversocket.accept();
                 InputStream in = client.getInputStream();
                 OutputStream ot = client.getOutputStream();
-                handler = new ConnectionHandler(in,ot); // ポート番号セットされた参照変数serversocketをConnectionHandler
+                handler = new ConnectionHandler(in, ot); // ポート番号セットされた参照変数serversocketをConnectionHandler
                 client.close();
-            }catch (RuntimeException e){
-
-            }catch (IOException e) {
-                System.out.println("エラー:"+e.getMessage());
+            } catch (IOException e) {
+                System.out.println("エラー:" + e.getMessage());
                 e.printStackTrace();
             }
         }

@@ -1,6 +1,5 @@
 package jp.co.topgate.jan.web;
 
-import org.junit.Assert;
 import org.junit.Test;
 
 /**
@@ -10,6 +9,6 @@ public class MainTest {
 
     @Test
     public void runserver(){
-        Assert.assertTrue(true);
+
     }
 }

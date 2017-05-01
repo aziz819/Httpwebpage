@@ -16,35 +16,34 @@ public class HttpResponse {
 
     private InputStreamReader inp = null;
 
-    private String rootpath = "/Users/aizijiang.aerken/homepage/src/main/resource";                 //リソースパス
+    private String rootPath = "/Users/aizijiang.aerken/homepage/src/main/resource";                 //リソースパス
 
     private PrintWriter pr;
 
-    String response ;
+    String response;
 
-    String version ;
+    String version;
 
-    static final int BAD_REQUEST = 400 ;
+    static final int BAD_REQUEST = 400;
 
-    Map<String,String> filetype = new HashMap<>();
+    Map<String, String> fileType = new HashMap<>();
 
 
+    public HttpResponse(HttpRequest request, OutputStream ot) throws IOException {
 
-    public HttpResponse(HttpRequest request , OutputStream ot) throws IOException {
-
-        filetype.put("html","Content-Type: text/html; charset=utf-8\r\n");
-        filetype.put("htm","Content-Type: text/htm; charset=utf-8\r\n");
-        filetype.put("css","Content-Type: text/css; charset=utf-8\r\n");
-        filetype.put("js","Content-Type: text/javascript; charset=utf-8\r\n");
-        filetype.put("png","Content-Type: image/png\r\n");
-        filetype.put("jpg","Content-Type: image/jpg\r\n");
-        filetype.put("jpeg","Content-Type: image/jpeg\r\n");
-        filetype.put("gif","Content-Type: image/gif\r\n");
-        filetype.put("txt","Content-Type: text/plain\r\n");
+        fileType.put("html", "Content-Type: text/html; charset=utf-8\r\n");
+        fileType.put("htm", "Content-Type: text/htm; charset=utf-8\r\n");
+        fileType.put("css", "Content-Type: text/css; charset=utf-8\r\n");
+        fileType.put("js", "Content-Type: text/javascript; charset=utf-8\r\n");
+        fileType.put("png", "Content-Type: image/png\r\n");
+        fileType.put("jpg", "Content-Type: image/jpg\r\n");
+        fileType.put("jpeg", "Content-Type: image/jpeg\r\n");
+        fileType.put("gif", "Content-Type: image/gif\r\n");
+        fileType.put("txt", "Content-Type: text/plain\r\n");
 
         if (request.statuscode != BAD_REQUEST) {
 
-            File file = new File(rootpath + request.uri);
+            File file = new File(rootPath + request.uri);
 
             if (file.exists() && file.isFile()) {
 
@@ -54,28 +53,28 @@ public class HttpResponse {
 
                 ot.write(contenttype(url[1]).getBytes());
 
-                    BufferedReader bfr = new BufferedReader(new InputStreamReader(new FileInputStream(file)));
-                    String line;
-                    while ((line = bfr.readLine()) != null) {
-                        version += line + "\n";
-                    }
-                    System.out.println("\n"+version);
+                BufferedReader bfr = new BufferedReader(new InputStreamReader(new FileInputStream(file)));
+                String line;
+                while ((line = bfr.readLine()) != null) {
+                    version += line + "\n";
+                }
+                System.out.println("\n" + version);
 
 
-                    FileInputStream fin = new FileInputStream(file);
-                    byte[] bytes = new byte[1024];
-                    while (true) {
-                        int r = fin.read(bytes);
-                        if (r == -1) {
-                            break;
-                        }
-
-                        ot.write(bytes, 0, r);      //通信ソケットに送信するバイトストリームを取得(ブラウザーに表示)
+                FileInputStream fin = new FileInputStream(file);
+                byte[] bytes = new byte[1024];
+                while (true) {
+                    int r = fin.read(bytes);
+                    if (r == -1) {
+                        break;
                     }
 
+                    ot.write(bytes, 0, r);      //通信ソケットに送信するバイトストリームを取得(ブラウザーに表示)
+                }
 
-                    ot.close();
-                    fin.close();
+
+                ot.close();
+                fin.close();
 
             } else {
                 String[] nofound = request.uri.split("/");
@@ -88,7 +87,7 @@ public class HttpResponse {
                 ot.write(version.getBytes());
             }
 
-        }else{
+        } else {
             version = "HTTP/1.1 400 Bad Request \r\n";
             version += "Content-Type: text/html; charset=utf-8" + "\r\n";
             version += "\r\n";
@@ -98,14 +97,14 @@ public class HttpResponse {
         }
     }
 
-    public String contenttype(String url){
+    public String contenttype(String url) {
 
-        for(String type : filetype.keySet()){
-            if(type.equals(url)){
-                version += filetype.get(type)+"\r\n";
+        for (String type : fileType.keySet()) {
+            if (type.equals(url)) {
+                version += fileType.get(type) + "\r\n";
                 break;
             }
         }
-        return version ;
+        return version;
     }
 }

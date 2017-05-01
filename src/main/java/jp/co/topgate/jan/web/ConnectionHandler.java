@@ -8,17 +8,17 @@ import java.net.ServerSocket;
 /**
  * Created by aizijiang.aerken on 2017/04/13.
  */
-public class ConnectionHandler{
+public class ConnectionHandler {
     private ServerSocket serversocket;
 
-    public ConnectionHandler(InputStream in , OutputStream ot) throws IOException {
+    public ConnectionHandler(InputStream in, OutputStream ot) throws IOException {
 
-        if(in == null || ot == null) {
+        if (in == null || ot == null) {
             throw new IOException("入力ストリームと出力ストリームどっちかnullになっています。");
         }
 
         HttpRequest req = new HttpRequest(in);
 
-        HttpResponse res = new HttpResponse(req,ot);
+        HttpResponse res = new HttpResponse(req, ot);
     }
 }

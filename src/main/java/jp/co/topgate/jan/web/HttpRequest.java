@@ -12,7 +12,7 @@ import java.util.Map;
  */
 public class HttpRequest {
 
-    private static final int  REQUEST_LINE_QUANTYTI = 3 ;                           // リクエストラインを分割してから３か
+    private static final int REQUEST_LINE_QUANTYTI = 3;                           // リクエストラインを分割してから３か
 
     private static final String REQUEST_LINE_SPACE_SEPARATE = " ";                  // リクエスト行を空白の所から分割
 
@@ -24,31 +24,31 @@ public class HttpRequest {
 
     private static final String GET_QUERY_QUEASTION_SEPARATE = "\\?";               // uriとクエリーを分割
 
-    private  static String HEADER_LINE ;                                            // リクエストヘッダーを一行ずつ代入する一時的な変数
+    private static String HEADER_LINE;                                            // リクエストヘッダーを一行ずつ代入する一時的な変数
 
-    private  BufferedReader bfin ;
+    private BufferedReader bfin;
 
-    String method ;                                                                 // HTTPメソッド
+    String method;                                                                 // HTTPメソッド
 
-    String uri ;                                                                    // URL
+    String uri;                                                                    // URL
 
-    String version ;                                                                // HTTPバージョン
+    String version;                                                                // HTTPバージョン
 
-    static final int BAD_REQUEST = 400 ;                                            // bad request
+    static final int BAD_REQUEST = 400;                                            // bad request
 
-    int statuscode ;
+    int statuscode;
 
-    Map<String,String> HAEDER_FIELD_VALUE = new HashMap<>();                        // リクエストヘッダーのフィールドと値を扱う
+    Map<String, String> HAEDER_FIELD_VALUE = new HashMap<>();                        // リクエストヘッダーのフィールドと値を扱う
 
-    Map<String,String> POST_REQUEST_PARAMETER_EQUAL_SEPARATE = new HashMap<>();     // ポストクエリーを扱う
+    Map<String, String> POST_REQUEST_PARAMETER_EQUAL_SEPARATE = new HashMap<>();     // ポストクエリーを扱う
 
-    Map<String,String> GET_PARAMETER_EQUAL_SEPARATE = new HashMap<>();              // ゲットクエリーを扱う
+    Map<String, String> GET_PARAMETER_EQUAL_SEPARATE = new HashMap<>();              // ゲットクエリーを扱う
 
 
     public HttpRequest(InputStream in) throws IOException {
 
-        if(in == null){
-            throw  new IOException("入力ストリームはnullになっています。");
+        if (in == null) {
+            throw new IOException("入力ストリームはnullになっています。");
         }
 
         try {
@@ -110,14 +110,14 @@ public class HttpRequest {
                             }
 
                         }
-                    }else {
+                    } else {
                         throw new RuntimeException("メソッドはGETでもPOSTでもない。" + method);
                     }
                 }
             } else {
                 statuscode = BAD_REQUEST;
             }
-        }catch(IOException e){
+        } catch (IOException e) {
             throw new IOException("BufferedReaderに不具合がありました。");
         }
     }
