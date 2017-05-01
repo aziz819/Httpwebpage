@@ -1,5 +1,6 @@
 package jp.co.topgate.jan.web;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.ServerSocket;
@@ -10,7 +11,7 @@ import java.net.Socket;
  */
 public class Main extends  Thread{
 
-    final int SERVER_PORT = 8080;         // サーバポート番号
+    final int SERVER_PORT = 8080;         // ポート番号
 
     ServerSocket serversocket = null;
 
@@ -42,7 +43,10 @@ public class Main extends  Thread{
                 OutputStream ot = client.getOutputStream();
                 handler = new ConnectionHandler(in,ot); // ポート番号セットされた参照変数serversocketをConnectionHandler
                 client.close();
-            } catch (Exception e) {
+            }catch (RuntimeException e){
+
+            }catch (IOException e) {
+                System.out.println("エラー:"+e.getMessage());
                 e.printStackTrace();
             }
         }

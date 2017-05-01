@@ -16,7 +16,7 @@ public class HttpResponse {
 
     private InputStreamReader inp = null;
 
-    private String rootpath = "/Users/aizijiang.aerken/homepage/src/main/resource";
+    private String rootpath = "/Users/aizijiang.aerken/homepage/src/main/resource";                 //リソースパス
 
     private PrintWriter pr;
 
@@ -54,12 +54,12 @@ public class HttpResponse {
 
                 ot.write(contenttype(url[1]).getBytes());
 
-                    BufferedReader bfr = new BufferedReader(new InputStreamReader(new FileInputStream(file))); //テキストは文字化けにならないが画像がなる。
-                    String line;       //读取html code暂时放入到这个变数里然后添加在response变数后面
+                    BufferedReader bfr = new BufferedReader(new InputStreamReader(new FileInputStream(file)));
+                    String line;
                     while ((line = bfr.readLine()) != null) {
                         version += line + "\n";
                     }
-                    System.out.println(version);  //在这里显示包括正确访问的句子和html code**/
+                    System.out.println("\n"+version);
 
 
                     FileInputStream fin = new FileInputStream(file);
@@ -70,7 +70,7 @@ public class HttpResponse {
                             break;
                         }
 
-                        ot.write(bytes, 0, r); //通信ソケットに送信するバイトストリームを取得(浏览器显示)
+                        ot.write(bytes, 0, r);      //通信ソケットに送信するバイトストリームを取得(ブラウザーに表示)
                     }
 
 
@@ -79,22 +79,22 @@ public class HttpResponse {
 
             } else {
                 String[] nofound = request.uri.split("/");
-                response = "HTTP/1.1 404 Not Found \r\n";
+                version = "HTTP/1.1 404 Not Found \r\n";
                 // response += "Content-Length: " + file.length() + "\r\n";
-                response += "Content-Type: text/html; charset=utf-8" + "\r\n";
-                response += "\r\n";
-                response += "<html><head><title>Not Found</title></head><body><h1>Not_Found</h1><p>http://www." + nofound[1] + "のサーバーの DNS アドレスが見つかりませんでした。\n</p></body></html>";
-                System.out.println(response);
-                ot.write(response.getBytes());
+                version += "Content-Type: text/html; charset=utf-8" + "\r\n";
+                version += "\r\n";
+                version += "<html><head><title>Not Found</title></head><body><h1>Not_Found</h1><p>http://www." + nofound[1] + "のサーバーの DNS アドレスが見つかりませんでした。\n</p></body></html>";
+                System.out.println(version);
+                ot.write(version.getBytes());
             }
 
         }else{
-            response = "HTTP/1.1 400 Bad Request \r\n";
-            response += "Content-Type: text/html; charset=utf-8" + "\r\n";
-            response += "\r\n";
-            response += "<html><head><title>Not Found</title></head><body><h1>Not_Found</h1><p>Bad Request\n</p></body></html>";
-            System.out.println(response);
-            ot.write(response.getBytes());
+            version = "HTTP/1.1 400 Bad Request \r\n";
+            version += "Content-Type: text/html; charset=utf-8" + "\r\n";
+            version += "\r\n";
+            version += "<html><head><title>Not Found</title></head><body><h1>Not_Found</h1><p>Bad Request\n</p></body></html>";
+            System.out.println(version);
+            ot.write(version.getBytes());
         }
     }
 
