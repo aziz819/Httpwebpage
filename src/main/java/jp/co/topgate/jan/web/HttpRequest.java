@@ -38,11 +38,11 @@ public class HttpRequest {
 
     protected static int statusCode;
 
-    Map<String, String> header_Key_alue = new HashMap<>();                        // リクエストヘッダーのフィールドと値を扱う
+    private Map<String, String> header_Key_alue = new HashMap<>();                        // リクエストヘッダーのフィールドと値を扱う
 
-    Map<String, String> post_Parameter_attribute_value = new HashMap<>();     // ポストクエリーを扱う
+    private Map<String, String> post_Parameter_attribute_value = new HashMap<>();     // ポストクエリーを扱う
 
-    Map<String, String> get_Parameter_attribute_value = new HashMap<>();              // ゲットクエリーを扱う
+    private Map<String, String> get_Parameter_attribute_value = new HashMap<>();              // ゲットクエリーを扱う
 
 
     public HttpRequest(InputStream in) throws RuntimeException, IOException {
@@ -113,7 +113,7 @@ public class HttpRequest {
                             for (String post2 : post1) {
                                 String[] post3 = post2.split(GET_QUERY_EQUAL_SEPARATE);
                                 if(post3.length == PARAMETER_ATTRIBUTE_VALUE){
-                                    get_Parameter_attribute_value.put(post3[0], post3[1]);
+                                    post_Parameter_attribute_value.put(post3[0], post3[1]);
                                 }else{
                                     throw new RuntimeException("正しくないPOSTパラメーター:" + post2);
                                 }
@@ -142,5 +142,26 @@ public class HttpRequest {
 
     public String getVersion(){
         return version ;
+    }
+
+
+
+
+    public String getGetparameter(String name){
+        if(name != null){
+            name = get_Parameter_attribute_value.get(name);
+            return name ;
+        }else{
+            return null;
+        }
+    }
+
+    public String getPostparameter(String name){
+        if(name != null){
+            name = post_Parameter_attribute_value.get(name);
+            return name ;
+        }else{
+            return null;
+        }
     }
 }

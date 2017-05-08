@@ -1,5 +1,5 @@
-HTTP/1.1 405 Method Not Allowed
+HTTP/1.1 404 Not Found
 Content-Type: text/html; charset=utf-8
 
-<html><head><title>Method Not Allowed</title></head><body><h1>Method Not Allowed</h1><p>A request method is not supported for the requested resource.
+<html><head><title>Not Found</title></head><body><h1>Not_Found</h1><p>要求されたURL:yudetamago.htmlはこのサーバ上に見つかりませんでした。
 </p></body></html>
