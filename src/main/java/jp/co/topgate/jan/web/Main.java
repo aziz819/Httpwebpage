@@ -19,22 +19,26 @@ public class Main extends Thread {
 
     ConnectionHandler handler = null;
 
-    public static void main(String[] args) throws Exception {
+    public static void main(String[] args){
 
         new Main().runServer();        // Mainクラスのインスタンス作成,当時にrunserver()メソッドを呼び出す
 
     }
 
-    public void runServer() throws Exception {
+    public void runServer(){
 
         System.out.println("Server is started •••••••••\r\n");
 
-        serversocket = new ServerSocket(SERVER_PORT);      // サーバソケットのインスタンスを生成、ポート番号セット
-
+        try {
+            serversocket = new ServerSocket(SERVER_PORT);      // サーバソケットのインスタンスを生成、ポート番号セット
+        } catch (IOException e) {
+            System.out.println("エラー" + e.getMessage());
+            e.printStackTrace();
+        }
         this.start();
     }
 
-
+    @Override
     public void run() {
         while (true) {
             try {
@@ -44,6 +48,9 @@ public class Main extends Thread {
                 handler = new ConnectionHandler(in, ot); // ポート番号セットされた参照変数serversocketをConnectionHandler
                 client.close();
             } catch (IOException e) {
+                System.out.println("エラー:" + e.getMessage());
+                e.printStackTrace();
+            }catch (RuntimeException e){
                 System.out.println("エラー:" + e.getMessage());
                 e.printStackTrace();
             }

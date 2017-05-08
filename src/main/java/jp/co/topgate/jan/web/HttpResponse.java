@@ -16,20 +16,27 @@ public class HttpResponse {
 
     private InputStreamReader inp = null;
 
-    private String rootPath = "/Users/aizijiang.aerken/homepage/src/main/resource";                 //リソースパス
+    private String rootPath = "./src/main/resouces";                 //リソースパス
 
     private PrintWriter pr;
 
-    String response;
+    private String response;
 
-    String version;
+    private String responseMessage;
+
+    static final int OK = 200 ;
 
     static final int BAD_REQUEST = 400;
 
+    static final int NOT_FOUND = 404 ;
+
+    static final int Method_Not_Allowed = 405 ;
+
+    static final int HTTP_Version_Not_Supported = 505 ;
+
     Map<String, String> fileType = new HashMap<>();
 
-
-    public HttpResponse(HttpRequest request, OutputStream ot) throws IOException {
+    public HttpResponse(int statusCode,String uri, OutputStream ot) throws IOException {
 
         fileType.put("html", "Content-Type: text/html; charset=utf-8\r\n");
         fileType.put("htm", "Content-Type: text/htm; charset=utf-8\r\n");
@@ -41,24 +48,29 @@ public class HttpResponse {
         fileType.put("gif", "Content-Type: image/gif\r\n");
         fileType.put("txt", "Content-Type: text/plain\r\n");
 
-        if (request.statuscode != BAD_REQUEST) {
 
-            File file = new File(rootPath + request.uri);
+
+        if (statusCode == OK) {
+            if(uri.endsWith("/") || uri.length() < 1){
+                uri="/index.html";
+            }
+
+            File file = new File(rootPath + uri);
 
             if (file.exists() && file.isFile()) {
 
-                String[] url = request.uri.split("\\.", 0);
+                String[] url = uri.split("\\.", 0);
 
-                version = "HTTP/1.1 200 OK\r\n";
+                responseMessage = "HTTP/1.1 200 OK\r\n";
 
                 ot.write(contenttype(url[1]).getBytes());
 
                 BufferedReader bfr = new BufferedReader(new InputStreamReader(new FileInputStream(file)));
                 String line;
                 while ((line = bfr.readLine()) != null) {
-                    version += line + "\n";
+                    responseMessage += line + "\n";
                 }
-                System.out.println("\n" + version);
+                System.out.println("\n" + responseMessage);
 
 
                 FileInputStream fin = new FileInputStream(file);
@@ -77,34 +89,51 @@ public class HttpResponse {
                 fin.close();
 
             } else {
-                String[] nofound = request.uri.split("/");
-                version = "HTTP/1.1 404 Not Found \r\n";
+                String[] nofound = uri.split("/");
+                responseMessage = "HTTP/1.1 404 Not Found\r\n";
                 // response += "Content-Length: " + file.length() + "\r\n";
-                version += "Content-Type: text/html; charset=utf-8" + "\r\n";
-                version += "\r\n";
-                version += "<html><head><title>Not Found</title></head><body><h1>Not_Found</h1><p>http://www." + nofound[1] + "のサーバーの DNS アドレスが見つかりませんでした。\n</p></body></html>";
-                System.out.println(version);
-                ot.write(version.getBytes());
+                responseMessage += "Content-Type: text/html; charset=utf-8" + "\r\n";
+                responseMessage += "\r\n";
+                responseMessage += "<html><head><title>Not Found</title></head><body><h1>Not_Found</h1><p>要求されたURL:" + nofound[1] + "はこのサーバ上に見つかりませんでした。\n</p></body></html>";
+                System.out.println(responseMessage);
+                ot.write(responseMessage.getBytes());
             }
 
-        } else {
-            version = "HTTP/1.1 400 Bad Request \r\n";
-            version += "Content-Type: text/html; charset=utf-8" + "\r\n";
-            version += "\r\n";
-            version += "<html><head><title>Not Found</title></head><body><h1>Not_Found</h1><p>Bad Request\n</p></body></html>";
-            System.out.println(version);
-            ot.write(version.getBytes());
+        } else if(statusCode == BAD_REQUEST) {
+            responseMessage = "HTTP/1.1 400 Bad Request\r\n";
+            responseMessage += "Content-Type: text/html; charset=utf-8" + "\r\n";
+            responseMessage += "\r\n";
+            responseMessage += "<html><head><title>Bad Request</title></head><body><h1>Bad Request</h1><p>The request cannot be fulfilled due to bad syntax.</p></body></html>";
+            System.out.println(responseMessage);
+            ot.write(responseMessage.getBytes());
+        }else if(statusCode == HTTP_Version_Not_Supported){
+            responseMessage = "HTTP/1.1 505 Version not supported\r\n";
+            responseMessage += "Content-Type: text/html; charset=utf-8" + "\r\n";
+            responseMessage += "\r\n";
+            responseMessage += "<html><head><title>Version not supported</title></head><body><h1>Version not supported</h1><p>" +
+                               "The server does not support the HTTP protocol version used in the request.\r\n</p></body></html>";
+            System.out.println(responseMessage);
+            ot.write(responseMessage.getBytes());
+        }else if(statusCode == Method_Not_Allowed) {
+            responseMessage = "HTTP/1.1 405 Method Not Allowed\r\n";
+            responseMessage += "Content-Type: text/html; charset=utf-8" + "\r\n";
+            responseMessage += "\r\n";
+            responseMessage += "<html><head><title>Method Not Allowed</title></head><body><h1>Method Not Allowed</h1><p>" +
+                    "A request method is not supported for the requested resource.\r\n</p></body></html>";
+            System.out.println(responseMessage);
+            ot.write(responseMessage.getBytes());
         }
+
     }
 
     public String contenttype(String url) {
 
         for (String type : fileType.keySet()) {
             if (type.equals(url)) {
-                version += fileType.get(type) + "\r\n";
+                responseMessage += fileType.get(type) + "\r\n";
                 break;
             }
         }
-        return version;
+        return responseMessage;
     }
 }
