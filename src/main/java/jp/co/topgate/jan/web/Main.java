@@ -13,11 +13,11 @@ public class Main extends Thread {
 
     final int SERVER_PORT = 8080;         // ポート番号
 
-    ServerSocket serversocket = null;
+    private ServerSocket serverSocket = null;
 
-    Socket client = null;
+    private Socket client = null;
 
-    ConnectionHandler handler = null;
+    private ConnectionHandler handLer = null;
 
     public static void main(String[] args){
 
@@ -30,7 +30,7 @@ public class Main extends Thread {
         System.out.println("Server is started •••••••••\r\n");
 
         try {
-            serversocket = new ServerSocket(SERVER_PORT);      // サーバソケットのインスタンスを生成、ポート番号セット
+            serverSocket = new ServerSocket(SERVER_PORT);      // サーバソケットのインスタンスを生成、ポート番号セット
         } catch (IOException e) {
             System.out.println("エラー" + e.getMessage());
             e.printStackTrace();
@@ -42,10 +42,10 @@ public class Main extends Thread {
     public void run() {
         while (true) {
             try {
-                client = serversocket.accept();
+                client = serverSocket.accept();
                 InputStream in = client.getInputStream();
                 OutputStream ot = client.getOutputStream();
-                handler = new ConnectionHandler(in, ot); // ポート番号セットされた参照変数serversocketをConnectionHandler
+                handLer = new ConnectionHandler(in, ot); // ポート番号セットされた参照変数serversocketをConnectionHandler
                 client.close();
             } catch (IOException e) {
                 System.out.println("エラー:" + e.getMessage());

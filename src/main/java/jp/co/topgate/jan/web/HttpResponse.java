@@ -10,17 +10,7 @@ import java.util.Map;
 
 public class HttpResponse {
 
-    private HttpRequest reqs;
-
-    private BufferedReader br = null;
-
-    private InputStreamReader inp = null;
-
     private String rootPath = "./src/main/resouces";                 //リソースパス
-
-    private PrintWriter pr;
-
-    private String response;
 
     private String responseMessage;
 
@@ -28,11 +18,9 @@ public class HttpResponse {
 
     static final int BAD_REQUEST = 400;
 
-    static final int NOT_FOUND = 404 ;
+    static final int METHOD_NOT_ALLOWED = 405 ;
 
-    static final int Method_Not_Allowed = 405 ;
-
-    static final int HTTP_Version_Not_Supported = 505 ;
+    static final int HTTP_VERSION_NOT_SUPPORTED = 505 ;
 
     Map<String, String> fileType = new HashMap<>();
 
@@ -106,7 +94,7 @@ public class HttpResponse {
             responseMessage += "<html><head><title>Bad Request</title></head><body><h1>Bad Request</h1><p>The request cannot be fulfilled due to bad syntax.</p></body></html>";
             System.out.println(responseMessage);
             ot.write(responseMessage.getBytes());
-        }else if(statusCode == HTTP_Version_Not_Supported){
+        }else if(statusCode == HTTP_VERSION_NOT_SUPPORTED){
             responseMessage = "HTTP/1.1 505 Version not supported\r\n";
             responseMessage += "Content-Type: text/html; charset=utf-8" + "\r\n";
             responseMessage += "\r\n";
@@ -114,12 +102,12 @@ public class HttpResponse {
                                "The server does not support the HTTP protocol version used in the request.\r\n</p></body></html>";
             System.out.println(responseMessage);
             ot.write(responseMessage.getBytes());
-        }else if(statusCode == Method_Not_Allowed) {
+        }else if(statusCode == METHOD_NOT_ALLOWED) {
             responseMessage = "HTTP/1.1 405 Method Not Allowed\r\n";
             responseMessage += "Content-Type: text/html; charset=utf-8" + "\r\n";
             responseMessage += "\r\n";
             responseMessage += "<html><head><title>Method Not Allowed</title></head><body><h1>Method Not Allowed</h1><p>" +
-                    "A request method is not supported for the requested resource.\r\n</p></body></html>";
+                               "A request method is not supported for the requested resource.\r\n</p></body></html>";
             System.out.println(responseMessage);
             ot.write(responseMessage.getBytes());
         }

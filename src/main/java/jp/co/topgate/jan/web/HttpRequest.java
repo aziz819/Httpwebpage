@@ -12,7 +12,7 @@ import java.util.Map;
  */
 public class HttpRequest {
 
-    private static final int REQUEST_LINE_QUANTYTI = 3;                           // リクエストラインを分割してから３か
+    private static final int REQUEST_LINE_QUANTYTI = 3;                             // リクエストラインを分割してから３か
 
     private static final int PARAMETER_ATTRIBUTE_VALUE = 2 ;
 
@@ -28,7 +28,7 @@ public class HttpRequest {
 
     private BufferedReader bfin;
 
-    private static String headerLine;                                            // リクエストヘッダーを一行ずつ代入する一時的な変数
+    private static String headerLine;                                               // リクエストヘッダーを一行ずつ代入する一時的な変数
 
     private String method;                                                                 // HTTPメソッド
 
@@ -36,13 +36,11 @@ public class HttpRequest {
 
     private String version;                                                                // HTTPバージョン
 
-    protected static int statusCode;
+    private Map<String, String> header_Key_value = new HashMap<>();                        // リクエストヘッダーのフィールドと値を扱う
 
-    private Map<String, String> header_Key_alue = new HashMap<>();                        // リクエストヘッダーのフィールドと値を扱う
+    private Map<String, String> post_Parameter_attribute_value = new HashMap<>();          // ポストクエリーを扱う
 
-    private Map<String, String> post_Parameter_attribute_value = new HashMap<>();     // ポストクエリーを扱う
-
-    private Map<String, String> get_Parameter_attribute_value = new HashMap<>();              // ゲットクエリーを扱う
+    private Map<String, String> get_Parameter_attribute_value = new HashMap<>();           // ゲットクエリーを扱う
 
 
     public HttpRequest(InputStream in) throws RuntimeException, IOException {
@@ -55,16 +53,16 @@ public class HttpRequest {
 
             bfin = new BufferedReader(new InputStreamReader(in, "UTF-8"));
 
-            String requestLine = bfin.readLine();                                       // 取り敢えずリクエストの一行目を読み取る
+            String requestLine = bfin.readLine();                                        // 取り敢えずリクエストの一行目を読み取る
 
             if (requestLine != null) {
 
                 System.out.println(requestLine);
 
-                String[] str1 = requestLine.split(REQUEST_LINE_SPACE_SEPARATE);        // REQUEST_LINE_SPACE_SEPARATE == " " / 一行目を空白のところから三つに分ける
+                String[] str1 = requestLine.split(REQUEST_LINE_SPACE_SEPARATE);         // REQUEST_LINE_SPACE_SEPARATE == " " / 一行目を空白のところから三つに分ける
 
 
-                if (str1.length == 3) {
+                if (str1.length == REQUEST_LINE_QUANTYTI) {                             // REQUEST_LINE_QUANTYTI == 3
 
                     method = str1[0];                                                   // メソッド
                     uri = str1[1];                                                      // URI
@@ -72,32 +70,32 @@ public class HttpRequest {
 
                     while ((headerLine = bfin.readLine()) != null && !headerLine.equals("")) {    // 二行目からヘッダーフィールドと値を読み取る
 
-                        String[] header = headerLine.split(HEADER_SEPARATE); // HEADER_SEPARATE  == ":"
+                        String[] header = headerLine.split(HEADER_SEPARATE);                     // HEADER_SEPARATE  == ":"
 
-                        if (header.length == PARAMETER_ATTRIBUTE_VALUE) { // PARAMETER_ATTRIBUTE_VALUE == 2
+                        if (header.length == PARAMETER_ATTRIBUTE_VALUE) {                        // PARAMETER_ATTRIBUTE_VALUE == 2
 
                             header[1] = header[1].trim();
 
-                            header_Key_alue.put(header[0], header[1]);
+                            header_Key_value.put(header[0], header[1]);
 
                         } else if (header.length > 2) {
 
                             header[1] = header[1].trim();
 
-                            header_Key_alue.put(header[0], header[1] + HEADER_SEPARATE + header[2]);         // ヘッダーに　”：”コロンが多かったら
+                            header_Key_value.put(header[0], header[1] + HEADER_SEPARATE + header[2]);         // ヘッダーに　”：”コロンが多かったら
 
                         }
 
-                        System.out.println(headerLine);                                // ヘッダーフィールドと値
+                        System.out.println(headerLine);                                                       // ヘッダーフィールドと値
                     }
 
                     if (("GET".equals(method))) {
                         if (uri.matches(".*" + GET_QUERY_QUEASTION_SEPARATE + ".*")) {                  // GET_QUERY_QUEASTION_SEPARATE == "?"疑問符があるかどうかの判断
                             String[] get1 = uri.split(GET_QUERY_QUEASTION_SEPARATE);
                             uri = get1[0];
-                            String[] get2 = get1[1].split(QUERY_PARAMETER_SEPARATE); // QUERY_PARAMETER_SEPARATE == "&"
+                            String[] get2 = get1[1].split(QUERY_PARAMETER_SEPARATE);                          // QUERY_PARAMETER_SEPARATE == "&"
                             for (String get3 : get2) {
-                                String[] get4 = get3.split(GET_QUERY_EQUAL_SEPARATE);  // GET_QUERY_EQUAL_SEPARATE == "="
+                                String[] get4 = get3.split(GET_QUERY_EQUAL_SEPARATE);                         // GET_QUERY_EQUAL_SEPARATE == "="
                                 if(get4.length == PARAMETER_ATTRIBUTE_VALUE){
                                     get_Parameter_attribute_value.put(get4[0], get4[1]);
                                 }
@@ -134,18 +132,20 @@ public class HttpRequest {
 
     public String getMethod(){
         return method;
-    }
+    }           // privateのメソッドにアクセス
 
     public String getURL(){
         return uri ;
-    }
+    }                //privateのuriにアクセス
 
     public String getVersion(){
         return version ;
-    }
+    }        //priavteのバージョンにアクセス
 
 
-
+    /*
+    * 下記はテストの時に使用
+    * */
 
     public String getGetparameter(String name){
         if(name != null){
