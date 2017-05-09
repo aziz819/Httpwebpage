@@ -183,7 +183,7 @@ public class ConnectionHandlerTest {
 
     public static class リクエストがNULLの時でのテスト {
         @Test
-        public void リクエストがnullか() throws IOException {
+        public void リクエストがヌールか() throws IOException {
             File file = new File("./src/test/Testresources/ResponseMessage.txt");
             file.delete();
 
