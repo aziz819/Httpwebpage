@@ -26,7 +26,7 @@ public class ConnectionHandlerTest {
 
 
             try {
-                is = new FileInputStream(new File("./src/test/Testresources/getTes.txt"));
+                is = new FileInputStream(new File("./src/test/Testresources/getTest.txt"));
                 os = new FileOutputStream(new File("./src/test/Testresources/ResponseMessage.txt"));
 
                 new ConnectionHandler(is, os);
