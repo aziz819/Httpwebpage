@@ -129,17 +129,20 @@ public class HttpRequest {
     }
 
 
-    public String getMethod(){
+    public String getMethod() {             // privateのメソッドにアクセス
+
         return method;
-    }           // privateのメソッドにアクセス
+    }
 
-    public String getURL(){
+    public String getURL(){                 //privateのuriにアクセス
+
         return uri ;
-    }                //privateのuriにアクセス
+    }
 
-    public String getVersion(){
-        return version ;
-    }        //priavteのバージョンにアクセス
+    public String getVersion() {            //priavteのバージョンにアクセス
+
+        return version;
+    }
 
 
     /*

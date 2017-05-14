@@ -7,40 +7,49 @@ import java.io.*;
  */
 
 public class HttpResponse {
-    FileInputStream filein = null ;
+    FileInputStream fileIn = null ;
 
-    public HttpResponse(int statusCode, OutputStream os, FileResources file,StatusLine statusline) throws IOException {
+    public HttpResponse(int statusCode, OutputStream os, FileResources fileresources, StatusLine statusline) throws IOException {
 
-        if(os == null || file == null){
-            throw new RuntimeException("osかfileがnullになっています。");
+        if (os == null || fileresources == null) {
+            throw new RuntimeException("osかfileresourcesがnullになっています。");
         }
 
         try {
-            StringBuilder responseMessage = statusline.statusfirstline(statusCode);
-            responseMessage.append(file.getContenType());
+            StringBuilder responseMessage = statusline.statusfirstline(statusCode);   // 現在のステータスコードでコード説明を選択する
 
-            os.write(responseMessage.toString().getBytes());
+            responseMessage.append(fileresources.getContenType(statusCode)).append("\n");      // ファイルの拡張によってコンテントタイプをセットする
 
-            BufferedReader bfr = new BufferedReader(new InputStreamReader(new FileInputStream(file)));
-            String line;
-            while ((line = bfr.readLine()) != null) {
-                responseMessage.append(line + "\n");
-            }
-            System.out.println("\n" + responseMessage);
+            if (statusCode != statusline.OK) {
+                responseMessage.append(statusline.irregularityStatusCode(statusCode));
+                System.out.println(responseMessage);
+                os.write(responseMessage.toString().getBytes());
+            } else {
 
-            filein = new FileInputStream(file);
-            byte[] bytes = new byte[1024];
-            while (true) {
-                int r = filein.read(bytes);
-                if (r == -1) {
-                    break;
+                os.write(responseMessage.toString().getBytes());
+
+                BufferedReader bfr = new BufferedReader(new InputStreamReader(new FileInputStream(fileresources)));
+                String line;
+                while ((line = bfr.readLine()) != null) {
+                    responseMessage.append(line + "\n");
                 }
+                System.out.println(responseMessage);
 
-                os.write(bytes, 0, r);      //通信ソケットに送信するバイトストリームを取得(ブラウザーに表示)
+                fileIn = new FileInputStream(fileresources);
+                byte[] bytes = new byte[1024];
+                while (true) {
+                    int r = fileIn.read(bytes);
+                    if (r == -1) {
+                        break;
+                    }
+
+                    os.write(bytes, 0, r);      //通信ソケットに送信するバイトストリームを取得(ブラウザーに表示)
+                }
+                os.flush();
             }
-            os.flush();
         }finally {
-            if(filein != null)filein.close();
+            if(fileIn != null) fileIn.close();
+            if (os != null) os.close();
         }
 
     }

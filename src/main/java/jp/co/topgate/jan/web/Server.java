@@ -38,6 +38,7 @@ public class Server {
         System.out.println("Server is started •••••••••\r\n");
         while (true) {
             try {
+
                 client = serverSocket.accept();
                 InputStream is = client.getInputStream();
                 OutputStream os = client.getOutputStream();

@@ -21,7 +21,7 @@ public class ConnectionHandler {
 
         HttpResponse response;
 
-        FileResources file = null;
+        FileResources fileresources = null;
 
         StatusLine statusline = new StatusLine();
 
@@ -37,15 +37,19 @@ public class ConnectionHandler {
 
             uri = request.getURL();
 
+            if (uri.endsWith("/")) {
+                uri = "/index.html";
+            }
+
             version = request.getVersion();
 
-            file = new FileResources(uri);
+            fileresources = new FileResources(uri);
 
             if (!"GET".equals(method) && !"POST".equals(method)) {
                 statusCode = StatusLine.METHOD_NOT_ALLOWED;
             } else if (!("HTTP/1.1".equals(version))) {
                 statusCode = StatusLine.HTTP_VERSION_NOT_SUPPORTED;
-            } else if (!(file.exists() && file.isFile())) {
+            } else if (!(fileresources.exists() && fileresources.isFile())) {
                 statusCode = StatusLine.NOT_FOUND;
             } else {
                 statusCode = StatusLine.OK;
@@ -61,12 +65,13 @@ public class ConnectionHandler {
             System.out.println("エラー：" + e.getMessage());
             e.printStackTrace();
             statusCode = statusline.BAD_REQUEST;
+            fileresources = new FileResources("");
         }
 
 
         try {
 
-            response = new HttpResponse(statusCode, os,file,statusline);
+            response = new HttpResponse(statusCode, os, fileresources, statusline);
 
         }catch (IOException e){
             System.out.println("エラー：" + e.getMessage());
@@ -74,6 +79,7 @@ public class ConnectionHandler {
         }catch (RuntimeException e){
             System.out.println("エラー：" + e.getMessage());
             e.printStackTrace();
+            throw new NullPointerException();
         }
     }
 }

@@ -14,9 +14,9 @@ import static org.junit.Assert.assertThat;
  */
 public class HttpRequestTest {
 
-    public static class GETパラメーター付きリクエストラインを分割テスト{
+    public static class GETとPOSTパラメーターの分割テスト {
         @Test
-        public void 正しく値を取得できるか()throws Exception{
+        public void GETの場合() throws Exception {
             HttpRequest req;
             try (InputStream in = new FileInputStream(new File("./src/test/Testresources/getTest.txt"))) {
                 req = new HttpRequest(in);
@@ -28,11 +28,9 @@ public class HttpRequestTest {
                 assertThat(req.getGetparameter("name"), is("kinnikuman"));
             }
         }
-    }
 
-    public static class POSTパラメーター付きリクエストラインを分割テスト {
         @Test
-        public void 正しく値を取得できるか() throws Exception {
+        public void POSTの場合() throws Exception {
             HttpRequest req;
             try (InputStream in = new FileInputStream(new File("./src/test/Testresources/postTest.txt"))) {
                 req = new HttpRequest(in);
@@ -44,12 +42,12 @@ public class HttpRequestTest {
                 assertThat(req.getPostparameter("name"), is("kinnikuman"));
             }
         }
+
     }
 
-
-    public static class POSTとGETメソッドテスト {
+    public static class POSTとGETメソッド取得テスト {
         @Test
-        public void post正しく値を取得できるか() throws Exception {
+        public void POSTの場合() throws Exception {
             HttpRequest req;
             try (InputStream in = new FileInputStream(new File("./src/test/Testresources/postTest.txt"))) {
                 req = new HttpRequest(in);
@@ -60,7 +58,7 @@ public class HttpRequestTest {
 
 
         @Test
-        public void get正しく値を取得できるか() throws Exception {
+        public void GETの場合() throws Exception {
             HttpRequest req;
             try (InputStream in = new FileInputStream(new File("./src/test/Testresources/getTest.txt"))) {
                 req = new HttpRequest(in);
@@ -71,8 +69,7 @@ public class HttpRequestTest {
     }
 
 
-
-    public class HTTPバージョンテスト {
+    public static class HTTPバージョン取得テスト {
         @Test
         public void 正しく値を取得できるか() throws Exception {
             HttpRequest req;
@@ -85,8 +82,7 @@ public class HttpRequestTest {
     }
 
 
-
-    public static class URLのテスト {
+    public static class URL取得テスト {
         @Test
         public void 正しく値を取得できるか() throws Exception {
             HttpRequest req;
