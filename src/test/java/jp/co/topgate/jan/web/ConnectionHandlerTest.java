@@ -4,6 +4,7 @@ import org.junit.Test;
 
 import java.io.*;
 
+import static junit.framework.TestCase.fail;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
@@ -12,68 +13,74 @@ import static org.junit.Assert.assertThat;
  */
 public class ConnectionHandlerTest {
 
-    public static class GETとPOSTそれぞれのパラメーター付きのリクエストでテスト {
+    public static class パラメーター付きGETとPOST場合の200OK確認テスト {
+
 
         @Test
-        public void GETの場合200OKのテスト() throws IOException {
+        public void GETの場合() throws IOException {
             File file = new File("./src/test/Testresources/ResponseMessage.txt");
             file.delete();
 
-            InputStream in = null;
-            OutputStream ot = null;
+            InputStream is = null;
+            OutputStream os = null;
+
 
             try {
-                in = new FileInputStream(new File("./src/test/Testresources/getTest.txt"));
-                ot = new FileOutputStream(new File("./src/test/Testresources/ResponseMessage.txt"));
+                is = new FileInputStream(new File("./src/test/Testresources/getTest.txt"));
+                os = new FileOutputStream(new File("./src/test/Testresources/ResponseMessage.txt"));
 
-                new ConnectionHandler(in, ot);
+                new ConnectionHandler(is, os);
 
             } catch (FileNotFoundException e) {
+                System.out.println("エラー：指定したファイルが見つかりませんでした。");
                 e.printStackTrace();
+                fail();
             } finally {
-                if (in != null) in.close();
-                if (ot != null) ot.close();
+                if (is != null) is.close();
+                if (os != null) os.close();
             }
 
             try {
-                in = new FileInputStream(new File("./src/test/Testresources/ResponseMessage.txt"));
-                BufferedReader bf = new BufferedReader(new InputStreamReader(in));
+                is = new FileInputStream(new File("./src/test/Testresources/ResponseMessage.txt"));
+                BufferedReader bf = new BufferedReader(new InputStreamReader(is));
                 assertThat(bf.readLine(), is("HTTP/1.1 200 OK"));
                 assertThat(bf.readLine(), is("Content-Type: text/html; charset=utf-8"));
             } finally {
-                if (in != null) in.close();
+                if (is != null) is.close();
             }
         }
 
 
         @Test
-        public void POSTの場合200OKテスト() throws IOException {
+        public void POSTの場合() throws IOException {
             File file = new File("./src/test/Testresources/ResponseMessage.txt");
             file.delete();
 
-            InputStream in = null;
-            OutputStream ot = null;
+            InputStream is = null;
+            OutputStream os = null;
 
             try {
-                in = new FileInputStream(new File("./src/test/Testresources/postTest.txt"));
-                ot = new FileOutputStream(new File("./src/test/Testresources/ResponseMessage.txt"));
+                is = new FileInputStream(new File("./src/test/Testresources/postTest.txt"));
+                os = new FileOutputStream(new File("./src/test/Testresources/ResponseMessage.txt"));
 
-                new ConnectionHandler(in, ot);
+                new ConnectionHandler(is, os);
 
             } catch (FileNotFoundException e) {
+                System.out.println("エラー：指定したファイルが見つかりませんでした。");
                 e.printStackTrace();
+                fail();
             } finally {
-                if (in != null) in.close();
-                if (ot != null) ot.close();
+                if (is != null) is.close();
+                if (os != null) os.close();
             }
 
             try {
-                in = new FileInputStream(new File("./src/test/Testresources/ResponseMessage.txt"));
-                BufferedReader bf = new BufferedReader(new InputStreamReader(in));
+                is = new FileInputStream(new File("./src/test/Testresources/ResponseMessage.txt"));
+                BufferedReader bf = new BufferedReader(new InputStreamReader(is));
                 assertThat(bf.readLine(), is("HTTP/1.1 200 OK"));
                 assertThat(bf.readLine(), is("Content-Type: text/html; charset=utf-8"));
             } finally {
-                if (in != null) in.close();
+                if (is != null) is.close();
             }
         }
     }
@@ -85,131 +92,139 @@ public class ConnectionHandlerTest {
             File file = new File("./src/test/Testresources/ResponseMessage.txt");
             file.delete();
 
-            InputStream in = null;
-            OutputStream ot = null;
+            InputStream is = null;
+            OutputStream os = null;
 
             try {
-                in = new FileInputStream(new File("./src/test/Testresources/versionTest.txt"));
-                ot = new FileOutputStream(new File("./src/test/Testresources/ResponseMessage.txt"));
+                is = new FileInputStream(new File("./src/test/Testresources/versionTest.txt"));
+                os = new FileOutputStream(new File("./src/test/Testresources/ResponseMessage.txt"));
 
-                new ConnectionHandler(in, ot);
+                new ConnectionHandler(is, os);
 
             } catch (FileNotFoundException e) {
+                System.out.println("エラー：指定したファイルが見つかりませんでした。");
                 e.printStackTrace();
+                fail();
             } finally {
-                if (in != null) in.close();
-                if (ot != null) ot.close();
+                if (is != null) is.close();
+                if (os != null) os.close();
             }
 
             try {
-                in = new FileInputStream(new File("./src/test/Testresources/ResponseMessage.txt"));
-                BufferedReader bf = new BufferedReader(new InputStreamReader(in));
-                assertThat(bf.readLine(), is("HTTP/1.1 505 Version not supported"));
+                is = new FileInputStream(new File("./src/test/Testresources/ResponseMessage.txt"));
+                BufferedReader bf = new BufferedReader(new InputStreamReader(is));
+                assertThat(bf.readLine(), is("HTTP/1.1 505 Version Not Supported"));
                 assertThat(bf.readLine(), is("Content-Type: text/html; charset=utf-8"));
             } finally {
-                if (in != null) in.close();
+                if (is != null) is.close();
             }
         }
 
     }
 
 
-
-    public static class 指定ファイルを見つからないテスト {
+    public static class 指定したファイルを見つからないテスト {
         @Test
         public void 指定したファイルかどうか() throws IOException {
             File file = new File("./src/test/Testresources/ResponseMessage.txt");
             file.delete();
 
-            InputStream in = null;
-            OutputStream ot = null;
+            InputStream is = null;
+            OutputStream os = null;
 
             try {
-                in = new FileInputStream(new File("./src/test/Testresources/notFileTest.txt"));
-                ot = new FileOutputStream(new File("./src/test/Testresources/ResponseMessage.txt"));
+                is = new FileInputStream(new File("./src/test/Testresources/notFileTest.txt"));
+                os = new FileOutputStream(new File("./src/test/Testresources/ResponseMessage.txt"));
 
-                new ConnectionHandler(in, ot);
+                new ConnectionHandler(is, os);
 
             } catch (FileNotFoundException e) {
+                System.out.println("エラー：指定したファイルが見つかりませんでした。");
                 e.printStackTrace();
+                fail();
             } finally {
-                if (in != null) in.close();
-                if (ot != null) ot.close();
+                if (is != null) is.close();
+                if (os != null) os.close();
             }
 
             try {
-                in = new FileInputStream(new File("./src/test/Testresources/ResponseMessage.txt"));
-                BufferedReader bf = new BufferedReader(new InputStreamReader(in));
+                is = new FileInputStream(new File("./src/test/Testresources/ResponseMessage.txt"));
+                BufferedReader bf = new BufferedReader(new InputStreamReader(is));
                 assertThat(bf.readLine(), is("HTTP/1.1 404 Not Found"));
                 assertThat(bf.readLine(), is("Content-Type: text/html; charset=utf-8"));
             } finally {
-                if (in != null) in.close();
+                if (is != null) is.close();
             }
         }
     }
 
-    public static class 指定されていないHTTPメソッドテスト {
+    public static class 許されないHTTPメソッドテスト {
         @Test
         public void GETやPOST以外のメソッドかどうか() throws IOException {
             File file = new File("./src/test/Testresources/ResponseMessage.txt");
             file.delete();
 
-            InputStream in = null;
-            OutputStream ot = null;
+            InputStream is = null;
+            OutputStream os = null;
 
             try {
-                in = new FileInputStream(new File("./src/test/Testresources/notMethodTest.txt"));
-                ot = new FileOutputStream(new File("./src/test/Testresources/ResponseMessage.txt"));
+                is = new FileInputStream(new File("./src/test/Testresources/notMethodTest.txt"));
+                os = new FileOutputStream(new File("./src/test/Testresources/ResponseMessage.txt"));
 
-                new ConnectionHandler(in, ot);
+                new ConnectionHandler(is, os);
 
             } catch (FileNotFoundException e) {
+                System.out.println("エラー：指定したファイルが見つかりませんでした。");
                 e.printStackTrace();
+                fail();
             } finally {
-                if (in != null) in.close();
-                if (ot != null) ot.close();
+                if (is != null) is.close();
+                if (os != null) os.close();
             }
 
             try {
-                in = new FileInputStream(new File("./src/test/Testresources/ResponseMessage.txt"));
-                BufferedReader bf = new BufferedReader(new InputStreamReader(in));
+                is = new FileInputStream(new File("./src/test/Testresources/ResponseMessage.txt"));
+                BufferedReader bf = new BufferedReader(new InputStreamReader(is));
                 assertThat(bf.readLine(), is("HTTP/1.1 405 Method Not Allowed"));
                 assertThat(bf.readLine(), is("Content-Type: text/html; charset=utf-8"));
             } finally {
-                if (in != null) in.close();
+                if (is != null) is.close();
             }
         }
     }
 
-    public static class リクエストがNULLの時でのテスト {
+    public static class リクエストラインがNULLの時でのテスト {
+
         @Test
         public void リクエストがヌールか() throws IOException {
             File file = new File("./src/test/Testresources/ResponseMessage.txt");
             file.delete();
 
-            InputStream in = null;
-            OutputStream ot = null;
+            InputStream is = null;
+            OutputStream os = null;
 
             try {
-                in = new FileInputStream(new File("./src/test/Testresources/emptyingRequestTest.txt"));
-                ot = new FileOutputStream(new File("./src/test/Testresources/ResponseMessage.txt"));
+                is = new FileInputStream(new File("./src/test/Testresources/emptyingRequestTest.txt"));
+                os = new FileOutputStream(new File("./src/test/Testresources/ResponseMessage.txt"));
 
-                new ConnectionHandler(in, ot);
+                new ConnectionHandler(is, os);
 
             } catch (FileNotFoundException e) {
+                System.out.println("エラー：指定したファイルが見つかりませんでした。");
                 e.printStackTrace();
+                fail();
             } finally {
-                if (in != null) in.close();
-                if (ot != null) ot.close();
+                if (is != null) is.close();
+                if (os != null) os.close();
             }
 
             try {
-                in = new FileInputStream(new File("./src/test/Testresources/ResponseMessage.txt"));
-                BufferedReader bf = new BufferedReader(new InputStreamReader(in));
+                is = new FileInputStream(new File("./src/test/Testresources/ResponseMessage.txt"));
+                BufferedReader bf = new BufferedReader(new InputStreamReader(is));
                 assertThat(bf.readLine(), is("HTTP/1.1 400 Bad Request"));
                 assertThat(bf.readLine(), is("Content-Type: text/html; charset=utf-8"));
             } finally {
-                if (in != null) in.close();
+                if (is != null) is.close();
             }
         }
     }
@@ -221,29 +236,31 @@ public class ConnectionHandlerTest {
             File file = new File("./src/test/Testresources/ResponseMessage.txt");
             file.delete();
 
-            InputStream in = null;
-            OutputStream ot = null;
+            InputStream is = null;
+            OutputStream os = null;
 
             try {
-                in = new FileInputStream(new File("./src/test/Testresources/getParameterTest.txt"));
-                ot = new FileOutputStream(new File("./src/test/Testresources/ResponseMessage.txt"));
+                is = new FileInputStream(new File("./src/test/Testresources/getParameterTest.txt"));
+                os = new FileOutputStream(new File("./src/test/Testresources/ResponseMessage.txt"));
 
-                new ConnectionHandler(in, ot);
+                new ConnectionHandler(is, os);
 
             } catch (FileNotFoundException e) {
+                System.out.println("エラー：指定したファイルが見つかりませんでした。");
                 e.printStackTrace();
+                fail();
             } finally {
-                if (in != null) in.close();
-                if (ot != null) ot.close();
+                if (is != null) is.close();
+                if (os != null) os.close();
             }
 
             try {
-                in = new FileInputStream(new File("./src/test/Testresources/ResponseMessage.txt"));
-                BufferedReader bf = new BufferedReader(new InputStreamReader(in));
+                is = new FileInputStream(new File("./src/test/Testresources/ResponseMessage.txt"));
+                BufferedReader bf = new BufferedReader(new InputStreamReader(is));
                 assertThat(bf.readLine(), is("HTTP/1.1 400 Bad Request"));
                 assertThat(bf.readLine(), is("Content-Type: text/html; charset=utf-8"));
             } finally {
-                if (in != null) in.close();
+                if (is != null) is.close();
             }
         }
     }
@@ -255,29 +272,31 @@ public class ConnectionHandlerTest {
             File file = new File("./src/test/Testresources/ResponseMessage.txt");
             file.delete();
 
-            InputStream in = null;
-            OutputStream ot = null;
+            InputStream is = null;
+            OutputStream os = null;
 
             try {
-                in = new FileInputStream(new File("./src/test/Testresources/postParameterTest.txt"));
-                ot = new FileOutputStream(new File("./src/test/Testresources/ResponseMessage.txt"));
+                is = new FileInputStream(new File("./src/test/Testresources/postParameterTest.txt"));
+                os = new FileOutputStream(new File("./src/test/Testresources/ResponseMessage.txt"));
 
-                new ConnectionHandler(in, ot);
+                new ConnectionHandler(is, os);
 
             } catch (FileNotFoundException e) {
+                System.out.println("エラー：指定したファイルが見つかりませんでした。");
                 e.printStackTrace();
+                fail();
             } finally {
-                if (in != null) in.close();
-                if (ot != null) ot.close();
+                if (is != null) is.close();
+                if (os != null) os.close();
             }
 
             try {
-                in = new FileInputStream(new File("./src/test/Testresources/ResponseMessage.txt"));
-                BufferedReader bf = new BufferedReader(new InputStreamReader(in));
+                is = new FileInputStream(new File("./src/test/Testresources/ResponseMessage.txt"));
+                BufferedReader bf = new BufferedReader(new InputStreamReader(is));
                 assertThat(bf.readLine(), is("HTTP/1.1 400 Bad Request"));
                 assertThat(bf.readLine(), is("Content-Type: text/html; charset=utf-8"));
             } finally {
-                if (in != null) in.close();
+                if (is != null) is.close();
             }
         }
     }

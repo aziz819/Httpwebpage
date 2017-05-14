@@ -1,5 +1,6 @@
 package jp.co.topgate.jan.web;
 
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -8,44 +9,77 @@ import java.io.OutputStream;
  * Created by aizijiang.aerken on 2017/04/13.
  */
 public class ConnectionHandler {
-    private HttpRequest req ;
-    private HttpResponse res ;
+
     private String version ;
     private String uri ;
     private String method ;
     private int statusCode ;
 
+    public ConnectionHandler(InputStream is, OutputStream os) throws IOException {
 
+        HttpRequest request;
 
-    public ConnectionHandler(InputStream in, OutputStream ot) throws IOException {
+        HttpResponse response;
 
-        if (in == null || ot == null) {
-            throw new RuntimeException("入力ストリームと出力ストリームどっちかnullになっています。");
+        FileResources fileresources = null;
+
+        StatusLine statusline = new StatusLine();
+
+        if (is == null || os == null) {
+            throw new NullPointerException("入力ストリームと出力ストリームどっちかnullになっています。");
         }
 
         try {
 
-            req = new HttpRequest(in);
-            method = req.getMethod();
-            uri = req.getURL();
-            version = req.getVersion();
+            request = new HttpRequest(is);
 
-            if(!("HTTP/1.1".equals(version))){
-                statusCode = HttpResponse.HTTP_VERSION_NOT_SUPPORTED ;
-            }else if(!"GET".equals(method) && !"POST".equals(method)){
-                statusCode = HttpResponse.METHOD_NOT_ALLOWED ;
-            }else{
-                statusCode = HttpResponse.OK;
+            method = request.getMethod();
+
+            uri = request.getURL();
+
+            if (uri.endsWith("/")) {
+                uri = "/index.html";
             }
-        }catch (RuntimeException e){
+
+            version = request.getVersion();
+
+            fileresources = new FileResources(uri);
+
+            if (!"GET".equals(method) && !"POST".equals(method)) {
+                statusCode = StatusLine.METHOD_NOT_ALLOWED;
+            } else if (!("HTTP/1.1".equals(version))) {
+                statusCode = StatusLine.HTTP_VERSION_NOT_SUPPORTED;
+            } else if (!(fileresources.exists() && fileresources.isFile())) {
+                statusCode = StatusLine.NOT_FOUND;
+            } else {
+                statusCode = StatusLine.OK;
+            }
+
+        } catch (FileNotFoundException e) {
             System.out.println("エラー：" + e.getMessage());
-            statusCode = HttpResponse.BAD_REQUEST;
+            e.printStackTrace();
+        } catch (IOException e) {
+            System.out.println("エラー：" + e.getMessage());
+            e.printStackTrace();
+        } catch (RuntimeException e) {
+            System.out.println("エラー：" + e.getMessage());
+            e.printStackTrace();
+            statusCode = statusline.BAD_REQUEST;
+            fileresources = new FileResources("");
         }
+
+
         try {
-            res = new HttpResponse(statusCode, uri, ot);
+
+            response = new HttpResponse(statusCode, os, fileresources, statusline);
+
         }catch (IOException e){
             System.out.println("エラー：" + e.getMessage());
             e.printStackTrace();
+        }catch (RuntimeException e){
+            System.out.println("エラー：" + e.getMessage());
+            e.printStackTrace();
+            throw new NullPointerException();
         }
     }
 }

@@ -1,8 +1,18 @@
 #.gradleは必要なし
 /.gradle/
+<<<<<<< HEAD
+=======
+/.gradle
+>>>>>>> newriver
 
 #.ideaは必要なし
 /.idea/
 
 #buildは必要なし
+<<<<<<< HEAD
 /build/
+=======
+/build/
+
+/Httpwebpage/jan.html/
+>>>>>>> newriver
