@@ -5,7 +5,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
-/**
+/* Serverクラスからクライアントからの要求を受けとり、ステータス行の確認をする
  * Created by aizijiang.aerken on 2017/04/13.
  */
 public class ConnectionHandler {
@@ -31,6 +31,10 @@ public class ConnectionHandler {
 
         try {
 
+            /*
+             * リクエストメッセージをHttpRequestクラスの渡して分析、分割してもらう
+             */
+
             request = new HttpRequest(is);
 
             method = request.getMethod();
@@ -42,6 +46,10 @@ public class ConnectionHandler {
             }
 
             version = request.getVersion();
+
+            /*
+             * uriをFileResourcesクラスに渡してファイル拡張子の確認をする
+             */
 
             fileresources = new FileResources(uri);
 

@@ -4,6 +4,7 @@ import org.junit.Test;
 
 import java.io.*;
 
+import static junit.framework.TestCase.fail;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
@@ -12,13 +13,13 @@ import static org.junit.Assert.assertThat;
  */
 public class HttpResponseTest {
 
-    public static class HTTPメッソドテスト {
+    public static class ステータスコードテスト {
         @Test
-        public void 実装されていないHTTPメッソド() throws IOException {
+        public void 予期されていないスタータスコード確認() throws IOException {
             File file = new File("./src/test/Testresources/ResponseMessage.txt");
             file.delete();
 
-            FileResources fileResources = new FileResources("");
+            FileResources fileResources = new FileResources("/index.html");
             StatusLine statusline = new StatusLine();
             OutputStream os = null;
             InputStream is = null;
@@ -28,9 +29,16 @@ public class HttpResponseTest {
 
                 new HttpResponse(506, os, fileResources, statusline);
 
-            } catch (IOException e) {
+            } catch (FileNotFoundException e) {
+                System.out.println("エラー：指定したファイルが見つかりませんでした。");
                 e.printStackTrace();
-            } finally {
+                fail();
+            } catch (NullPointerException e){
+                System.out.println("エラー：osかfileresourcesがnullになっています。");
+                e.printStackTrace();
+                fail();
+
+            }finally {
                 if (is != null) is.close();
                 if (os != null) os.close();
             }
