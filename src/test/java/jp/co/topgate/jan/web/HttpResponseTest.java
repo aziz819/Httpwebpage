@@ -46,7 +46,7 @@ public class HttpResponseTest {
             try {
                 is = new FileInputStream(new File("./src/test/Testresources/ResponseMessage.txt"));
                 BufferedReader bf = new BufferedReader(new InputStreamReader(is));
-                assertThat(bf.readLine(), is("HTTP/1.1 500 INTERNET_SERVER_ERROR"));
+                assertThat(bf.readLine(), is("HTTP/1.1 500 Internet Server Error"));
                 assertThat(bf.readLine(), is("Content-Type: text/html; charset=utf-8"));
             } finally {
                 if (is != null) is.close();
