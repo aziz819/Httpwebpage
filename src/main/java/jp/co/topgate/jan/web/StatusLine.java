@@ -3,7 +3,7 @@ package jp.co.topgate.jan.web;
 import java.util.HashMap;
 import java.util.Map;
 
-/**
+/* ステータスコードを受け取り、ステータスコードとステータスメッセージをセットするして表示すべきメッセージボディを返す
  * Created by aizijiang.aerken on 2017/05/10.
  */
 public class StatusLine {
@@ -15,9 +15,10 @@ public class StatusLine {
 
     static final int METHOD_NOT_ALLOWED = 405 ;
 
+    static final int INTERNET_SERVER_ERROR = 500;
+
     static final int HTTP_VERSION_NOT_SUPPORTED = 505 ;
 
-    static final int INTERNET_SERVER_ERROR = 500;
 
     Map<Integer, String> codeType = new HashMap<>();
 
@@ -29,7 +30,7 @@ public class StatusLine {
         codeType.put(HTTP_VERSION_NOT_SUPPORTED, "Version Not Supported");
     }
 
-    public StringBuilder statusfirstline(int statusCode) {
+    public StringBuilder getStatusCode(int statusCode) {
         StringBuilder builder = new StringBuilder();
         for (int code : codeType.keySet()) {
             if (code == statusCode) {
@@ -37,45 +38,45 @@ public class StatusLine {
                 return builder;
             }
         }
-        return builder.append("HTTP/1.1").append(" ").append(INTERNET_SERVER_ERROR).append(" ").append("INTERNET_SERVER_ERROR").append("\n");
+        return builder.append("HTTP/1.1").append(" ").append(INTERNET_SERVER_ERROR).append(" ").append("Internet Server Error").append("\n");
     }
 
 
-    public String irregularityStatusCode(int statusCode) {
+    public String IncorrectStatusCode(int statusCode) {
 
-        String s;
+        String m;
         switch (statusCode) {
             case BAD_REQUEST:
-                s = "<html><head><title>400 Bad Request</title></head>" +
+                m = "<html><head><title>400 Bad Request</title></head>" +
                         "<body><h1>Bad Request</h1>" +
                         "<p>リクエストは不正な構文であるために、サーバーに理解できませんでした。<br /></p></body></html>";
                 break;
 
             case NOT_FOUND:
-                s = "<html><head><title>404 Not Found</title></head>" +
+                m = "<html><head><title>404 Not Found</title></head>" +
                         "<body><h1>Not Found</h1>" +
                         "<p>サーバーは、リクエストURIと一致するものを見つけられませんでした。</p></body></html>";
                 break;
 
             case METHOD_NOT_ALLOWED:
-                s = "<html><head><title>405 Method Not Allowed</title></head>" +
+                m = "<html><head><title>405 Method Not Allowed</title></head>" +
                         "<body><h1>Not Implemented</h1>" +
                         "<p>実装されていないサーバメソッドです。</p></body></html>";
                 break;
 
             case HTTP_VERSION_NOT_SUPPORTED:
-                s = "<html><head><title>505 HTTP Version Not Supported</title></head>" +
+                m = "<html><head><title>505 HTTP Version Not Supported</title></head>" +
                         "<body><h1>HTTP Version Not Supported</h1>" +
                         "<p>サーバーは、リクエスト・メッセージで使用されたHTTPプロトコル・バージョンをサポートしていない、あるいはサポートを拒否している。</p> " +
                         "</body></html>";
                 break;
 
             default:
-                s = "<html><head><title>500 Internal Server Error</title></head>" +
+                m = "<html><head><title>500 Internal Server Error</title></head>" +
                         "<body><h1>Internal Server Error</h1>" +
                         "<p>サーバー内部の不明なエラーにより表示できません。</p></body></html>";
         }
-        return s;
+        return m;
     }
 
 }

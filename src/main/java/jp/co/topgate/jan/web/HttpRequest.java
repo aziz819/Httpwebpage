@@ -14,9 +14,9 @@ public class HttpRequest {
 
     private static final int REQUEST_LINE_QUANTYTI = 3;                       // リクエストラインの分割結果3つか
 
-    private static final int PARAMETER_ATTRIBUTE_VALUE = 2 ;                  // パラメーターの分割結果２つか
+    private static final int PARAMETER_QUANTYTI = 2;                          // パラメーターの分割結果２つか
 
-    private static final int HEADER_ATTRIBUTE_VALUE = 2 ;                     // ヘッダーをコロンから分割して２つか
+    private static final int HEADERS_QUANTYTI = 2;                            // ヘッダーをコロンから分割して２つか
 
     private static final String REQUEST_LINE_SEPARATOR = " ";                 // リクエスト行を空白の所から分割
 
@@ -55,7 +55,7 @@ public class HttpRequest {
 
             buffr = new BufferedReader(new InputStreamReader(is, "UTF-8"));
 
-            String requestLine = buffr.readLine();                                         // 取り敢えずリクエストの一行目を読み取る
+            String requestLine = buffr.readLine();                                       // 取り敢えずリクエストの一行目を読み取る
 
             if (requestLine == null) {
                 throw new NullPointerException("requestLineがnullになっています。");
@@ -63,7 +63,7 @@ public class HttpRequest {
 
             System.out.println(requestLine);
 
-            String[] str1 = requestLine.split(REQUEST_LINE_SEPARATOR);                    // REQUEST_LINE_SEPARATOR == " " / 一行目を空白のところから三つに分ける
+            String[] str1 = requestLine.split(REQUEST_LINE_SEPARATOR);                   // REQUEST_LINE_SEPARATOR == " " / 一行目を空白のところから三つに分ける
 
 
             if (str1.length != REQUEST_LINE_QUANTYTI) {                                  // REQUEST_LINE_QUANTYTI == 3
@@ -80,31 +80,25 @@ public class HttpRequest {
 
                 String[] header = headerLine.split(HEADERS_SEPARATOR,2);           // HEADERS_SEPARATOR  == ":"
 
-                if (header.length == HEADER_ATTRIBUTE_VALUE) {                           // HEADER_ATTRIBUTE_VALUE == 2
+                if (header.length == HEADERS_QUANTYTI) {                                 // HEADER_ATTRIBUTE_VALUE == 2
                     
                     header[1] = header[1].trim();
 
                     headersMap.put(header[0], header[1]);
 
-                } else if (header.length > HEADER_ATTRIBUTE_VALUE) {
-
-                    header[1] = header[1].trim();
-
-                    headersMap.put(header[0], header[1] + HEADERS_SEPARATOR + header[2]);         // ヘッダーに　”：”コロンが2以上の場合
-
                 }
 
-                System.out.println(headerLine);                                                   // ヘッダーフィールドと値
+                System.out.println(headerLine);                                          // ヘッダーフィールドと値
             }
 
             if (("GET".equals(method))) {
-                if (uri.matches(".*" + GET_QUERY_QUEASTION_SEPARATE + ".*")) {             // GET_QUERY_QUEASTION_SEPARATE == "?"疑問符があるかどうかの判断
-                    String[] get1 = uri.split(GET_QUERY_QUEASTION_SEPARATE);
+                if (uri.matches(".*" + GET_QUERY_QUEASTION_SEPARATE + ".*")) {    // GET_QUERY_QUEASTION_SEPARATE == "?"疑問符があるかどうかの判断
+                    String[] get1 = uri.split(GET_QUERY_QUEASTION_SEPARATE,2);
                     uri = get1[0];
                     //String[] get2 = get1[1].split(QUERIES_PARAMETERS_SEPARATE);
-                    for (String get3 : get1[1].split(QUERIES_PARAMETERS_SEPARATE)) {             // QUERY_PARAMETER_SEPARATE == "&"
-                        String[] get4 = get3.split(QUERIES_SEPARATOR);                           // QUERIES__SEPARATOR == "="
-                        if(get4.length != PARAMETER_ATTRIBUTE_VALUE){                            // PARAMETER_ATTRIBUTE_VALUE == 2
+                    for (String get3 : get1[1].split(QUERIES_PARAMETERS_SEPARATE)) {     // QUERY_PARAMETER_SEPARATE == "&"
+                        String[] get4 = get3.split(QUERIES_SEPARATOR,2);                   // QUERIES__SEPARATOR == "="
+                        if (get4.length != PARAMETER_QUANTYTI) {                         // PARAMETER_ATTRIBUTE_VALUE == 2
                             throw new RuntimeException("正しくないGETパラメーター:" + get3);
                         }
                         getParametersMap.put(get4[0], get4[1]);
@@ -112,11 +106,11 @@ public class HttpRequest {
                 }
             } else if (("POST".equals(method))) {
                 String parameterLine;
-                while ((parameterLine = buffr.readLine()) != null) {                            // ボディーメッセージを読み取り
+                while ((parameterLine = buffr.readLine()) != null) {                     // ボディーメッセージを読み取り
                     //String[] post1 = parameterLine.split(QUERIES_PARAMETERS_SEPARATE);
                     for (String post2 : parameterLine.split(QUERIES_PARAMETERS_SEPARATE)) {
-                        String[] post3 = post2.split(QUERIES_SEPARATOR);
-                        if(post3.length != PARAMETER_ATTRIBUTE_VALUE){
+                        String[] post3 = post2.split(QUERIES_SEPARATOR,2);
+                        if (post3.length != PARAMETER_QUANTYTI) {
                             throw new RuntimeException("正しくないPOSTパラメーター:" + post2);
                         }
                         postParametersMap.put(post3[0], post3[1]);
@@ -146,8 +140,8 @@ public class HttpRequest {
 
 
     /*
-    * 下記はテストの時に使用
-    * */
+     * 下記はテストの時に使用,GETの場合とPOSTの場合のパラメーター属性と値の取得
+     */
 
     public String getGetparameter(String name){
         if(name != null){
