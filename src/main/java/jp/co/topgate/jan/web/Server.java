@@ -77,12 +77,6 @@ public class Server {
 
                 e.printStackTrace();
 
-            } catch (RuntimeException e) {
-
-                System.out.println("エラー:" + e.getMessage());
-
-                e.printStackTrace();
-
             }
         }
     }
