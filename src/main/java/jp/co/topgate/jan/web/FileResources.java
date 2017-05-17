@@ -4,21 +4,28 @@ import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
 
-/* uriを受け取ってContentTypeをセットする
+/* Fileクラスを継承してファイル有無の確認＆ファイル拡張子によってContentTypeをセットする
  * Created by aizijiang.aerken on 2017/05/10.
  */
+
+
 public class FileResources extends File {
-    private boolean filecheck ;
-    private static final String rootPath = "./src/main/resources";                 //リソースパス
+
+    private static final String rootPath = "./src/main/resources";
+
     private String contentType;
+
     private String url ;
 
     Map<String, String> fileType = new HashMap<>();
 
 
-    public FileResources(String uri){
+    public FileResources(String uri) {
+
         super(rootPath + uri);
+
         url = uri ;
+
         fileType.put("html", "Content-Type: text/html; charset=utf-8\n");
         fileType.put("htm", "Content-Type: text/htm; charset=utf-8\n");
         fileType.put("css", "Content-Type: text/css; charset=utf-8\n");
@@ -33,11 +40,17 @@ public class FileResources extends File {
         fileType.put("mpeg", "Content-Type: video/mpeg\n");
         fileType.put("csv", "Content-Type: text/csv\n");
 
+    }
 
+    /*
+     *ファイル拡張子によってContentTypeのセット
+     */
 
-        if(uri != null && !"".equals(this.url)) {
+    public String getContentType() {
+
+        if (url != null && !"".equals(url)) {
             for (String type : fileType.keySet()) {
-                if (uri.endsWith(type)) {
+                if (url.endsWith(type)) {
                     contentType = type;
                     break;
                 }
@@ -45,18 +58,7 @@ public class FileResources extends File {
             }
         }
 
-    }
-
-    public String getContenType(int statusCode){
-
-        /*
-         *  ステータスコード200以外の場合にエラーメッセージボディを表示するためContent-TypeにfileTypeのキーhtmlの値がセットされる
-         */
-
-        if(statusCode != StatusLine.OK){
-            return fileType.get("html");
-        }
-       return fileType.getOrDefault(contentType,"Content-Type: text/html; charset=utf-8\n");
+        return fileType.getOrDefault(contentType, "Content-Type: text/html; charset=utf-8\n");
     }
 
 

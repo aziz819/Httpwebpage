@@ -1,93 +1,124 @@
 package jp.co.topgate.jan.web;
 
+import jp.co.topgate.jan.web.Error.BadRequest;
+import jp.co.topgate.jan.web.Error.MethodNotAllowed;
+import jp.co.topgate.jan.web.Error.VersionNotSupported;
+
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
-/* Serverクラスからクライアントからの要求を受けとり、ステータス行の確認をする
+/* HttpRequestクラスから返してきたメソッド、url,バージョンの確認してHttpResponseクラスのい渡す
  * Created by aizijiang.aerken on 2017/04/13.
  */
+
+
 public class ConnectionHandler {
 
-    private String version ;
-    private String uri ;
-    private String method ;
     private int statusCode ;
+
+    private HttpRequest httpRequest = null;
+
+    private HttpResponse httpResponse = null;
+
+    private FileResources fileResources = null;
 
     public ConnectionHandler(InputStream is, OutputStream os) throws IOException {
 
-        HttpRequest request;
-
-        HttpResponse response;
-
-        FileResources fileresources = null;
-
-        StatusLine statusline = new StatusLine();
-
         if (is == null || os == null) {
+
             throw new NullPointerException("入力ストリームと出力ストリームどっちかnullになっています。");
+
+        }
+        request(is, os);
+    }
+
+
+    public void request(InputStream is, OutputStream os){
+
+        try {
+
+            httpRequest = new HttpRequest(is);
+
+            methodCheck(httpRequest.getMethod());                    //HTTPメソッド
+
+            fileResources = filrCheck(httpRequest.getURL());        //url
+
+            versionCheck(httpRequest.getVersion());                 //HTTPバージョン
+
+            statusCode = StatusLine.OK;
+
+        } catch (MethodNotAllowed e) {                              // 実装されていないHTTPメソッドの場合にキャッチ
+            e.printStackTrace();
+            statusCode = StatusLine.METHOD_NOT_ALLOWED;
+
+        } catch (VersionNotSupported e) {                           // サポートされていないHTTPバージョンの場合にキャッチ
+            e.printStackTrace();
+            statusCode = StatusLine.HTTP_VERSION_NOT_SUPPORTED;
+
+        } catch (FileNotFoundException e) {                         // 指定したファイルが見つからなかった場合にキャッチ
+            e.printStackTrace();
+            statusCode = StatusLine.NOT_FOUND;
+
+        } catch (IOException | BadRequest e) {                      // nullのリクエストライン、正しくないリクエストライン、正しくないGET&POSTパラメーター、BuffereadReader読み込み不具合にキャッチ
+            e.printStackTrace();
+            statusCode = StatusLine.BAD_REQUEST;
+
+        } finally {
+            if (fileResources == null) {
+                fileResources = new FileResources("");
+            }
         }
 
         try {
 
-            /*
-             * リクエストメッセージをHttpRequestクラスの渡して分析、分割してもらう
-             */
+            httpResponse = new HttpResponse(os, fileResources);
 
-            request = new HttpRequest(is);
+            httpResponse.makeStastusLine(statusCode);
 
-            method = request.getMethod();
-
-            uri = request.getURL();
-
-            if (uri.endsWith("/")) {
-                uri = "/index.html";
-            }
-
-            version = request.getVersion();
-
-            /*
-             * uriをFileResourcesクラスに渡してファイル拡張子の確認をする
-             */
-
-            fileresources = new FileResources(uri);
-
-            if (!"GET".equals(method) && !"POST".equals(method)) {
-                statusCode = StatusLine.METHOD_NOT_ALLOWED;
-            } else if (!("HTTP/1.1".equals(version))) {
-                statusCode = StatusLine.HTTP_VERSION_NOT_SUPPORTED;
-            } else if (!(fileresources.exists() && fileresources.isFile())) {
-                statusCode = StatusLine.NOT_FOUND;
-            } else {
-                statusCode = StatusLine.OK;
-            }
-
-        } catch (FileNotFoundException e) {
-            System.out.println("エラー：" + e.getMessage());
+        } catch (NullPointerException e) {
+            System.out.println("エラー:" + e.getMessage());
             e.printStackTrace();
-        } catch (IOException e) {
-            System.out.println("エラー：" + e.getMessage());
-            e.printStackTrace();
-        } catch (RuntimeException e) {
-            System.out.println("エラー：" + e.getMessage());
-            e.printStackTrace();
-            statusCode = statusline.BAD_REQUEST;
-            fileresources = new FileResources("");
+        }
+    }
+
+    /*
+     * HTTPバージョン確認
+     */
+
+    private void versionCheck(String version) {
+        if (!("HTTP/1.1".equals(version))) {
+            throw new VersionNotSupported("エラー:サポートされていないバージョン");
+        }
+    }
+
+
+
+    /*
+     * HTTPメソッド確認
+     */
+
+    private void methodCheck(String method) {
+        if (!"GET".equals(method) && !"POST".equals(method)) {
+            throw new MethodNotAllowed("エラー:GETでもPOSTでもないメソッド");
+        }
+    }
+
+
+
+    /*
+     * ファイル有無確認
+     */
+
+    private FileResources filrCheck(String url) throws FileNotFoundException {
+
+        fileResources = new FileResources(url);
+
+        if (!(fileResources.exists() && fileResources.isFile())) {
+            throw new FileNotFoundException("エラー:ファイルは見つかりません");
         }
 
-
-        try {
-
-            response = new HttpResponse(statusCode, os, fileresources, statusline);
-
-        }catch (IOException e){
-            System.out.println("エラー：" + e.getMessage());
-            e.printStackTrace();
-        }catch (RuntimeException e){
-            System.out.println("エラー：" + e.getMessage());
-            e.printStackTrace();
-            throw new NullPointerException();
-        }
+        return fileResources;
     }
 }

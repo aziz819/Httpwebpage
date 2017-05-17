@@ -3,9 +3,11 @@ package jp.co.topgate.jan.web;
 import java.util.HashMap;
 import java.util.Map;
 
-/* ステータスコードを受け取り、ステータスコードとステータスメッセージをセットするして表示すべきメッセージボディを返す
+/* ステータスコードの確認してコード説明をセット＆ステータスコード200以外の場合に返すメッセージボディ
  * Created by aizijiang.aerken on 2017/05/10.
  */
+
+
 public class StatusLine {
     static final int OK = 200 ;
 
@@ -23,29 +25,51 @@ public class StatusLine {
     Map<Integer, String> codeType = new HashMap<>();
 
     public StatusLine(){
+
         codeType.put(OK, "OK");
         codeType.put(NOT_FOUND, "Not Found");
         codeType.put(BAD_REQUEST, "Bad Request");
         codeType.put(METHOD_NOT_ALLOWED, "Method Not Allowed");
+        codeType.put(INTERNET_SERVER_ERROR, "Internal Server Error");
         codeType.put(HTTP_VERSION_NOT_SUPPORTED, "Version Not Supported");
+
     }
 
-    public StringBuilder getStatusCode(int statusCode) {
-        StringBuilder builder = new StringBuilder();
+    /*
+     *ステータスコードの確認
+     */
+
+    public int statusCodeCheck(int statusCode) {
         for (int code : codeType.keySet()) {
-            if (code == statusCode) {
-                builder.append("HTTP/1.1").append(" ").append(statusCode).append(" ").append(codeType.get(statusCode)).append("\n");
-                return builder;
+            if (statusCode == code) {
+                return statusCode;
             }
         }
-        return builder.append("HTTP/1.1").append(" ").append(INTERNET_SERVER_ERROR).append(" ").append("Internet Server Error").append("\n");
+        return INTERNET_SERVER_ERROR;
     }
 
 
-    public String IncorrectStatusCode(int statusCode) {
+    /*
+     * ステータスコードによってコード説明を返す
+     */
+
+    public String getStatusLine(int statusCode) {
+
+        return codeType.get(statusCode);
+
+    }
+
+
+    /*
+     * ステーツコード200以外の場合に返すメッセージボディ
+     */
+
+    public String getErrorMessageBody(int statusCode) {
 
         String m;
+
         switch (statusCode) {
+
             case BAD_REQUEST:
                 m = "<html><head><title>400 Bad Request</title></head>" +
                         "<body><h1>Bad Request</h1>" +
@@ -76,7 +100,7 @@ public class StatusLine {
                         "<body><h1>Internal Server Error</h1>" +
                         "<p>サーバー内部の不明なエラーにより表示できません。</p></body></html>";
         }
+
         return m;
     }
-
 }

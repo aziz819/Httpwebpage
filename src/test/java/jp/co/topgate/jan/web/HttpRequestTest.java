@@ -15,6 +15,8 @@ import static org.junit.Assert.assertThat;
 public class HttpRequestTest {
 
     public static class GETとPOSTパラメーターの分割テスト {
+
+
         @Test
         public void GETの場合() throws Exception {
             HttpRequest req;
@@ -28,6 +30,8 @@ public class HttpRequestTest {
                 assertThat(req.getGetparameter("name"), is("kinnikuman"));
             }
         }
+
+
 
         @Test
         public void POSTの場合() throws Exception {
@@ -45,6 +49,8 @@ public class HttpRequestTest {
 
     }
 
+
+
     public static class POSTとGETメソッド取得テスト {
         @Test
         public void POSTの場合() throws Exception {
@@ -55,6 +61,8 @@ public class HttpRequestTest {
                 assertThat(req.getMethod(), is("POST"));
             }
         }
+
+
 
 
         @Test
@@ -69,6 +77,8 @@ public class HttpRequestTest {
     }
 
 
+
+
     public static class HTTPバージョン取得テスト {
         @Test
         public void 正しく値を取得できるか() throws Exception {
@@ -80,6 +90,8 @@ public class HttpRequestTest {
             }
         }
     }
+
+
 
 
     public static class URL取得テスト {
