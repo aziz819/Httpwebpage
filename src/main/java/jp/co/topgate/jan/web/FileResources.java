@@ -13,11 +13,11 @@ public class FileResources extends File {
 
     private static final String rootPath = "./src/main/resources";
 
-    private String contentType;
+    private String extension;
 
     private String url ;
 
-    Map<String, String> fileType = new HashMap<>();
+    Map<String, String> contentType = new HashMap<>();
 
 
     public FileResources(String uri) {
@@ -26,19 +26,20 @@ public class FileResources extends File {
 
         url = uri ;
 
-        fileType.put("html", "Content-Type: text/html; charset=utf-8\n");
-        fileType.put("htm", "Content-Type: text/htm; charset=utf-8\n");
-        fileType.put("css", "Content-Type: text/css; charset=utf-8\n");
-        fileType.put("js", "Content-Type: text/javascript; charset=utf-8\n");
-        fileType.put("png", "Content-Type: image/png\n");
-        fileType.put("jpg", "Content-Type: image/jpg\n");
-        fileType.put("jpeg", "Content-Type: image/jpeg\n");
-        fileType.put("gif", "Content-Type: image/gif\n");
-        fileType.put("txt", "Content-Type: text/plain\n");
-        fileType.put("audio", "Content-Type: audio/mpeg\n");
-        fileType.put("mp4", "Content-Type: audio/mp4\n");
-        fileType.put("mpeg", "Content-Type: video/mpeg\n");
-        fileType.put("csv", "Content-Type: text/csv\n");
+        contentType.put("html", "Content-Type: text/html; charset=utf-8\n");
+        contentType.put("htm", "Content-Type: text/htm; charset=utf-8\n");
+        contentType.put("css", "Content-Type: text/css; charset=utf-8\n");
+        contentType.put("js", "Content-Type: text/javascript; charset=utf-8\n");
+        contentType.put("png", "Content-Type: image/png\n");
+        contentType.put("jpg", "Content-Type: image/jpg\n");
+        contentType.put("jpeg", "Content-Type: image/jpeg\n");
+        contentType.put("gif", "Content-Type: image/gif\n");
+        contentType.put("txt", "Content-Type: text/plain\n");
+        contentType.put("audio", "Content-Type: audio/mpeg\n");
+        contentType.put("mp4", "Content-Type: audio/mp4\n");
+        contentType.put("mpeg", "Content-Type: video/mpeg\n");
+        contentType.put("csv", "Content-Type: text/csv\n");
+        contentType.put("ico", "Content-Type: image/x-icon\n");
 
     }
 
@@ -46,19 +47,19 @@ public class FileResources extends File {
      *ファイル拡張子によってContentTypeのセット
      */
 
-    public String getContentType() {
+    public String getContentType(int statusCode) {
 
-        if (url != null && !"".equals(url)) {
-            for (String type : fileType.keySet()) {
-                if (url.endsWith(type)) {
-                    contentType = type;
+        if (url != null && !"".equals(url) && statusCode == StatusLine.OK) {
+            for (String key : contentType.keySet()) {
+                if (url.endsWith(key)) {
+                    extension = key;
                     break;
                 }
 
             }
         }
 
-        return fileType.getOrDefault(contentType, "Content-Type: text/html; charset=utf-8\n");
+        return contentType.getOrDefault(extension, "Content-Type: text/html; charset=utf-8\n");
     }
 
 

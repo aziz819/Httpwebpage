@@ -44,12 +44,12 @@ public class HttpResponseTest {
 		@Test
 		public void 予期されていないスタータスコード確認() throws IOException {
 			InputStream is = null;
-			httpResponse.makeStastusLine(506);
+			httpResponse.createStatusLine(506);
 
 			try {
 				is = new FileInputStream(new File("./src/test/Testresources/ResponseMessage.txt"));
 				BufferedReader bf = new BufferedReader(new InputStreamReader(is));
-				assertThat(bf.readLine(), is("HTTP/1.1 500 Internal Server Error"));
+				assertThat(bf.readLine(), is("HTTP/1.1 500 Internal Server exception"));
 				assertThat(bf.readLine(), is("Content-Type: text/html; charset=utf-8"));
 			} finally {
 				if (is != null) is.close();
@@ -88,7 +88,7 @@ public class HttpResponseTest {
 		@Test
 		public void レスポンスメッセージ() throws IOException {
 			InputStream is = null;
-			httpResponse.makeStastusLine(200);
+			httpResponse.createStatusLine(200);
 
 
 

@@ -1,8 +1,6 @@
 package jp.co.topgate.jan.web;
 
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
 
@@ -31,7 +29,7 @@ public class Server {
 
         } catch (IOException e) {
 
-            System.out.println("サーバ開始時にエラー発生しました:" + e.getMessage());
+            System.out.println("エラー:サーバ開始時にエラー発生しました:" + e.getMessage());
 
             e.printStackTrace();
         }
@@ -39,14 +37,16 @@ public class Server {
 
 
     /*
-     * クライアントからの接続要求をまち、受けたらConnectionhandlerクラスの渡す
+     * クライアントからの接続要求をまち
      */
 
-    public void startServer(int SERVER_PORT) throws IOException {
+    public void startServer(int serverPort) throws IOException {
 
         Socket client = null;
 
-        serverSocket = new ServerSocket(SERVER_PORT);
+        ConnectionHandler connectionHandler = null;
+
+        serverSocket = new ServerSocket(serverPort);
 
         System.out.println("Server is started •••••••••\n");
 
@@ -56,20 +56,23 @@ public class Server {
 
                 client = serverSocket.accept();
 
-                InputStream is = client.getInputStream();
+                connectionHandler = new ConnectionHandler(client.getInputStream(), client.getOutputStream());
 
-                OutputStream os = client.getOutputStream();
 
-                new ConnectionHandler(is, os);
+                /*
+                 * クライアントからのリクエストを解析
+                 */
 
+                connectionHandler.readRequest();
+
+
+                /*
+                 * クライアントにレスポンウを返す
+                 */
+
+                connectionHandler.writeResponse();
 
                 client.close();
-
-            } catch (IOException e) {
-
-                System.out.println("エラー:" + e.getMessage());
-
-                e.printStackTrace();
 
             } catch (NullPointerException e) {
 

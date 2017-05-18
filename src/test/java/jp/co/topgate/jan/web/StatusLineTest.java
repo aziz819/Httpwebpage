@@ -43,8 +43,8 @@ public class StatusLineTest {
             @Test
             public void コード500の場合() {
                 assertThat(String.valueOf(new StatusLine().getErrorMessageBody(500)),
-                        is("<html><head><title>500 Internal Server Error</title></head>" +
-                                "<body><h1>Internal Server Error</h1>" +
+                        is("<html><head><title>500 Internal Server exception</title></head>" +
+                                "<body><h1>Internal Server exception</h1>" +
                                 "<p>サーバー内部の不明なエラーにより表示できません。</p></body></html>"));
             }
 

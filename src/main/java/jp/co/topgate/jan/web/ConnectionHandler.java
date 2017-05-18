@@ -1,11 +1,6 @@
 package jp.co.topgate.jan.web;
-
-import jp.co.topgate.jan.web.Error.BadRequest;
-import jp.co.topgate.jan.web.Error.MethodNotAllowed;
-import jp.co.topgate.jan.web.Error.VersionNotSupported;
-
+import jp.co.topgate.jan.web.exception.RequestParseException;
 import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
@@ -24,101 +19,151 @@ public class ConnectionHandler {
 
     private FileResources fileResources = null;
 
-    public ConnectionHandler(InputStream is, OutputStream os) throws IOException {
+    private InputStream is = null;
+
+    private OutputStream os = null;
+
+
+    public ConnectionHandler(InputStream is, OutputStream os) {
 
         if (is == null || os == null) {
 
             throw new NullPointerException("入力ストリームと出力ストリームどっちかnullになっています。");
 
         }
-        request(is, os);
+
+        this.is = is;
+
+        this.os = os;
     }
 
 
-    public void request(InputStream is, OutputStream os){
+    public void readRequest() {
 
         try {
 
             httpRequest = new HttpRequest(is);
 
-            methodCheck(httpRequest.getMethod());                    //HTTPメソッド
 
-            fileResources = filrCheck(httpRequest.getURL());        //url
+            /*
+             * リクエスト行&メッセンジャ・ヘッダー読み込み
+             */
 
-            versionCheck(httpRequest.getVersion());                 //HTTPバージョン
+            httpRequest.parseRequestLine();
+
+
+
+            /*
+             * GETパラメーター & POSTパラメーター、メッセージボディの読み込み
+             */
+
+            httpRequest.parseRequestParameter();
+
+
+            String method = httpRequest.getMethod();
+
+            String url = httpRequest.getURL();
+
+            String version = httpRequest.getVersion();
+
+            fileResources = fileCheck(url);
+
+            if (!"GET".equals(method) && !"POST".equals(method)) {
+
+                statusCode = StatusLine.BAD_REQUEST;
+
+            } else if (!("HTTP/1.1".equals(version))) {
+
+                statusCode = StatusLine.HTTP_VERSION_NOT_SUPPORTED;
+
+            }
+
 
             statusCode = StatusLine.OK;
 
-        } catch (MethodNotAllowed e) {                              // 実装されていないHTTPメソッドの場合にキャッチ
-            e.printStackTrace();
-            statusCode = StatusLine.METHOD_NOT_ALLOWED;
-
-        } catch (VersionNotSupported e) {                           // サポートされていないHTTPバージョンの場合にキャッチ
-            e.printStackTrace();
-            statusCode = StatusLine.HTTP_VERSION_NOT_SUPPORTED;
-
         } catch (FileNotFoundException e) {                         // 指定したファイルが見つからなかった場合にキャッチ
+
+            System.out.println("エラー:" + e.getMessage());
+
             e.printStackTrace();
+
             statusCode = StatusLine.NOT_FOUND;
 
-        } catch (IOException | BadRequest e) {                      // nullのリクエストライン、正しくないリクエストライン、正しくないGET&POSTパラメーター、BuffereadReader読み込み不具合にキャッチ
+        } catch (RequestParseException e) {                      // nullのリクエストライン、正しくないリクエストライン、正しくないGET&POSTパラメーター、BuffereadReader読み込み不具合にキャッチ
+
+            System.out.println("エラー:" + e.getMessage());
+
             e.printStackTrace();
+
             statusCode = StatusLine.BAD_REQUEST;
 
         } finally {
+
             if (fileResources == null) {
+
                 fileResources = new FileResources("");
+
             }
         }
+
+
+    }
+
+
+    public void writeResponse() {
 
         try {
 
             httpResponse = new HttpResponse(os, fileResources);
 
-            httpResponse.makeStastusLine(statusCode);
+
+            /*
+             * ステータスコードの確認　＆　コード説明のセット
+             */
+
+            httpResponse.createStatusLine(statusCode);
+
+
+            /*
+             * ファイル拡張子によってContentTypeをセット
+             */
+
+            httpResponse.selectContentType();
+
+
+            /*
+             * レスポンセを書き込む
+             */
+
+            httpResponse.createResponse();
+
 
         } catch (NullPointerException e) {
+
             System.out.println("エラー:" + e.getMessage());
+
             e.printStackTrace();
         }
+
     }
-
-    /*
-     * HTTPバージョン確認
-     */
-
-    private void versionCheck(String version) {
-        if (!("HTTP/1.1".equals(version))) {
-            throw new VersionNotSupported("エラー:サポートされていないバージョン");
-        }
-    }
-
-
-
-    /*
-     * HTTPメソッド確認
-     */
-
-    private void methodCheck(String method) {
-        if (!"GET".equals(method) && !"POST".equals(method)) {
-            throw new MethodNotAllowed("エラー:GETでもPOSTでもないメソッド");
-        }
-    }
-
-
 
     /*
      * ファイル有無確認
      */
 
-    private FileResources filrCheck(String url) throws FileNotFoundException {
+    private FileResources fileCheck(String url) throws FileNotFoundException {
 
         fileResources = new FileResources(url);
 
         if (!(fileResources.exists() && fileResources.isFile())) {
+
             throw new FileNotFoundException("エラー:ファイルは見つかりません");
+
         }
 
         return fileResources;
+
     }
+
+
 }

@@ -18,7 +18,8 @@ public class HttpResponse {
 
     private StatusLine statusLine = null;
 
-    private int StatusCode;
+    private int statusCode;
+
 
     public HttpResponse(OutputStream os, FileResources fileResources) {
 
@@ -30,41 +31,49 @@ public class HttpResponse {
 
         statusLine = new StatusLine();
 
-        this.os = os;
-
         this.fileResources = fileResources;
 
-    }
-
-
-    /*
-     * ステータスコードの確認＆コード説明のセット
-     */
-
-    public void makeStastusLine(int statuscode) {
-
-        StatusCode = statusLine.statusCodeCheck(statuscode);
-
-        responseMessage.append("HTTP/1.1").append(" ").append(StatusCode).append(" ").append(statusLine.getStatusLine(StatusCode)).append("\n");
-
-        contentType(responseMessage);
+        this.os = os;
 
     }
 
 
     /*
-     *Content-Typのセット＆OutputStreamに書き込む
+     * ステータスコードの確認　＆　コードとコード説明のセット
      */
 
-    private void contentType(StringBuilder responseMessage) {
+    public void createStatusLine(int statuscode) {
 
-        responseMessage.append(fileResources.getContentType()).append("\n");
+        statusCode = statusLine.statusCodeCheck(statuscode);
+
+        responseMessage.append("HTTP/1.1").append(" ").append(statusCode).append(" ").append(statusLine.getCodeDescription(statusCode)).append("\n");
+
+    }
+
+
+    /*
+     * ファイル拡張子の確認　＆　Content-Typのセット
+     */
+
+    public void selectContentType() {
+
+        responseMessage.append(fileResources.getContentType(statusCode)).append("\n");
+
+
+    }
+
+
+    /*
+     * レスポンセの書き込み
+     */
+
+    public void createResponse() {
 
         try {
 
-            if (StatusCode != statusLine.OK) {
+            if (statusCode != statusLine.OK) {
 
-                responseMessage.append(statusLine.getErrorMessageBody(StatusCode));
+                responseMessage.append(statusLine.getErrorMessageBody(statusCode));
 
                 System.out.println(responseMessage);
 
@@ -103,7 +112,7 @@ public class HttpResponse {
                 }
             }
         } catch (IOException e) {
-            System.out.println("エラー:ファイルの読み込みに不具合が発生しました" + e.getMessage());
+            System.out.println("エラー:ファイルの読み書きに不具合が発生しました" + e.toString());
             e.printStackTrace();
         } finally {
 

@@ -9,6 +9,7 @@ import java.util.Map;
 
 
 public class StatusLine {
+
     static final int OK = 200 ;
 
     static final int BAD_REQUEST = 400;
@@ -22,16 +23,16 @@ public class StatusLine {
     static final int HTTP_VERSION_NOT_SUPPORTED = 505 ;
 
 
-    Map<Integer, String> codeType = new HashMap<>();
+    Map<Integer, String> codeDescription = new HashMap<>();
 
     public StatusLine(){
 
-        codeType.put(OK, "OK");
-        codeType.put(NOT_FOUND, "Not Found");
-        codeType.put(BAD_REQUEST, "Bad Request");
-        codeType.put(METHOD_NOT_ALLOWED, "Method Not Allowed");
-        codeType.put(INTERNET_SERVER_ERROR, "Internal Server Error");
-        codeType.put(HTTP_VERSION_NOT_SUPPORTED, "Version Not Supported");
+        codeDescription.put(OK, "OK");
+        codeDescription.put(NOT_FOUND, "Not Found");
+        codeDescription.put(BAD_REQUEST, "Bad Request");
+        codeDescription.put(METHOD_NOT_ALLOWED, "Method Not Allowed");
+        codeDescription.put(INTERNET_SERVER_ERROR, "Internal Server exception");
+        codeDescription.put(HTTP_VERSION_NOT_SUPPORTED, "Version Not Supported");
 
     }
 
@@ -40,7 +41,7 @@ public class StatusLine {
      */
 
     public int statusCodeCheck(int statusCode) {
-        for (int code : codeType.keySet()) {
+        for (int code : codeDescription.keySet()) {
             if (statusCode == code) {
                 return statusCode;
             }
@@ -53,9 +54,9 @@ public class StatusLine {
      * ステータスコードによってコード説明を返す
      */
 
-    public String getStatusLine(int statusCode) {
+    public String getCodeDescription(int statusCode) {
 
-        return codeType.get(statusCode);
+        return codeDescription.get(statusCode);
 
     }
 
@@ -96,8 +97,8 @@ public class StatusLine {
                 break;
 
             default:
-                m = "<html><head><title>500 Internal Server Error</title></head>" +
-                        "<body><h1>Internal Server Error</h1>" +
+                m = "<html><head><title>500 Internal Server exception</title></head>" +
+                        "<body><h1>Internal Server exception</h1>" +
                         "<p>サーバー内部の不明なエラーにより表示できません。</p></body></html>";
         }
 
