@@ -187,7 +187,7 @@ public class HttpRequest {
     public String getURL() {
 
         if (url.endsWith("/")) {
-            url = "/index.html";
+            url = url + "/index.html";
         }
 
         return url;
