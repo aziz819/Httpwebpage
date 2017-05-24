@@ -1,9 +1,10 @@
 package jp.co.topgate.jan.web;
 
+import jp.co.topgate.jan.web.exception.RequestParseException;
+
 import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.util.regex.PatternSyntaxException;
 
 /* HttpRequestクラスから返してきたメソッド、url,バージョンの確認してHttpResponseクラスのい渡す
  * Created by aizijiang.aerken on 2017/04/13.
@@ -65,7 +66,7 @@ public class ConnectionHandler {
 
             httpRequest.parseRequest();
 
-        } catch (PatternSyntaxException e) {                   // 不正なリクエストライン＆メッセージ・ヘッダー＆パラメーター　の時にキャッチ
+        } catch (RequestParseException e) {                   // 不正なリクエストライン＆メッセージ・ヘッダー＆パラメーター　の時にキャッチ
 
             System.out.println("エラー:" + e.getMessage());
 

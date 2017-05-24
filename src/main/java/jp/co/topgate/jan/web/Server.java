@@ -16,6 +16,7 @@ public class Server {
 
     private static final int SERVER_PORT = 8080;
 
+
     public static void main(String[] args) {
 
         Server server = new Server();
@@ -26,7 +27,7 @@ public class Server {
 
         } catch (IOException e) {
 
-            System.out.println("エラー:サーバ起動時にエラー発生しました:" + e.getMessage());
+            System.out.println("エラー:サーバ開始時にエラー発生しました:" + e.getMessage());
 
             e.printStackTrace();
         }
@@ -41,22 +42,41 @@ public class Server {
 
         ServerSocket serverSocket = new ServerSocket(serverPort);
 
-        ConnectionHandler connectionHandler = null;
-
         System.out.println("Server is started •••••••••\n");
 
         while (true) {
 
-
-            /*
-             * クライアントからの接続要求を受け取る
-             */
-
-            Socket client = serverSocket.accept();
+            ConnectionHandler connectionHandler = null;
 
             try {
 
+                /*
+                 * クライアントからの接続要求を受け取る
+                 */
+
+                Socket client = serverSocket.accept();
+
+
                 connectionHandler = new ConnectionHandler(client.getInputStream(), client.getOutputStream());
+
+                /*
+                 * クライアントからのリクエストを解析
+                 */
+
+                connectionHandler.readRequest();
+
+                /*
+                 * クライアントにレスポンスを作って返す
+                 */
+
+                connectionHandler.writeResponse();
+
+
+                /*
+                 * ソケットを閉じる
+                 */
+
+                client.close();
 
             } catch (IOException e){
 
@@ -64,31 +84,12 @@ public class Server {
 
                 e.printStackTrace();
 
-            }catch (NullPointerException e) {
+            } catch (RuntimeException e) {
 
                 System.out.println("エラー:" + e.getMessage());
 
                 e.printStackTrace();
             }
-
-             /*
-              * クライアントからのリクエストを解析
-              */
-
-            connectionHandler.readRequest();
-
-             /*
-              * クライアントにレスポンスを作って返す
-              */
-
-            connectionHandler.writeResponse();
-
-
-             /*
-              * ソケットを閉じる
-              */
-
-            client.close();
         }
     }
 }
