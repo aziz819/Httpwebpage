@@ -13,11 +13,9 @@ public class FileResources extends File {
 
     private static final String rootPath = "./src/main/resources";
 
-    private String extension;
-
     private String url ;
 
-    Map<String, String> contentType = new HashMap<>();
+    final static Map<String, String> contentType = new HashMap<>();
 
 
     public FileResources(String uri) {
@@ -43,21 +41,34 @@ public class FileResources extends File {
 
     }
 
+
+
+
     /*
      *ファイル拡張子によってContentTypeのセット
      */
 
     public String getContentType(int statusCode) {
 
+
+        String extension = "";
+
         if (url != null && !"".equals(url) && statusCode == StatusLine.OK) {
+
             for (String key : contentType.keySet()) {
+
                 if (url.endsWith(key)) {
-                    extension = key;
+
+                    extension = key;        // ファイル拡張子と一致するキーを獲得
+
                     break;
                 }
-
             }
         }
+
+        /*
+         * 獲得したキーの値(Content-Type)を返す,一致しなかったらdefaultValueの値を返す
+         */
 
         return contentType.getOrDefault(extension, "Content-Type: text/html; charset=utf-8\n");
     }

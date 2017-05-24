@@ -5,56 +5,52 @@ import org.junit.Test;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
-
 /**
  * Created by aizijiang.aerken on 2017/05/15.
  */
 public class StatusLineTest {
 
-    public static class ステータスコードのセットテスト {
+    public static class ステータスコードとコード説明の確認 {
 
-        public static class ステータスコード200以外の時のメッセージボディ {
+        StatusLine statusLine = new StatusLine();
 
+        @Test
+        public void ステータスコードの確認() {
 
-            @Test
-            public void コード400の場合() {
-                assertThat(String.valueOf(new StatusLine().getErrorMessageBody(400)),
-                        is("<html><head><title>400 Bad Request</title></head>" +
-                                "<body><h1>Bad Request</h1>" +
-                                "<p>リクエストは不正な構文であるために、サーバーに理解できませんでした。<br /></p></body></html>"));
+            int[] consistentNumber = new int[]{200, 400, 404, 405, 900, 505};
+
+            int[] statusCode = new int[]{StatusLine.OK, StatusLine.BAD_REQUEST, StatusLine.NOT_FOUND, StatusLine.METHOD_NOT_ALLOWED, StatusLine.INTERNET_SERVER_ERROR, StatusLine.HTTP_VERSION_NOT_SUPPORTED};
+
+            int i = 0;
+
+            for (int statusNumber : consistentNumber) {
+
+                statusNumber = statusLine.statusCodeCheck(statusNumber);
+
+                assertThat(statusCode[i++], is(statusNumber));
+
             }
+        }
 
-            @Test
-            public void コード404の場合() {
-                assertThat(String.valueOf(new StatusLine().getErrorMessageBody(404)),
-                        is("<html><head><title>404 Not Found</title></head>" +
-                                "<body><h1>Not Found</h1>" +
-                                "<p>サーバーは、リクエストURIと一致するものを見つけられませんでした。</p></body></html>"));
-            }
 
-            @Test
-            public void コード405の場合() {
-                assertThat(String.valueOf(new StatusLine().getErrorMessageBody(405)),
-                        is("<html><head><title>405 Method Not Allowed</title></head>" +
-                                "<body><h1>Not Implemented</h1>" +
-                                "<p>実装されていないサーバメソッドです。</p></body></html>"));
-            }
+        @Test
+        public void コード説明の確認() {
 
-            @Test
-            public void コード500の場合() {
-                assertThat(String.valueOf(new StatusLine().getErrorMessageBody(500)),
-                        is("<html><head><title>500 Internal Server exception</title></head>" +
-                                "<body><h1>Internal Server exception</h1>" +
-                                "<p>サーバー内部の不明なエラーにより表示できません。</p></body></html>"));
-            }
+            int[] consistentNumber = new int[]{200, 400, 404, 405, 500, 505};
 
-            @Test
-            public void コード505の場合() {
-                assertThat(String.valueOf(new StatusLine().getErrorMessageBody(505)),
-                        is("<html><head><title>505 HTTP Version Not Supported</title></head>" +
-                                "<body><h1>HTTP Version Not Supported</h1>" +
-                                "<p>サーバーは、リクエスト・メッセージで使用されたHTTPプロトコル・バージョンをサポートしていない、あるいはサポートを拒否している。</p> " +
-                                "</body></html>"));
+            String[] codeDescriptions = new String[]{"OK", "Bad Request", "Not Found", "Method Not Allowed", "Internal Server exception", "Version Not Supported"};
+
+            int i = 0;
+
+            for (int statusNumber : consistentNumber) {
+
+                String codeDescription = statusLine.getCodeDescription(statusNumber);
+
+                if (codeDescription != null) {
+
+                    assertThat(codeDescriptions[i++], is(codeDescription));
+
+                }
             }
         }
     }

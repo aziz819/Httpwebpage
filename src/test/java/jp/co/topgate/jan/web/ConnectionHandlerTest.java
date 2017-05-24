@@ -1,302 +1,277 @@
 package jp.co.topgate.jan.web;
 
+import jp.co.topgate.jan.web.exception.RequestParseException;
 import org.junit.Test;
 
 import java.io.*;
 
 import static junit.framework.TestCase.fail;
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertEquals;
 
 /**
  * Created by aizijiang.aerken on 2017/05/07.
  */
 public class ConnectionHandlerTest {
 
-    public static class パラメーター付きGETとPOST場合の200OK確認テスト {
+    public static class コンストラクタの引数の入出力ストリームはnullの時のテスト {
 
-
-        @Test
-        public void GETの場合() throws IOException {
-            File file = new File("./src/test/Testresources/ResponseMessage.txt");
-            file.delete();
-
+        @Test(expected = NullPointerException.class)
+        public void キャッチされるか() {
             InputStream is = null;
             OutputStream os = null;
 
+            new ConnectionHandler(is, os);
+        }
+    }
 
+
+    public static class readRequestTest例外メッセージ {
+
+        @Test
+        public void コンストラクタ引数出力ストリームがnullの時の例外メッセージ() {
+            InputStream is = null;
+            try {
+                new HttpRequest(is);
+            } catch (NullPointerException e) {
+                assertEquals("エラー:入力ストリームはnullになっています。", e.getMessage());
+            }
+        }
+    }
+
+    public static class parseRequestTest例外メッセージ {
+
+        @Test
+        public void リクエスト行がnullの例外メッセージ() {
+            HttpRequest httpRequest = null;
+            InputStream is = null;
+            try {
+                is = new FileInputStream(new File("./src/test/Testresources/emptyingRequestTest.txt"));
+                httpRequest = new HttpRequest(is);
+
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+                fail("指定したファイルが見つかりません");
+            }
+
+
+            try {
+                httpRequest.parseRequest();
+            } catch (RequestParseException e) {
+                assertEquals("リクエスト行がnullになっています。", e.getMessage());
+
+            } finally {
+                try {
+                    if (is != null) is.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+
+        @Test
+        public void ファイル存在しないときの例外メッセージ() {
+            ConnectionHandler connectionHandler = null;
+            InputStream is = null;
+            OutputStream os = null;
+            String url = "/yudetamago.html";
             try {
                 is = new FileInputStream(new File("./src/test/Testresources/getTest.txt"));
                 os = new FileOutputStream(new File("./src/test/Testresources/ResponseMessage.txt"));
-
-                new ConnectionHandler(is, os);
-
+                connectionHandler = new ConnectionHandler(is, os);
+                connectionHandler.getFilePas(url);
             } catch (FileNotFoundException e) {
-                System.out.println("エラー：指定したファイルが見つかりませんでした。");
-                e.printStackTrace();
-                fail();
-            } finally {
-                if (is != null) is.close();
-                if (os != null) os.close();
+                fail("指定したファイルが見つかりません");
             }
 
+
             try {
-                is = new FileInputStream(new File("./src/test/Testresources/ResponseMessage.txt"));
-                BufferedReader bf = new BufferedReader(new InputStreamReader(is));
-                assertThat(bf.readLine(), is("HTTP/1.1 200 OK"));
-                assertThat(bf.readLine(), is("Content-Type: text/html; charset=utf-8"));
+                connectionHandler.fileCheck(url);
+            } catch (FileNotFoundException e) {
+                assertEquals("エラー:ファイルは存在しないかファイルではありません", e.getMessage());
             } finally {
-                if (is != null) is.close();
+                try {
+                    if (os != null) os.close();
+                    if (is != null) is.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
             }
         }
 
-
         @Test
-        public void POSTの場合() throws IOException {
-            File file = new File("./src/test/Testresources/ResponseMessage.txt");
-            file.delete();
-
+        public void 不正なリクエスト行の例外メッセージ() {
+            HttpRequest httpRequest = null;
             InputStream is = null;
-            OutputStream os = null;
-
             try {
-                is = new FileInputStream(new File("./src/test/Testresources/postTest.txt"));
-                os = new FileOutputStream(new File("./src/test/Testresources/ResponseMessage.txt"));
-
-                new ConnectionHandler(is, os);
+                is = new FileInputStream(new File("./src/test/Testresources/BadRequestLine.txt"));
+                httpRequest = new HttpRequest(is);
 
             } catch (FileNotFoundException e) {
-                System.out.println("エラー：指定したファイルが見つかりませんでした。");
                 e.printStackTrace();
-                fail();
-            } finally {
-                if (is != null) is.close();
-                if (os != null) os.close();
+                fail("指定したファイルが見つかりません");
             }
 
             try {
-                is = new FileInputStream(new File("./src/test/Testresources/ResponseMessage.txt"));
-                BufferedReader bf = new BufferedReader(new InputStreamReader(is));
-                assertThat(bf.readLine(), is("HTTP/1.1 200 OK"));
-                assertThat(bf.readLine(), is("Content-Type: text/html; charset=utf-8"));
+                httpRequest.parseRequest();
+            } catch (RequestParseException e) {
+                assertEquals("正しくないリクエストライン。", e.getMessage());
             } finally {
-                if (is != null) is.close();
-            }
-        }
-    }
-
-
-    public static class Httpバージョンテスト {
-        @Test
-        public void 最新のHTTPバージョンか() throws IOException {
-            File file = new File("./src/test/Testresources/ResponseMessage.txt");
-            file.delete();
-
-            InputStream is = null;
-            OutputStream os = null;
-
-            try {
-                is = new FileInputStream(new File("./src/test/Testresources/versionTest.txt"));
-                os = new FileOutputStream(new File("./src/test/Testresources/ResponseMessage.txt"));
-
-                new ConnectionHandler(is, os);
-
-            } catch (FileNotFoundException e) {
-                System.out.println("エラー：指定したファイルが見つかりませんでした。");
-                e.printStackTrace();
-                fail();
-            } finally {
-                if (is != null) is.close();
-                if (os != null) os.close();
+                try {
+                    if (is != null) is.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
             }
 
-            try {
-                is = new FileInputStream(new File("./src/test/Testresources/ResponseMessage.txt"));
-                BufferedReader bf = new BufferedReader(new InputStreamReader(is));
-                assertThat(bf.readLine(), is("HTTP/1.1 505 Version Not Supported"));
-                assertThat(bf.readLine(), is("Content-Type: text/html; charset=utf-8"));
-            } finally {
-                if (is != null) is.close();
-            }
         }
 
-    }
-
-
-    public static class 指定したファイルを見つからないテスト {
         @Test
-        public void 指定したファイルかどうか() throws IOException {
-            File file = new File("./src/test/Testresources/ResponseMessage.txt");
-            file.delete();
-
+        public void 不正なGETパラメーターの例外メッセージ() {
+            HttpRequest httpRequest = null;
             InputStream is = null;
-            OutputStream os = null;
-
-            try {
-                is = new FileInputStream(new File("./src/test/Testresources/notFileTest.txt"));
-                os = new FileOutputStream(new File("./src/test/Testresources/ResponseMessage.txt"));
-
-                new ConnectionHandler(is, os);
-
-            } catch (FileNotFoundException e) {
-                System.out.println("エラー：指定したファイルが見つかりませんでした。");
-                e.printStackTrace();
-                fail();
-            } finally {
-                if (is != null) is.close();
-                if (os != null) os.close();
-            }
-
-            try {
-                is = new FileInputStream(new File("./src/test/Testresources/ResponseMessage.txt"));
-                BufferedReader bf = new BufferedReader(new InputStreamReader(is));
-                assertThat(bf.readLine(), is("HTTP/1.1 404 Not Found"));
-                assertThat(bf.readLine(), is("Content-Type: text/html; charset=utf-8"));
-            } finally {
-                if (is != null) is.close();
-            }
-        }
-    }
-
-    public static class 許されないHTTPメソッドテスト {
-        @Test
-        public void GETやPOST以外のメソッドかどうか() throws IOException {
-            File file = new File("./src/test/Testresources/ResponseMessage.txt");
-            file.delete();
-
-            InputStream is = null;
-            OutputStream os = null;
-
-            try {
-                is = new FileInputStream(new File("./src/test/Testresources/notMethodTest.txt"));
-                os = new FileOutputStream(new File("./src/test/Testresources/ResponseMessage.txt"));
-
-                new ConnectionHandler(is, os);
-
-            } catch (FileNotFoundException e) {
-                System.out.println("エラー：指定したファイルが見つかりませんでした。");
-                e.printStackTrace();
-                fail();
-            } finally {
-                if (is != null) is.close();
-                if (os != null) os.close();
-            }
-
-            try {
-                is = new FileInputStream(new File("./src/test/Testresources/ResponseMessage.txt"));
-                BufferedReader bf = new BufferedReader(new InputStreamReader(is));
-                assertThat(bf.readLine(), is("HTTP/1.1 405 Method Not Allowed"));
-                assertThat(bf.readLine(), is("Content-Type: text/html; charset=utf-8"));
-            } finally {
-                if (is != null) is.close();
-            }
-        }
-    }
-
-    public static class リクエストラインがNULLの時でのテスト {
-
-        @Test
-        public void リクエストがヌールか() throws IOException {
-            File file = new File("./src/test/Testresources/ResponseMessage.txt");
-            file.delete();
-
-            InputStream is = null;
-            OutputStream os = null;
-
-            try {
-                is = new FileInputStream(new File("./src/test/Testresources/emptyingRequestTest.txt"));
-                os = new FileOutputStream(new File("./src/test/Testresources/ResponseMessage.txt"));
-
-                new ConnectionHandler(is, os);
-
-            } catch (FileNotFoundException e) {
-                System.out.println("エラー：指定したファイルが見つかりませんでした。");
-                e.printStackTrace();
-                fail();
-            } finally {
-                if (is != null) is.close();
-                if (os != null) os.close();
-            }
-
-            try {
-                is = new FileInputStream(new File("./src/test/Testresources/ResponseMessage.txt"));
-                BufferedReader bf = new BufferedReader(new InputStreamReader(is));
-                assertThat(bf.readLine(), is("HTTP/1.1 400 Bad Request"));
-                assertThat(bf.readLine(), is("Content-Type: text/html; charset=utf-8"));
-            } finally {
-                if (is != null) is.close();
-            }
-        }
-    }
-
-
-    public static class GETの場合パラメーターの属性と値の取得テスト {
-        @Test
-        public void 不正なパラメーターかどうか() throws IOException {
-            File file = new File("./src/test/Testresources/ResponseMessage.txt");
-            file.delete();
-
-            InputStream is = null;
-            OutputStream os = null;
-
             try {
                 is = new FileInputStream(new File("./src/test/Testresources/getParameterTest.txt"));
-                os = new FileOutputStream(new File("./src/test/Testresources/ResponseMessage.txt"));
-
-                new ConnectionHandler(is, os);
+                httpRequest = new HttpRequest(is);
 
             } catch (FileNotFoundException e) {
-                System.out.println("エラー：指定したファイルが見つかりませんでした。");
                 e.printStackTrace();
-                fail();
-            } finally {
-                if (is != null) is.close();
-                if (os != null) os.close();
+                fail("指定したファイルが見つかりません");
             }
 
+
             try {
-                is = new FileInputStream(new File("./src/test/Testresources/ResponseMessage.txt"));
-                BufferedReader bf = new BufferedReader(new InputStreamReader(is));
-                assertThat(bf.readLine(), is("HTTP/1.1 400 Bad Request"));
-                assertThat(bf.readLine(), is("Content-Type: text/html; charset=utf-8"));
+                httpRequest.parseRequest();
+            } catch (RequestParseException e) {
+                assertEquals("正しくないGETパラメーター:namekinnikuman", e.getMessage());
             } finally {
-                if (is != null) is.close();
+                try {
+                    if (is != null) is.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+
+
+        @Test
+        public void 不正なPOSTパラメーターの例外メッセージ() {
+            HttpRequest httpRequest = null;
+            InputStream is = null;
+            try {
+                is = new FileInputStream(new File("./src/test/Testresources/postParameterTest.txt"));
+                httpRequest = new HttpRequest(is);
+
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+                fail("指定したファイルが見つかりません");
+            }
+
+
+            try {
+                httpRequest.parseRequest();
+            } catch (RequestParseException e) {
+                assertEquals("正しくないPOSTパラメーター:namekinnikuman", e.getMessage());
+            } finally {
+                try {
+                    if (is != null) is.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
             }
         }
     }
 
 
-    public static class POSTの場合パラメーターの属性と値の取得テスト {
-        @Test
-        public void 不正なパラメーターかどうか() throws IOException {
-            File file = new File("./src/test/Testresources/ResponseMessage.txt");
-            file.delete();
+    public static class writeResponse例外メッセージ {
 
-            InputStream is = null;
-            OutputStream os = null;
+        FileResources fileResources = new FileResources("./src/main/resources/index.html");
+
+        OutputStream os = null;
+
+        @Test
+        public void コンストラクタ引数出力ストリームがnullの時の例外メッセージ() {
+            try {
+
+                new HttpResponse(os, fileResources);
+
+            } catch (NullPointerException e) {
+
+                assertEquals("エラー:出力ストリームがnullになっています", e.getMessage());
+            } finally {
+                try {
+                    if (os != null) os.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+
+
+        @Test
+        public void レスポンス行の作成に発生した不具合の例外メッセージ() {
+
+            HttpResponse httpResponse = null;
 
             try {
-                is = new FileInputStream(new File("./src/test/Testresources/postParameterTest.txt"));
                 os = new FileOutputStream(new File("./src/test/Testresources/ResponseMessage.txt"));
 
-                new ConnectionHandler(is, os);
+                httpResponse = new HttpResponse(os, fileResources);
+
+                StatusLine.codeDescription.clear();
 
             } catch (FileNotFoundException e) {
-                System.out.println("エラー：指定したファイルが見つかりませんでした。");
-                e.printStackTrace();
-                fail();
-            } finally {
-                if (is != null) is.close();
-                if (os != null) os.close();
+
+                fail("指定したファイルが見つかりません" + e.getMessage());
             }
 
             try {
-                is = new FileInputStream(new File("./src/test/Testresources/ResponseMessage.txt"));
-                BufferedReader bf = new BufferedReader(new InputStreamReader(is));
-                assertThat(bf.readLine(), is("HTTP/1.1 400 Bad Request"));
-                assertThat(bf.readLine(), is("Content-Type: text/html; charset=utf-8"));
+
+                httpResponse.createStatusLine(200);
+
+            } catch (RuntimeException e) {
+
+                assertEquals("エラー:正しくないステータスコード説明", e.getMessage());
             } finally {
-                if (is != null) is.close();
+                try {
+                    if (os != null) os.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+
+
+        @Test
+        public void ContentTypeの作成に発生した不具合の例外メッセージ() {
+
+            HttpResponse httpResponse = null;
+
+            try {
+                os = new FileOutputStream(new File("./src/test/Testresources/ResponseMessage.txt"));
+
+                httpResponse = new HttpResponse(os, fileResources);
+
+                httpResponse.setStatusCode(200);
+
+                FileResources.contentType.clear();
+
+            } catch (FileNotFoundException e) {
+                fail("指定したファイルが見つかりません" + e.getMessage());
+            }
+
+            try {
+
+                httpResponse.creatContentType();
+
+            } catch (RuntimeException e) {
+
+                assertEquals("エラー:正しくないContetn-Type", e.getMessage());
+            } finally {
+                try {
+                    if (os != null) os.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
             }
         }
     }

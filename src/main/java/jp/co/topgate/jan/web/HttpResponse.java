@@ -18,6 +18,8 @@ public class HttpResponse {
 
     private StatusLine statusLine = null;
 
+    private ErrorMessageBody errorMessageBody = null;
+
     private int statusCode;
 
 
@@ -25,11 +27,13 @@ public class HttpResponse {
 
         if (os == null) {
 
-            throw new NullPointerException("エラー:出力ストリートがnullになっています");
+            throw new NullPointerException("エラー:出力ストリームがnullになっています");
 
         }
 
         statusLine = new StatusLine();
+
+        errorMessageBody = new ErrorMessageBody();
 
         this.fileResources = fileResources;
 
@@ -46,7 +50,15 @@ public class HttpResponse {
 
         statusCode = statusLine.statusCodeCheck(statuscode);
 
-        responseMessage.append("HTTP/1.1").append(" ").append(statusCode).append(" ").append(statusLine.getCodeDescription(statusCode)).append("\n");
+        String codeDescription = " " + statusLine.getCodeDescription(statusCode) + "\n";
+
+        if (codeDescription == null || codeDescription == "") {
+            throw new RuntimeException("エラー:正しくないステータスコード説明");
+        }
+
+        responseMessage.append("HTTP/1.1").append(" ").append(statusCode).append(codeDescription);
+
+
 
     }
 
@@ -55,25 +67,29 @@ public class HttpResponse {
      * ファイル拡張子の確認　＆　Content-Typのセット
      */
 
-    public void selectContentType() {
+    public void creatContentType() {
 
         responseMessage.append(fileResources.getContentType(statusCode)).append("\n");
 
+        String ContenType = fileResources.getContentType(statusCode);
 
+        if (ContenType == null || ContenType == "") {
+            throw new RuntimeException("エラー:正しくないContetn-Type");
+        }
     }
 
 
     /*
-     * レスポンセの書き込み
+     * レスポンスの書き込み
      */
 
-    public void createResponse() {
+    public void toWriteResponse() {
 
         try {
 
             if (statusCode != statusLine.OK) {
 
-                responseMessage.append(statusLine.getErrorMessageBody(statusCode));
+                responseMessage.append(errorMessageBody.getErrorMessageBody(statusCode));
 
                 System.out.println(responseMessage);
 
@@ -112,30 +128,61 @@ public class HttpResponse {
                 }
             }
         } catch (IOException e) {
+
             System.out.println("エラー:ファイルの読み書きに不具合が発生しました" + e.toString());
+
             e.printStackTrace();
+
         } finally {
 
             try {
+
                 os.flush();
+
             } catch (IOException e) {
+
                 e.printStackTrace();
+
             }
 
             if (fileInputStream != null)
                 try {
+
                     fileInputStream.close();
+
                 } catch (IOException e) {
+
                     e.printStackTrace();
+
                 }
 
             if (os != null)
                 try {
-                    os.close();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
 
+                    os.close();
+
+                } catch (IOException e) {
+
+                    e.printStackTrace();
+
+                }
         }
+    }
+
+    /*
+     *  下記テスト時に使用
+     */
+
+    public void setStatusCode(int statusCode) {
+        this.statusCode = statusCode;
+    }
+
+    public int getStatusCode() {
+        return statusCode;
+    }
+
+    public void setResponseMessage(StringBuilder responseMessage) {
+
+        this.responseMessage = responseMessage;
     }
 }

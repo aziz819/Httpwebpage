@@ -39,6 +39,8 @@ public class HttpRequest {
 
     private String version;                                               // HTTPバージョン
 
+    private  String requestLine = null ;                                  // リクエスト行格納、テスト用のためクラスメンバにしました。
+
     private Map<String, String> headersMap = new HashMap<>();             // リクエストヘッダーのフィールドと値を扱う
 
     private Map<String, String> parametersMap = new HashMap<>();          // ポストクエリーを扱う
@@ -48,7 +50,7 @@ public class HttpRequest {
 
         if (is == null) {
 
-            throw new RequestParseException("入力ストリームはnullになっています。");
+            throw new NullPointerException("エラー:入力ストリームはnullになっています。");
 
         }
 
@@ -59,7 +61,7 @@ public class HttpRequest {
      *  リクエスト行　＆　メッセージ・ヘッダー　の読み込み、分割処理
      */
 
-    public void parseRequestLine() {
+    public void parseRequest() {
 
         try {
             bufferedReader = new BufferedReader(new InputStreamReader(is, "UTF-8"));
@@ -68,8 +70,6 @@ public class HttpRequest {
             throw new RequestParseException("エラー:" + e.toString());
 
         }
-
-        String requestLine = null;                              // 取り敢えずリクエストの一行目を読み取る
 
         try {
 
@@ -91,19 +91,19 @@ public class HttpRequest {
 
         System.out.println(requestLine);
 
-        String[] str1 = requestLine.split(REQUEST_LINE_SEPARATOR);                   // REQUEST_LINE_SEPARATOR == " " / 一行目を空白のところから三つに分ける
+        String[] requestLineElement = requestLine.split(REQUEST_LINE_SEPARATOR);                   // REQUEST_LINE_SEPARATOR == " " / 一行目を空白のところから三つに分ける
 
 
-        if (str1.length != REQUEST_LINE_SIZE) {                                      // REQUEST_LINE_QUANTYTI == 3
+        if (requestLineElement.length != REQUEST_LINE_SIZE) {                                      // REQUEST_LINE_QUANTYTI == 3
 
             throw new RequestParseException("正しくないリクエストライン");
         }
 
-        method = str1[0];                                                            // メソッド
+        method = requestLineElement[0];                                                            // メソッド
 
-        url = str1[1];                                                               // URI
+        url = requestLineElement[1];                                                               // URI
 
-        version = str1[2];                                                           // バージョン
+        version = requestLineElement[2];                                                           // バージョン
 
         try {
             while ((headerLine = bufferedReader.readLine()) != null && !headerLine.equals("")) {    // 二行目からヘッダーフィールドと値を読み取る
@@ -128,26 +128,21 @@ public class HttpRequest {
 
             throw new RequestParseException("エラー:" + e.toString());
         }
-    }
 
-
-    /*
-     * POSTメッセージボディの読み込み、 GETパラメーター　＆　POSTパラメーター　の分割処理
-     */
-
-    public void parseRequestParameter() {
+        
+        String[] attributeSeparatorValue ;
 
         if (("GET".equals(method))) {
-            if (url.matches(".*" + GET_QUERY_QUEASTION_SEPARATE + ".*")) {              // GET_QUERY_QUEASTION_SEPARATE == "?"疑問符があるかどうかの判断
-                String[] get1 = url.split(GET_QUERY_QUEASTION_SEPARATE, 2);
-                url = get1[0];
-                //String[] get2 = get1[1].split(QUERIES_PARAMETERS_SEPARATE);
-                for (String get3 : get1[1].split(QUERIES_PARAMETERS_SEPARATE)) {              // QUERY_PARAMETER_SEPARATE == "&"
-                    String[] get4 = get3.split(QUERIES_SEPARATOR, 2);                    // QUERIES__SEPARATOR == "="
-                    if (get4.length != PARAMETER_SIZE) {                                      // PARAMETER_ATTRIBUTE_VALUE == 2
-                        throw new RequestParseException("正しくないGETパラメーター:" + get3);
+            if (url.matches(".*" + GET_QUERY_QUEASTION_SEPARATE + ".*")) {                   // GET_QUERY_QUEASTION_SEPARATE == "?"疑問符があるかどうかの判断
+                String[] urlSeparatorParameter = url.split(GET_QUERY_QUEASTION_SEPARATE, 2);
+                url = urlSeparatorParameter[0];                                                    // url
+                //String[] get2 = urlSeparatorParameter[1].split(QUERIES_PARAMETERS_SEPARATE);
+                for (String parameters : urlSeparatorParameter[1].split(QUERIES_PARAMETERS_SEPARATE)) {  // QUERY_PARAMETER_SEPARATE == "&"
+                    attributeSeparatorValue = parameters.split(QUERIES_SEPARATOR, 2);                        // QUERIES__SEPARATOR == "="
+                    if (attributeSeparatorValue.length != PARAMETER_SIZE) {                                                        // PARAMETER_ATTRIBUTE_VALUE == 2
+                        throw new RequestParseException("正しくないGETパラメーター:" + parameters);
                     }
-                    parametersMap.put(get4[0], get4[1]);
+                    parametersMap.put(attributeSeparatorValue[0], attributeSeparatorValue[1]);
                 }
             }
         } else if (("POST".equals(method))) {
@@ -155,12 +150,12 @@ public class HttpRequest {
             try {
                 while ((parameterLine = bufferedReader.readLine()) != null) {                     // ボディーメッセージを読み取り
                     //String[] post1 = parameterLine.split(QUERIES_PARAMETERS_SEPARATE);
-                    for (String post2 : parameterLine.split(QUERIES_PARAMETERS_SEPARATE)) {
-                        String[] post3 = post2.split(QUERIES_SEPARATOR, 2);
-                        if (post3.length != PARAMETER_SIZE) {
-                            throw new RequestParseException("正しくないPOSTパラメーター:" + post2);
+                    for (String parameters : parameterLine.split(QUERIES_PARAMETERS_SEPARATE)) {
+                        attributeSeparatorValue = parameters.split(QUERIES_SEPARATOR, 2);
+                        if (attributeSeparatorValue.length != PARAMETER_SIZE) {
+                            throw new RequestParseException("正しくないPOSTパラメーター:" + parameters);
                         }
-                        parametersMap.put(post3[0], post3[1]);
+                        parametersMap.put(attributeSeparatorValue[0], attributeSeparatorValue[1]);
                     }
                 }
             } catch (IOException e) {
@@ -186,7 +181,7 @@ public class HttpRequest {
 
     public String getURL() {
 
-        if (url.endsWith("/")) {
+       if (url.endsWith("/")) {
             url = url + "/index.html";
         }
 
@@ -205,7 +200,7 @@ public class HttpRequest {
 
 
     /*
-     * 下記はテストの時に使用,GETの場合とPOSTの場合のパラメーター属性と値の取得
+     * 下記はテスト時に使用
      */
 
     public String getGetparameter(String name){
@@ -224,6 +219,10 @@ public class HttpRequest {
         }else{
             return null;
         }
+    }
+
+    public String getRequestLine(){
+        return requestLine;
     }
 
 

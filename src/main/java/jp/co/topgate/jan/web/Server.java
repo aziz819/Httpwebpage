@@ -16,9 +16,6 @@ public class Server {
 
     private static final int SERVER_PORT = 8080;
 
-    private ServerSocket serverSocket = null;
-
-
     public static void main(String[] args) {
 
         Server server = new Server();
@@ -29,7 +26,7 @@ public class Server {
 
         } catch (IOException e) {
 
-            System.out.println("エラー:サーバ開始時にエラー発生しました:" + e.getMessage());
+            System.out.println("エラー:サーバ起動時にエラー発生しました:" + e.getMessage());
 
             e.printStackTrace();
         }
@@ -42,45 +39,56 @@ public class Server {
 
     public void startServer(int serverPort) throws IOException {
 
-        Socket client = null;
+        ServerSocket serverSocket = new ServerSocket(serverPort);
 
         ConnectionHandler connectionHandler = null;
-
-        serverSocket = new ServerSocket(serverPort);
 
         System.out.println("Server is started •••••••••\n");
 
         while (true) {
 
-            try {
 
-                client = serverSocket.accept();
+            /*
+             * クライアントからの接続要求を受け取る
+             */
+
+            Socket client = serverSocket.accept();
+
+            try {
 
                 connectionHandler = new ConnectionHandler(client.getInputStream(), client.getOutputStream());
 
+            } catch (IOException e){
 
-                /*
-                 * クライアントからのリクエストを解析
-                 */
-
-                connectionHandler.readRequest();
-
-
-                /*
-                 * クライアントにレスポンウを返す
-                 */
-
-                connectionHandler.writeResponse();
-
-                client.close();
-
-            } catch (NullPointerException e) {
-
-                System.out.println("エラー：" + e.getMessage());
+                System.out.println("エラー:" + e.getMessage());
 
                 e.printStackTrace();
 
+            }catch (NullPointerException e) {
+
+                System.out.println("エラー:" + e.getMessage());
+
+                e.printStackTrace();
             }
+
+             /*
+              * クライアントからのリクエストを解析
+              */
+
+            connectionHandler.readRequest();
+
+             /*
+              * クライアントにレスポンスを作って返す
+              */
+
+            connectionHandler.writeResponse();
+
+
+             /*
+              * ソケットを閉じる
+              */
+
+            client.close();
         }
     }
 }
