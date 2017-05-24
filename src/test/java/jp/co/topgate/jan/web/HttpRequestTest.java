@@ -14,7 +14,7 @@ import static org.junit.Assert.fail;
  */
 public class HttpRequestTest {
 
-    public static class コンストラクタの引数入力ストリームはnullの時のテスト {
+    public static class コンストラクタの引数入力ストリームnullの時のテスト {
 
         @Test(expected = NullPointerException.class)
         public void キャッチされるか() {
