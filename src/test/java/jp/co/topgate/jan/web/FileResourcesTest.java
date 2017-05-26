@@ -5,9 +5,11 @@ import org.junit.Test;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
-/**
+/*
  * Created by aizijiang.aerken on 2017/05/15.
  */
+
+
 public class FileResourcesTest {
 
     public static class getContentTypeテスト {
@@ -43,4 +45,10 @@ public class FileResourcesTest {
         }
 
     }
+
+    @Test
+    public void 想定外の拡張子のファイルパステスト(){
+        assertThat(new FileResources("index.mp3").getContentType(200),is("Content-Type: text/html; charset=utf-8\n"));
+    }
+
 }

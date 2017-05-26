@@ -6,7 +6,7 @@ import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
-/* HttpRequestクラスから返してきたメソッド、url,バージョンの確認してHttpResponseクラスのい渡す
+/* HttpRequestからの解析結果によってHttpResponseに表示すべきものを渡しています
  * Created by aizijiang.aerken on 2017/04/13.
  */
 
@@ -59,7 +59,7 @@ public class ConnectionHandler {
 
 
         /*
-         * リクエスト行　&　メッセンジャ・ヘッダー読み込み　& パラメーターの扱い
+         * リクエストの解析
          */
 
         try {
@@ -83,21 +83,15 @@ public class ConnectionHandler {
         String version = httpRequest.getVersion();
 
 
-         /*
-          * ファイルパスを返す
-          */
-
-
-        getFilePas(url);
-
-
         /*
          * ファイルチェック
          */
 
         try {
 
-            fileCheck(url);
+            fileResources = new FileResources(url);
+
+            checkFile(fileResources);
 
         } catch (FileNotFoundException e) {                     // 指定したファイルが見つからなかった場合にキャッチ
 
@@ -123,7 +117,7 @@ public class ConnectionHandler {
     }
 
 
-    public void writeResponse() {
+    public void createResponse() {
 
         HttpResponse httpResponse = null;
 
@@ -138,73 +132,24 @@ public class ConnectionHandler {
             e.printStackTrace();
         }
 
-
-
         /*
-         * ステータスコードの確認　＆　コード説明のセット
+         * レスポンスを作成する
          */
 
-        try {
-
-            httpResponse.createStatusLine(statusCode);
-
-        } catch (RuntimeException e) {
-
-            System.out.println("レスポンスラインの作成に不具合が発生しました:" + e.getMessage());
-
-            e.printStackTrace();
-        }
-
-
-
-        /*
-         * ファイル拡張子によってContentTypeをセット
-         */
-
-        try {
-
-            httpResponse.creatContentType();
-
-        } catch (RuntimeException e) {
-
-            System.out.println("エラー:Content-Typeの作成に不具合が発生しました");
-
-            e.printStackTrace();
-        }
-
-
-        /*
-         * レスポンスを書き込む
-         */
-
-        httpResponse.toWriteResponse();
-
+        httpResponse.writeResponse(statusCode);
 
     }
 
 
-
     /*
-     *  urlを継承元のFileクラスのコンストラクタに渡してファイルパスを設定
+     *ファイル有無をチェックする
      */
 
-    public void getFilePas(String url) {
+    private static void checkFile(FileResources file) throws FileNotFoundException {
 
-        fileResources = new FileResources(url);
+        if (!(file.exists() && file.isFile())) {
 
-    }
-
-
-
-    /*
-     * 継承元のFileクラスのメソッドを継承してファイル有無確認
-     */
-
-    public void fileCheck(String url) throws FileNotFoundException {
-
-        if (!(fileResources.exists() && fileResources.isFile())) {
-
-            throw new FileNotFoundException("エラー:ファイルは存在しないかファイルではありません");
+            throw new FileNotFoundException("ファイルは存在しないかファイルではありません");
 
         }
     }

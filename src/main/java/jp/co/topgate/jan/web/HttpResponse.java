@@ -2,7 +2,7 @@ package jp.co.topgate.jan.web;
 
 import java.io.*;
 
-/* ConnectionHandlerクラスからの結果を持ってリクエストライン＆Content-Typeの作成
+/* クエストライン行　＆　Content-Typeの作成　ストリームに書き込む
  * Created by aizijiang.aerken on 2017/04/13.
  */
 
@@ -22,12 +22,11 @@ public class HttpResponse {
 
     private int statusCode;
 
-
     public HttpResponse(OutputStream os, FileResources fileResources) {
 
         if (os == null) {
 
-            throw new NullPointerException("エラー:出力ストリームがnullになっています");
+            throw new NullPointerException("出力ストリームがnullになっています");
 
         }
 
@@ -41,25 +40,65 @@ public class HttpResponse {
 
     }
 
+    /*
+     * ステータス行　＆　ContentType　＆　ストリームに書き込むのを各メソッドで処理する
+     */
+
+    public void writeResponse(int statusCode) {
+
+        /*
+         * ステータスコードの確認　＆　コード説明のセット
+         */
+
+        try {
+
+            createStatusLine(statusCode);
+
+        } catch (RuntimeException e) {
+
+            System.out.println("エラ:" + e.getMessage());
+
+            e.printStackTrace();
+        }
+
+        /*
+         * ファイル拡張子によってContentTypeをセット
+         */
+
+        try {
+
+            createContentType();
+
+        } catch (RuntimeException e) {
+
+            System.out.println("エラー:" + e.getMessage());
+
+            e.printStackTrace();
+        }
+
+
+        /*
+         * ストリームに書き込む
+         */
+
+        writeResponse();
+    }
+
 
     /*
      * ステータスコードの確認　＆　コードとコード説明のセット
      */
 
-    public void createStatusLine(int statuscode) {
+    private void createStatusLine(int statuscode) {
 
         statusCode = statusLine.statusCodeCheck(statuscode);
 
-        String codeDescription = " " + statusLine.getCodeDescription(statusCode) + "\n";
+        String codeDescription = statusLine.getCodeDescription(statusCode);
 
         if (codeDescription == null || codeDescription == "") {
-            throw new RuntimeException("エラー:正しくないステータスコード説明");
+            throw new RuntimeException("ステータスコード説明がnullで成り立っていない");
         }
-
-        responseMessage.append("HTTP/1.1").append(" ").append(statusCode).append(codeDescription);
-
-
-
+        responseMessage.append("HTTP/1.1").append(" ").append(statusCode).append(" ").append(codeDescription).append("\n");
     }
 
 
@@ -67,15 +106,14 @@ public class HttpResponse {
      * ファイル拡張子の確認　＆　Content-Typのセット
      */
 
-    public void creatContentType() {
+    private void createContentType() {
 
-        responseMessage.append(fileResources.getContentType(statusCode)).append("\n");
+        String contenType = fileResources.getContentType(statusCode);
 
-        String ContenType = fileResources.getContentType(statusCode);
-
-        if (ContenType == null || ContenType == "") {
-            throw new RuntimeException("エラー:正しくないContetn-Type");
+        if (contenType == null || contenType == "") {
+            throw new RuntimeException("Contetn-Typeがnullで成り立っていない");
         }
+        responseMessage.append(contenType).append("\n");
     }
 
 
@@ -83,7 +121,7 @@ public class HttpResponse {
      * レスポンスの書き込み
      */
 
-    public void toWriteResponse() {
+    private void writeResponse() {
 
         try {
 
@@ -96,7 +134,6 @@ public class HttpResponse {
                 os.write(responseMessage.toString().getBytes());
 
             } else {
-
 
                 os.write(responseMessage.toString().getBytes());
 
@@ -129,7 +166,7 @@ public class HttpResponse {
             }
         } catch (IOException e) {
 
-            System.out.println("エラー:ファイルの読み書きに不具合が発生しました" + e.toString());
+            System.out.println("ファイルの読み書きに不具合が発生しました" + e.toString());
 
             e.printStackTrace();
 

@@ -10,7 +10,7 @@ import static org.junit.Assert.assertThat;
  */
 public class ErrorMessageBodyTest {
 
-    public static class ステータスコード200以外の時のメッセージボディ {
+    public static class ステータスコード200以外の時エラーメッセージボディ確認テスト {
         
         @Test
         public void コード400の場合() {

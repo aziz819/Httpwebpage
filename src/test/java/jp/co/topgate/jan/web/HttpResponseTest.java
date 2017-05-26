@@ -4,9 +4,12 @@ import org.junit.Before;
 import org.junit.Test;
 
 import java.io.*;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 
 import static junit.framework.TestCase.fail;
 import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
 
 /**
@@ -29,19 +32,24 @@ public class HttpResponseTest {
 
 	}
 
-	public static class ステータスコードが200の時のtoWriteResponseTest {
+	public static class ステータスコードが200OKの場合のメッセージボディー書き込み確認テスト {
 
 		ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
 
 		FileResources fileResources = new FileResources("/index.html");
 
 		@Before
-		public void setUpStrems() {
+		public void setUpStream() {
 			System.setOut(new PrintStream(byteArrayOutputStream));
 		}
 
 		@Test
-		public void ステータスコードが200の時のメッセージボディボディーの書き込み() throws FileNotFoundException {
+		public void メッセージボディボディーの書き込み()
+				throws FileNotFoundException,
+				IllegalAccessException,
+				IllegalArgumentException,
+				InvocationTargetException,
+				NoSuchMethodException {
 
 			File file = new File("./src/test/Testresources/ResponseMessage.txt");
 
@@ -53,7 +61,9 @@ public class HttpResponseTest {
 
 			httpResponse.setStatusCode(200);
 
-			httpResponse.toWriteResponse();
+			Method method = HttpResponse.class.getDeclaredMethod("writeResponse");
+			method.setAccessible(true);
+			method.invoke(httpResponse);
 
 			assertThat(byteArrayOutputStream.toString(), is(
 					"<html>\n" +
@@ -80,12 +90,13 @@ public class HttpResponseTest {
 				if(os != null)os.close();
 			} catch (IOException e) {
 				e.printStackTrace();
+				fail("ストリームが閉じられていません");
 			}
 		}
 
 	}
 
-	public static class ステータスコードが200以外の時のtoWriteResponseTest {
+	public static class ステータスコードが200以外の時のメッセージボディー書き込み確認テスト {
 
 		ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
 
@@ -98,7 +109,11 @@ public class HttpResponseTest {
 
 
 		@Test
-		public void ステータスコードが400の時のメッセージボディーの書き込み() throws FileNotFoundException {
+		public void ステータスコードが400の場合() throws FileNotFoundException,
+				IllegalAccessException,
+				IllegalArgumentException,
+				InvocationTargetException,
+				NoSuchMethodException {
 
 			OutputStream os = new FileOutputStream(new File("./src/test/Testresources/ResponseMessage.txt"));
 
@@ -106,7 +121,9 @@ public class HttpResponseTest {
 
 			httpResponse.setStatusCode(400);
 
-			httpResponse.toWriteResponse();
+			Method method = HttpResponse.class.getDeclaredMethod("writeResponse");
+			method.setAccessible(true);
+			method.invoke(httpResponse);
 
 			assertThat(byteArrayOutputStream.toString(), is("<html><head><title>400 Bad Request</title></head>" +
 					"<body><h1>Bad Request</h1>" +
@@ -116,11 +133,16 @@ public class HttpResponseTest {
 				if(os != null)os.close();
 			} catch (IOException e) {
 				e.printStackTrace();
+				fail("ストリームが閉じられていません");
 			}
 		}
 
 		@Test
-		public void ステータスコードが404の時のメッセージボディーの書き込み() throws FileNotFoundException {
+		public void ステータスコードが404の場合() throws FileNotFoundException,
+				IllegalAccessException,
+				IllegalArgumentException,
+				InvocationTargetException,
+				NoSuchMethodException {
 
 			OutputStream os = new FileOutputStream(new File("./src/test/Testresources/ResponseMessage.txt"));
 
@@ -128,7 +150,9 @@ public class HttpResponseTest {
 
 			httpResponse.setStatusCode(404);
 
-			httpResponse.toWriteResponse();
+			Method method = HttpResponse.class.getDeclaredMethod("writeResponse");
+			method.setAccessible(true);
+			method.invoke(httpResponse);
 
 			assertThat(byteArrayOutputStream.toString(), is("<html><head><title>404 Not Found</title></head>" +
 					"<body><h1>Not Found</h1>" +
@@ -139,18 +163,26 @@ public class HttpResponseTest {
 				if(os != null)os.close();
 			} catch (IOException e) {
 				e.printStackTrace();
+				fail("ストリームが閉じられていません");
 			}
 		}
 
 		@Test
-		public void ステータスコードが405の時のメッセージボディーの書き込み() throws FileNotFoundException {
+		public void ステータスコードが405の場合()
+				throws FileNotFoundException,
+				IllegalAccessException,
+				IllegalArgumentException,
+				InvocationTargetException,
+				NoSuchMethodException {
 			OutputStream os = new FileOutputStream(new File("./src/test/Testresources/ResponseMessage.txt"));
 
 			HttpResponse httpResponse = new HttpResponse(os, fileResources);
 
 			httpResponse.setStatusCode(405);
 
-			httpResponse.toWriteResponse();
+			Method method = HttpResponse.class.getDeclaredMethod("writeResponse");
+			method.setAccessible(true);
+			method.invoke(httpResponse);
 
 			assertThat(byteArrayOutputStream.toString(), is("<html><head><title>405 Method Not Allowed</title></head>" +
 					"<body><h1>Not Implemented</h1>" +
@@ -161,12 +193,18 @@ public class HttpResponseTest {
 				if(os != null)os.close();
 			} catch (IOException e) {
 				e.printStackTrace();
+				fail("ストリームが閉じられていません");
 			}
 		}
 
 
 		@Test
-		public void ステータスコードが505の時のメッセージボディーの書き込み() throws FileNotFoundException {
+		public void ステータスコードが505の場合()
+				throws FileNotFoundException,
+				IllegalAccessException,
+				IllegalArgumentException,
+				InvocationTargetException,
+				NoSuchMethodException {
 
 			OutputStream os = new FileOutputStream(new File("./src/test/Testresources/ResponseMessage.txt"));
 
@@ -174,7 +212,9 @@ public class HttpResponseTest {
 
 			httpResponse.setStatusCode(505);
 
-			httpResponse.toWriteResponse();
+			Method method = HttpResponse.class.getDeclaredMethod("writeResponse");
+			method.setAccessible(true);
+			method.invoke(httpResponse);
 
 			assertThat(byteArrayOutputStream.toString(), is("<html><head><title>505 HTTP Version Not Supported</title></head>" +
 					"<body><h1>HTTP Version Not Supported</h1>" +
@@ -186,12 +226,18 @@ public class HttpResponseTest {
 				if(os != null)os.close();
 			} catch (IOException e) {
 				e.printStackTrace();
+				fail("ストリームが閉じられていません");
 			}
 		}
 
 
 		@Test
-		public void ステータスコードが500の時のメッセージボディーの書き込み() throws FileNotFoundException {
+		public void ステータスコードが500の場合()
+				throws FileNotFoundException,
+				IllegalAccessException,
+				IllegalArgumentException,
+				InvocationTargetException,
+				NoSuchMethodException {
 
 			OutputStream os = new FileOutputStream(new File("./src/test/Testresources/ResponseMessage.txt"));
 
@@ -199,7 +245,9 @@ public class HttpResponseTest {
 
 			httpResponse.setStatusCode(500);
 
-			httpResponse.toWriteResponse();
+			Method method = HttpResponse.class.getDeclaredMethod("writeResponse");
+			method.setAccessible(true);
+			method.invoke(httpResponse);
 
 			assertThat(byteArrayOutputStream.toString(), is("<html><head><title>500 Internal Server exception</title></head>" +
 					"<body><h1>Internal Server exception</h1>" +
@@ -210,18 +258,24 @@ public class HttpResponseTest {
 				if(os != null)os.close();
 			} catch (IOException e) {
 				e.printStackTrace();
+				fail("ストリームが閉じられていません");
 			}
 		}
 
 	}
 
 
-	public static class 予期されていないステータスコードの時のレスポンスメッセージ {
+	public static class 想定外のステータスコードの時のレスポンスメッセージ確認テスト {
 
 		HttpResponse httpResponse = null;
 
 		@Before
-		public void OuputStreamとFileResourcesの初期化() {
+		public void setUpOuputStreamとFileResources()
+				throws FileNotFoundException,
+				IllegalAccessException,
+				IllegalArgumentException,
+				InvocationTargetException,
+				NoSuchMethodException {
 
 			File file = null;
 
@@ -240,11 +294,17 @@ public class HttpResponseTest {
 
 				httpResponse = new HttpResponse(os, fileResources);
 
-				httpResponse.createStatusLine(900);
+				Method method = HttpResponse.class.getDeclaredMethod("createStatusLine", int.class);
+				method.setAccessible(true);
+				method.invoke(httpResponse, 900);
 
-				httpResponse.creatContentType();
+				method = HttpResponse.class.getDeclaredMethod("createContentType");
+				method.setAccessible(true);
+				method.invoke(httpResponse);
 
-				httpResponse.toWriteResponse();
+				method = HttpResponse.class.getDeclaredMethod("writeResponse");
+				method.setAccessible(true);
+				method.invoke(httpResponse);
 
 			} catch (FileNotFoundException e) {
 
@@ -268,34 +328,52 @@ public class HttpResponseTest {
 		}
 
 		@Test
-		public void レスポンスメッセージ() throws IOException {
+		public void レスポンスメッセージ() {
 
 			InputStream is = null;
 
 			try {
-				is = new FileInputStream(new File("./src/test/Testresources/ResponseMessage.txt"));
+				try {
+					is = new FileInputStream(new File("./src/test/Testresources/ResponseMessage.txt"));
+				} catch (FileNotFoundException e) {
+					e.printStackTrace();
+					fail("指定したファイルが見つかりません");
+				}
 
 				BufferedReader bf = new BufferedReader(new InputStreamReader(is));
 
-				assertThat(bf.readLine(), is("HTTP/1.1 500 Internal Server exception"));
-
-				assertThat(bf.readLine(), is("Content-Type: text/html; charset=utf-8"));
+				try {
+					assertThat(bf.readLine(), is("HTTP/1.1 500 Internal Server exception"));
+					assertThat(bf.readLine(), is("Content-Type: text/html; charset=utf-8"));
+				} catch (IOException e) {
+					e.printStackTrace();
+					fail("BufferedReader読み込みエラー");
+				}
 
 			} finally {
-
-				if (is != null) is.close();
+				if (is != null) try {
+					is.close();
+				} catch (IOException e) {
+					e.printStackTrace();
+					fail("ストリームが閉じられていません");
+				}
 			}
 		}
 
 	}
 
 
-	public static class ファイルあり200OKの時のレスポンスメッセージ {
+	public static class ファイル存在で200OKの時のレスポンスメッセージ {
 
 		HttpResponse httpResponse = null ;
 
 		@Before
-		public void OuputStreamとFileResourcesの初期化() {
+		public void OuputStreamとFileResourcesの初期化()
+				throws FileNotFoundException,
+				IllegalAccessException,
+				IllegalArgumentException,
+				InvocationTargetException,
+				NoSuchMethodException {
 
 			File file = null;
 
@@ -314,11 +392,18 @@ public class HttpResponseTest {
 
 				httpResponse = new HttpResponse(os, fileResources);
 
-				httpResponse.createStatusLine(200);
+				Method method = HttpResponse.class.getDeclaredMethod("createStatusLine", int.class);
+				method.setAccessible(true);
+				method.invoke(httpResponse, 200);
 
-				httpResponse.creatContentType();
+				method = HttpResponse.class.getDeclaredMethod("createContentType");
+				method.setAccessible(true);
+				method.invoke(httpResponse);
 
-				httpResponse.toWriteResponse();
+				method = HttpResponse.class.getDeclaredMethod("writeResponse");
+				method.setAccessible(true);
+				method.invoke(httpResponse);
+
 
 			} catch (FileNotFoundException e) {
 
@@ -330,13 +415,14 @@ public class HttpResponseTest {
 
 				e.printStackTrace();
 
-				fail("エラー：osかfileresourcesがnullになっています。");
+				fail("エラー：osがnullになっています。");
 			}finally {
 
 				try {
 					if(os != null)os.close();
 				} catch (IOException e) {
 					e.printStackTrace();
+					fail("ファイルが閉じられていません");
 				}
 			}
 		}
@@ -378,7 +464,12 @@ public class HttpResponseTest {
 		HttpResponse httpResponse = null ;
 
 		@Before
-		public void OuputStreamとFileResourcesの初期化() {
+		public void OuputStreamとFileResourcesの初期化()
+				throws FileNotFoundException,
+				IllegalAccessException,
+				IllegalArgumentException,
+				InvocationTargetException,
+				NoSuchMethodException {
 
 			File file = null;
 
@@ -397,11 +488,17 @@ public class HttpResponseTest {
 
 				httpResponse = new HttpResponse(os, fileResources);
 
-				httpResponse.createStatusLine(400);
+				Method method = HttpResponse.class.getDeclaredMethod("createStatusLine", int.class);
+				method.setAccessible(true);
+				method.invoke(httpResponse, 400);
 
-				httpResponse.creatContentType();
+				method = HttpResponse.class.getDeclaredMethod("createContentType");
+				method.setAccessible(true);
+				method.invoke(httpResponse);
 
-				httpResponse.toWriteResponse();
+				method = HttpResponse.class.getDeclaredMethod("writeResponse");
+				method.setAccessible(true);
+				method.invoke(httpResponse);
 
 			} catch (FileNotFoundException e) {
 
@@ -413,32 +510,48 @@ public class HttpResponseTest {
 
 				e.printStackTrace();
 
-				fail("エラー：osかfileresourcesがnullになっています。");
+				fail("エラー：osがnullになっています。");
 			}finally{
 				if(os != null) try {
 					os.close();
 				} catch (IOException e) {
 					e.printStackTrace();
+					fail("ストリームクローズに不具合が発生しました。");
 				}
 			}
 		}
 
 		@Test
-		public void レスポンスメッセージ() throws IOException {
+		public void レスポンスメッセージ(){
 
 			InputStream is = null;
 
 			try {
-				is = new FileInputStream(new File("./src/test/Testresources/ResponseMessage.txt"));
+				try {
+					is = new FileInputStream(new File("./src/test/Testresources/ResponseMessage.txt"));
+				} catch (FileNotFoundException e) {
+					e.printStackTrace();
+					fail("指定したファイルが見つかりません");
+				}
 
 				BufferedReader bf = new BufferedReader(new InputStreamReader(is));
 
-				assertThat(bf.readLine(), is("HTTP/1.1 400 Bad Request"));
+				try {
+					assertThat(bf.readLine(), is("HTTP/1.1 400 Bad Request"));
+					assertThat(bf.readLine(), is("Content-Type: text/html; charset=utf-8"));
+				} catch (IOException e) {
+					e.printStackTrace();
+					fail("BufferedReader読み込みエラー");
+				}
 
-				assertThat(bf.readLine(), is("Content-Type: text/html; charset=utf-8"));
 
 			} finally {
-				if (is != null) is.close();
+				if (is != null) try {
+					is.close();
+				} catch (IOException e) {
+					e.printStackTrace();
+					fail("ストリームクローズに不具合が発生しました。");
+				}
 			}
 		}
 
@@ -451,7 +564,12 @@ public class HttpResponseTest {
 		HttpResponse httpResponse = null ;
 
 		@Before
-		public void OuputStreamとFileResourcesの初期化() {
+		public void OuputStreamとFileResourcesの初期化()
+				throws FileNotFoundException,
+				IllegalAccessException,
+				IllegalArgumentException,
+				InvocationTargetException,
+				NoSuchMethodException {
 
 			File file = null;
 
@@ -470,11 +588,17 @@ public class HttpResponseTest {
 
 				httpResponse = new HttpResponse(os, fileResources);
 
-				httpResponse.createStatusLine(405);
+				Method method = HttpResponse.class.getDeclaredMethod("createStatusLine", int.class);
+				method.setAccessible(true);
+				method.invoke(httpResponse, 405);
 
-				httpResponse.creatContentType();
+				method = HttpResponse.class.getDeclaredMethod("createContentType");
+				method.setAccessible(true);
+				method.invoke(httpResponse);
 
-				httpResponse.toWriteResponse();
+				method = HttpResponse.class.getDeclaredMethod("writeResponse");
+				method.setAccessible(true);
+				method.invoke(httpResponse);
 
 			} catch (FileNotFoundException e) {
 
@@ -486,32 +610,49 @@ public class HttpResponseTest {
 
 				e.printStackTrace();
 
-				fail("エラー：osかfileresourcesがnullになっています。");
+				fail("エラー：osがnullになっています。");
 			}finally{
 				if(os != null) try {
 					os.close();
 				} catch (IOException e) {
 					e.printStackTrace();
+					fail("ストリームクローズに不具合が発生しました。");
 				}
 			}
 		}
 
 		@Test
-		public void レスポンスメッセージ() throws IOException {
+		public void レスポンスメッセージ(){
 
 			InputStream is = null;
 
 			try {
-				is = new FileInputStream(new File("./src/test/Testresources/ResponseMessage.txt"));
+				try {
+					is = new FileInputStream(new File("./src/test/Testresources/ResponseMessage.txt"));
+				} catch (FileNotFoundException e) {
+					e.printStackTrace();
+					fail("指定したファイルが見つかりません");
+				}
 
 				BufferedReader bf = new BufferedReader(new InputStreamReader(is));
 
-				assertThat(bf.readLine(), is("HTTP/1.1 405 Method Not Allowed"));
+				try {
+					assertThat(bf.readLine(), is("HTTP/1.1 405 Method Not Allowed"));
+					assertThat(bf.readLine(), is("Content-Type: text/html; charset=utf-8"));
 
-				assertThat(bf.readLine(), is("Content-Type: text/html; charset=utf-8"));
+				} catch (IOException e) {
+					e.printStackTrace();
+					fail("BufferedReader読み込みエラー");
+				}
+
 
 			} finally {
-				if (is != null) is.close();
+				if (is != null) try {
+					is.close();
+				} catch (IOException e) {
+					e.printStackTrace();
+					fail("ストリームクローズに不具合が発生しました。");
+				}
 			}
 		}
 
@@ -523,7 +664,12 @@ public class HttpResponseTest {
 		HttpResponse httpResponse = null ;
 
 		@Before
-		public void OuputStreamとFileResourcesの初期化() {
+		public void OuputStreamとFileResourcesの初期化()
+				throws FileNotFoundException,
+				IllegalAccessException,
+				IllegalArgumentException,
+				InvocationTargetException,
+				NoSuchMethodException {
 
 			File file = null;
 
@@ -542,11 +688,17 @@ public class HttpResponseTest {
 
 				httpResponse = new HttpResponse(os, fileResources);
 
-				httpResponse.createStatusLine(404);
+				Method method = HttpResponse.class.getDeclaredMethod("createStatusLine", int.class);
+				method.setAccessible(true);
+				method.invoke(httpResponse, 404);
 
-				httpResponse.creatContentType();
+				method = HttpResponse.class.getDeclaredMethod("createContentType");
+				method.setAccessible(true);
+				method.invoke(httpResponse);
 
-				httpResponse.toWriteResponse();
+				method = HttpResponse.class.getDeclaredMethod("writeResponse");
+				method.setAccessible(true);
+				method.invoke(httpResponse);
 
 			} catch (FileNotFoundException e) {
 
@@ -558,105 +710,134 @@ public class HttpResponseTest {
 
 				e.printStackTrace();
 
-				fail("エラー：osかfileresourcesがnullになっています。");
+				fail("エラー：osがnullになっています。");
 			}finally{
 				if(os != null) try {
 					os.close();
 				} catch (IOException e) {
 					e.printStackTrace();
+					fail("ストリームクローズに不具合が発生しました。");
 				}
 			}
 		}
 
 		@Test
-		public void レスポンスメッセージ() throws IOException {
+		public void レスポンスメッセージ(){
 
 			InputStream is = null;
 
 			try {
-				is = new FileInputStream(new File("./src/test/Testresources/ResponseMessage.txt"));
+				try {
+					is = new FileInputStream(new File("./src/test/Testresources/ResponseMessage.txt"));
+				} catch (FileNotFoundException e) {
+					e.printStackTrace();
+					fail("指定したファイルが見つかりません");
+				}
 
 				BufferedReader bf = new BufferedReader(new InputStreamReader(is));
 
-				assertThat(bf.readLine(), is("HTTP/1.1 404 Not Found"));
+				try {
+					assertThat(bf.readLine(), is("HTTP/1.1 404 Not Found"));
+					assertThat(bf.readLine(), is("Content-Type: text/html; charset=utf-8"));
 
-				assertThat(bf.readLine(), is("Content-Type: text/html; charset=utf-8"));
+				} catch (IOException e) {
+					e.printStackTrace();
+					fail("BufferedReader読み込みエラー");
+				}
 
 			} finally {
-				if (is != null) is.close();
+				if (is != null) try {
+					is.close();
+				} catch (IOException e) {
+					e.printStackTrace();
+					fail("ストリームクローズに不具合が発生しました。");
+				}
 			}
 		}
 	}
 
+	public static class リクエスト行とContentTypeを組み立てるメッソドのテスト {
 
-	public static class 実装されていないHttpバージョンの場合のレスポンスメッセージ {
+		FileResources fileResources = new FileResources("./src/main/resources/index.html");
 
-		HttpResponse httpResponse = null ;
+		OutputStream os = null;
 
-		@Before
-		public void OuputStreamとFileResourcesの初期化() {
 
-			File file = null;
+		@Test
+		public void createStatusLineメソッドレスポンス行の作成に発生した不具合の例外メッセージ() throws NoSuchFieldException, NoSuchMethodException, IllegalAccessException {
 
-			FileResources fileResources = null;
-
-			OutputStream os = null;
+			HttpResponse httpResponse = null;
 
 			try {
-				file = new File("./src/test/Testresources/ResponseMessage.txt");
-
-				file.delete();
-
-				fileResources = new FileResources("/index.html");
-
 				os = new FileOutputStream(new File("./src/test/Testresources/ResponseMessage.txt"));
 
 				httpResponse = new HttpResponse(os, fileResources);
 
-				httpResponse.createStatusLine(505);
-
-				httpResponse.creatContentType();
-
-				httpResponse.toWriteResponse();
+				StatusLine.codeDescription.clear();
 
 			} catch (FileNotFoundException e) {
 
-				e.printStackTrace();
-
-				fail("エラー：指定したファイルが見つかりませんでした。");
-
-			} catch (NullPointerException e) {
-
-				e.printStackTrace();
-
-				fail("エラー：osかfileresourcesがnullになっています。");
-			}finally{
-				if(os != null) try {
-					os.close();
-				} catch (IOException e) {
-					e.printStackTrace();
-				}
+				fail("指定したファイルが見つかりません" + e.getMessage());
 			}
-		}
 
-		@Test
-		public void レスポンスメッセージ() throws IOException {
 
-			InputStream is = null;
+			Method method = HttpResponse.class.getDeclaredMethod("createStatusLine", int.class);
+			method.setAccessible(true);
+			try {
+				method.invoke(httpResponse, 200);
+			} catch (InvocationTargetException e) {
+				assertEquals(e.getCause().getMessage(), "ステータスコード説明がnullで成り立っていない");
+			}
 
 			try {
-				is = new FileInputStream(new File("./src/test/Testresources/ResponseMessage.txt"));
-
-				BufferedReader bf = new BufferedReader(new InputStreamReader(is));
-
-				assertThat(bf.readLine(), is("HTTP/1.1 505 Version Not Supported"));
-
-				assertThat(bf.readLine(), is("Content-Type: text/html; charset=utf-8"));
-
-			} finally {
-				if (is != null) is.close();
+				if (os != null) os.close();
+			} catch (IOException e) {
+				e.printStackTrace();
+				fail("ストリームクローズに不具合が発生しました。");
 			}
+
 		}
 
+
+		@Test
+		public void createContentTypeメソッドContentTypeの作成に発生した不具合の例外メッセージ() throws NoSuchMethodException, IllegalAccessException {
+
+			HttpResponse httpResponse = null;
+
+			try {
+				os = new FileOutputStream(new File("./src/test/Testresources/ResponseMessage.txt"));
+
+				httpResponse = new HttpResponse(os, fileResources);
+
+				FileResources.contentType.clear();
+
+				httpResponse.setStatusCode(200);
+
+				FileResources.contentType.put("html", null);
+
+
+			} catch (FileNotFoundException e) {
+				fail("指定したファイルが見つかりません" + e.getMessage());
+			}
+
+
+			Method method = HttpResponse.class.getDeclaredMethod("createContentType");
+			method.setAccessible(true);
+			try {
+				method.invoke(httpResponse);
+			} catch (InvocationTargetException e) {
+				assertEquals(e.getCause().getMessage(), "Contetn-Typeがnullで成り立っていない");
+			}
+
+
+			try {
+				if (os != null) os.close();
+			} catch (IOException e) {
+				e.printStackTrace();
+				fail("ストリームクローズに不具合が発生しました。");
+			}
+
+		}
 	}
+
 }

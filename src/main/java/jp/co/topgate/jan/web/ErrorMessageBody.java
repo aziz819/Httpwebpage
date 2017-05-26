@@ -1,6 +1,6 @@
 package jp.co.topgate.jan.web;
 
-/**
+/* エラーメッセージボディーを返す
  * Created by aizijiang.aerken on 2017/05/22.
  */
 public class ErrorMessageBody {

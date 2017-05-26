@@ -38,7 +38,7 @@ public class Server {
      * クライアントからの接続要求をまち
      */
 
-    public void startServer(int serverPort) throws IOException {
+    private void startServer(int serverPort) throws IOException {
 
         ServerSocket serverSocket = new ServerSocket(serverPort);
 
@@ -46,18 +46,16 @@ public class Server {
 
         while (true) {
 
-            ConnectionHandler connectionHandler = null;
-
             try {
 
                 /*
                  * クライアントからの接続要求を受け取る
                  */
 
-                Socket client = serverSocket.accept();
+                Socket clientSocket = serverSocket.accept();
 
 
-                connectionHandler = new ConnectionHandler(client.getInputStream(), client.getOutputStream());
+                ConnectionHandler connectionHandler = new ConnectionHandler(clientSocket.getInputStream(), clientSocket.getOutputStream());
 
                 /*
                  * クライアントからのリクエストを解析
@@ -69,14 +67,14 @@ public class Server {
                  * クライアントにレスポンスを作って返す
                  */
 
-                connectionHandler.writeResponse();
+                connectionHandler.createResponse();
 
 
                 /*
                  * ソケットを閉じる
                  */
 
-                client.close();
+                clientSocket.close();
 
             } catch (IOException e){
 

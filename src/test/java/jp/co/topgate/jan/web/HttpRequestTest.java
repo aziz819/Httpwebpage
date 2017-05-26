@@ -9,9 +9,11 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.fail;
 
-/**
+/*
  * Created by aizijiang.aerken on 2017/05/08.
  */
+
+
 public class HttpRequestTest {
 
     public static class コンストラクタの引数入力ストリームnullの時のテスト {
@@ -22,13 +24,11 @@ public class HttpRequestTest {
             InputStream is = null;
 
             new HttpRequest(is);
-
         }
-
     }
 
 
-    public static class GETパラメーターの分割テスト {
+    public static class GETメソッドの時のリクエスト行の分割テスト {
         HttpRequest req;
 
         @Before
@@ -44,7 +44,7 @@ public class HttpRequestTest {
         }
 
         @Test
-        public void GETの場合() throws Exception {
+        public void 正しく分割できるか() throws Exception {
 
             assertThat(req.getMethod(), is("GET"));
             assertThat(req.getURL(), is("/index.html"));
@@ -57,7 +57,7 @@ public class HttpRequestTest {
     }
 
 
-    public static class POSTパラメーターの分割テスト {
+    public static class POSTメソッドの時のリクエスト行とパラメーターの分割確認テスト {
         HttpRequest req;
 
         @Before
@@ -73,7 +73,7 @@ public class HttpRequestTest {
         }
 
         @Test
-        public void POSTの場合() throws Exception {
+        public void 正しく分割できるか() throws Exception {
 
             assertThat(req.getMethod(), is("POST"));
             assertThat(req.getURL(), is("/index.html"));

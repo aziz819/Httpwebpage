@@ -13,16 +13,11 @@ public class FileResources extends File {
 
     private static final String rootPath = "./src/main/resources";
 
-    private String url ;
+    private static String url;
 
-    final static Map<String, String> contentType = new HashMap<>();
+    static final Map<String, String> contentType = new HashMap<>();
 
-
-    public FileResources(String uri) {
-
-        super(rootPath + uri);
-
-        url = uri ;
+    static {
 
         contentType.put("html", "Content-Type: text/html; charset=utf-8\n");
         contentType.put("htm", "Content-Type: text/htm; charset=utf-8\n");
@@ -38,6 +33,15 @@ public class FileResources extends File {
         contentType.put("mpeg", "Content-Type: video/mpeg\n");
         contentType.put("csv", "Content-Type: text/csv\n");
         contentType.put("ico", "Content-Type: image/x-icon\n");
+
+    }
+
+
+    public FileResources(String uri) {
+
+        super(rootPath + uri);
+
+        url = uri;
 
     }
 

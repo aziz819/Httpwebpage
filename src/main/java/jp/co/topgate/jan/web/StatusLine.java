@@ -3,24 +3,24 @@ package jp.co.topgate.jan.web;
 import java.util.HashMap;
 import java.util.Map;
 
-/* ステータスコードの確認してコード説明をセット＆ステータスコード200以外の場合に返すメッセージボディ
+/* ステータスコードの確認してコード説明をセット
  * Created by aizijiang.aerken on 2017/05/10.
  */
 
 
 public class StatusLine {
 
-    static final int OK = 200 ;
+    public static final int OK = 200 ;
 
-    static final int BAD_REQUEST = 400;
+    public static final int BAD_REQUEST = 400;
 
-    static final int NOT_FOUND = 404 ;
+    public static final int NOT_FOUND = 404 ;
 
-    static final int METHOD_NOT_ALLOWED = 405 ;
+    public static final int METHOD_NOT_ALLOWED = 405 ;
 
-    static final int INTERNET_SERVER_ERROR = 500;
+    public static final int INTERNET_SERVER_ERROR = 500;
 
-    static final int HTTP_VERSION_NOT_SUPPORTED = 505 ;
+    public static final int HTTP_VERSION_NOT_SUPPORTED = 505 ;
 
 
     static final Map<Integer, String> codeDescription = new HashMap<Integer,String>();

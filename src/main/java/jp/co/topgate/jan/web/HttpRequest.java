@@ -41,16 +41,16 @@ public class HttpRequest {
 
     private  String requestLine = null ;                                  // リクエスト行格納、テスト用のためクラスメンバにしました。
 
-    private Map<String, String> headersMap = new HashMap<>();             // リクエストヘッダーのフィールドと値を扱う
+    private static final Map<String, String> headersMap = new HashMap<>();             // リクエストヘッダーのフィールドと値を扱う
 
-    private Map<String, String> parametersMap = new HashMap<>();          // ポストクエリーを扱う
+    private static final Map<String, String> parametersMap = new HashMap<>();          // ポストクエリーを扱う
 
 
     public HttpRequest(InputStream is) {
 
         if (is == null) {
 
-            throw new NullPointerException("エラー:入力ストリームはnullになっています。");
+            throw new NullPointerException("入力ストリームはnullになっています。");
 
         }
 
@@ -58,15 +58,49 @@ public class HttpRequest {
     }
 
     /*
-     *  リクエスト行　＆　メッセージ・ヘッダー　の読み込み、分割処理
+     *  リクエスト行　＆　メッセージ・ヘッダー　＆　パラメーターを部分ごとに各メソッドで処理する
      */
 
     public void parseRequest() {
 
+
+        /*
+         * リクエスト行の解析
+         */
+
+        parseRequestLine();
+
+
+        /*
+         * リクエストヘッダーの解析
+         */
+
+        parseRequestHeaders();
+
+
+        /*
+         * パラメーターの解析
+         */
+
+        parseParameter();
+
+    }
+
+
+    /*
+     * リクエスト行の確認　＆　分割処理
+     */
+
+    private void parseRequestLine() {
+
         try {
+
             bufferedReader = new BufferedReader(new InputStreamReader(is, "UTF-8"));
+
         } catch (UnsupportedEncodingException e) {
+
             System.out.println("文字のエンコーディングがサポートされていません");
+
             throw new RequestParseException("エラー:" + e.toString());
 
         }
@@ -97,7 +131,7 @@ public class HttpRequest {
 
         if (requestLineElement.length != REQUEST_LINE_SIZE) {                                      // REQUEST_LINE_QUANTYTI == 3
 
-            throw new RequestParseException("正しくないリクエストライン");
+            throw new RequestParseException("正しくないリクエスト行");
         }
 
         method = requestLineElement[0];                                                            // メソッド
@@ -105,6 +139,15 @@ public class HttpRequest {
         url = requestLineElement[1];                                                               // URI
 
         version = requestLineElement[2];                                                           // バージョン
+
+    }
+
+
+    /*
+     * リクエストヘッダーの確認　＆　分割処理
+     */
+
+    private void parseRequestHeaders() {
 
         try {
             while ((headerLine = bufferedReader.readLine()) != null && !headerLine.equals("")) {    // 二行目からヘッダーフィールドと値を読み取る
@@ -119,7 +162,7 @@ public class HttpRequest {
 
                 }
 
-                System.out.println(headerLine);                                                    // ヘッダーフィールドと値
+                System.out.println(headerLine);
             }
         } catch (IOException e) {
 
@@ -129,34 +172,39 @@ public class HttpRequest {
 
             throw new RequestParseException("エラー:" + e.toString());
         }
+    }
 
-        
-        String[] attributeSeparatorValue ;
+
+    /*
+     * パラメーターの確認　＆　分割処理
+     */
+
+    private void parseParameter() {
+
+        String[] attributesAndValue;
 
         if (("GET".equals(method))) {
-            if (url.matches(".*" + GET_QUERY_QUEASTION_SEPARATE + ".*")) {                   // GET_QUERY_QUEASTION_SEPARATE == "?"疑問符があるかどうかの判断
-                String[] urlSeparatorParameter = url.split(GET_QUERY_QUEASTION_SEPARATE, 2);
-                url = urlSeparatorParameter[0];                                                    // url
-                //String[] get2 = urlSeparatorParameter[1].split(QUERIES_PARAMETERS_SEPARATE);
-                for (String parameters : urlSeparatorParameter[1].split(QUERIES_PARAMETERS_SEPARATE)) {  // QUERY_PARAMETER_SEPARATE == "&"
-                    attributeSeparatorValue = parameters.split(QUERIES_SEPARATOR, 2);                        // QUERIES__SEPARATOR == "="
-                    if (attributeSeparatorValue.length != PARAMETER_SIZE) {                                                        // PARAMETER_ATTRIBUTE_VALUE == 2
+            if (url.matches(".*" + GET_QUERY_QUEASTION_SEPARATE + ".*")) {                        // GET_QUERY_QUEASTION_SEPARATE == "?"疑問符があるかどうかの判断
+                String[] parameterAcquisition = url.split(GET_QUERY_QUEASTION_SEPARATE, 2);
+                url = parameterAcquisition[0];                                                          // url
+                for (String parameters : parameterAcquisition[1].split(QUERIES_PARAMETERS_SEPARATE)) {  // QUERY_PARAMETER_SEPARATE == "&"
+                    attributesAndValue = parameters.split(QUERIES_SEPARATOR, 2);                  // QUERIES__SEPARATOR == "="
+                    if (attributesAndValue.length != PARAMETER_SIZE) {                                 // PARAMETER_ATTRIBUTE_VALUE == 2
                         throw new RequestParseException("正しくないGETパラメーター:" + parameters);
                     }
-                    parametersMap.put(attributeSeparatorValue[0], attributeSeparatorValue[1]);
+                    parametersMap.put(attributesAndValue[0], attributesAndValue[1]);
                 }
             }
         } else if (("POST".equals(method))) {
             String parameterLine;
             try {
-                while ((parameterLine = bufferedReader.readLine()) != null) {                     // ボディーメッセージを読み取り
-                    //String[] post1 = parameterLine.split(QUERIES_PARAMETERS_SEPARATE);
+                while ((parameterLine = bufferedReader.readLine()) != null) {                          // ボディーメッセージを読み取り
                     for (String parameters : parameterLine.split(QUERIES_PARAMETERS_SEPARATE)) {
-                        attributeSeparatorValue = parameters.split(QUERIES_SEPARATOR, 2);
-                        if (attributeSeparatorValue.length != PARAMETER_SIZE) {
+                        attributesAndValue = parameters.split(QUERIES_SEPARATOR, 2);
+                        if (attributesAndValue.length != PARAMETER_SIZE) {
                             throw new RequestParseException("正しくないPOSTパラメーター:" + parameters);
                         }
-                        parametersMap.put(attributeSeparatorValue[0], attributeSeparatorValue[1]);
+                        parametersMap.put(attributesAndValue[0], attributesAndValue[1]);
                     }
                 }
             } catch (IOException e) {
@@ -183,8 +231,10 @@ public class HttpRequest {
     public String getURL() {
 
        if (url.endsWith("/")) {
-            url = url + "/index.html";
-        }
+
+           url = url + "/index.html";
+
+       }
 
         return url;
     }
@@ -201,24 +251,36 @@ public class HttpRequest {
 
 
     /*
-     * 下記はテスト時に使用
+     * 下記はテスト確認時に使用
      */
 
     public String getGetparameter(String name){
+
         if(name != null){
+
             name = parametersMap.get(name);
+
             return name ;
+
         }else{
+
             return null;
+
         }
     }
 
     public String getPostparameter(String name){
+
         if(name != null){
+
             name = parametersMap.get(name);
+
             return name ;
+
         }else{
+
             return null;
+
         }
     }
 
