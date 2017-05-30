@@ -113,16 +113,5 @@ public class HttpResponse {
     public void setStatusCode(int statusCode) {
         this.statusCode = statusCode;
     }
-
-
-    /**
-     * 下記テスト時に使用
-     *
-     * @return ステータスコードを返す
-     */
-
-    public int getStatusCode() {
-        return statusCode;
-    }
-
+    
 }
