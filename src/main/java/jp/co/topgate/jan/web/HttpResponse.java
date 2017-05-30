@@ -52,14 +52,17 @@ public class HttpResponse {
         String codeDescription = statusLine.getCodeDescription(statusCode) + "\n";
         responseMessage.append("HTTP/1.1 ").append(statusCode).append(" ").append(codeDescription);
 
+        String contentType ;
         try {
             if (statusCode != statusLine.OK) {
-                responseMessage.append("Content-Type: text/html; charset=utf-8").append("\n\n");
+                contentType = "Content-Type: text/html; charset=utf-8\n\n";
+                responseMessage.append(contentType);
                 responseMessage.append(errorMessageBody.getErrorMessageBody(statusCode));
                 System.out.println(responseMessage);
                 os.write(responseMessage.toString().getBytes());
             } else {
-                responseMessage.append("Content-Type: ").append(fileResources.getContentType(statusCode)).append("\n\n");
+                contentType = fileResources.getContentType(statusCode) + "\n\n";
+                responseMessage.append("Content-Type: ").append(contentType);
                 os.write(responseMessage.toString().getBytes());
 
                 BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(new FileInputStream(fileResources)));
@@ -76,7 +79,7 @@ public class HttpResponse {
                     if (r == -1) {
                         break;
                     }
-                    os.write(bytes, 0, r);              //OutputStreamに書き込む
+                    os.write(bytes, 0, r);
                 }
             }
 
@@ -107,11 +110,11 @@ public class HttpResponse {
     /**
      * 下記はテスト時に使用
      *
-     * @param statusCode        ステータスコードの値を変更する
+     * @param statusCode        statusCodeに値をセットする
      */
 
     public void setStatusCode(int statusCode) {
         this.statusCode = statusCode;
     }
-    
+
 }
