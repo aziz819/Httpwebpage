@@ -17,7 +17,7 @@ public class StatusLineTest {
         @Test
         public void ステータスコードの確認() {
 
-            int[] consistentNumber = new int[]{200, 400, 404, 405, 900, 505};
+            int[] consistentNumber = new int[]{200, 400, 404, 405, 900, 505};       //　予期されていないコード900のような場合はコードの500が返される
 
             int[] statusCode = new int[]{StatusLine.OK, StatusLine.BAD_REQUEST, StatusLine.NOT_FOUND, StatusLine.METHOD_NOT_ALLOWED, StatusLine.INTERNET_SERVER_ERROR, StatusLine.HTTP_VERSION_NOT_SUPPORTED};
 
@@ -25,7 +25,7 @@ public class StatusLineTest {
 
             for (int statusNumber : consistentNumber) {
 
-                statusNumber = statusLine.statusCodeCheck(statusNumber);
+                statusNumber = statusLine.CheckStatusCode(statusNumber);
 
                 assertThat(statusCode[i++], is(statusNumber));
 
@@ -34,7 +34,7 @@ public class StatusLineTest {
 
 
         @Test
-        public void コード説明の確認() {
+        public void ステータスコードの正しい説明が返されるか() {
 
             int[] consistentNumber = new int[]{200, 400, 404, 405, 500, 505};
 

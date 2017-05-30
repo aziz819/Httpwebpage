@@ -1,12 +1,17 @@
 package jp.co.topgate.jan.web;
 
-/* エラーメッセージボディーを返す
+/**
+ * エラーメッセージボディーを返す
  * Created by aizijiang.aerken on 2017/05/22.
+ *
+ * @author  jan
  */
 public class ErrorMessageBody {
 
-     /*
-     * ステーツコード200以外の場合に返すメッセージボディ
+    /**
+     *
+     * @param statusCode
+     * @return      エラーメッセージボディを返す
      */
 
     public String getErrorMessageBody(int statusCode) {

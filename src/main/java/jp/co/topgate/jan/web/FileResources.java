@@ -4,8 +4,10 @@ import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
 
-/* Fileクラスを継承してファイル有無の確認＆ファイル拡張子によってContentTypeをセットする
+/**
  * Created by aizijiang.aerken on 2017/05/10.
+ *
+ * @author jan
  */
 
 
@@ -19,63 +21,47 @@ public class FileResources extends File {
 
     static {
 
-        contentType.put("html", "Content-Type: text/html; charset=utf-8\n");
-        contentType.put("htm", "Content-Type: text/htm; charset=utf-8\n");
-        contentType.put("css", "Content-Type: text/css; charset=utf-8\n");
-        contentType.put("js", "Content-Type: text/javascript; charset=utf-8\n");
-        contentType.put("png", "Content-Type: image/png\n");
-        contentType.put("jpg", "Content-Type: image/jpg\n");
-        contentType.put("jpeg", "Content-Type: image/jpeg\n");
-        contentType.put("gif", "Content-Type: image/gif\n");
-        contentType.put("txt", "Content-Type: text/plain\n");
-        contentType.put("audio", "Content-Type: audio/mpeg\n");
-        contentType.put("mp4", "Content-Type: audio/mp4\n");
-        contentType.put("mpeg", "Content-Type: video/mpeg\n");
-        contentType.put("csv", "Content-Type: text/csv\n");
-        contentType.put("ico", "Content-Type: image/x-icon\n");
+        contentType.put("html", "text/html; charset=utf-8");
+        contentType.put("htm", "text/htm; charset=utf-8");
+        contentType.put("css", "text/css; charset=utf-8");
+        contentType.put("js", "text/javascript; charset=utf-8");
+        contentType.put("png", "image/png");
+        contentType.put("jpg", "image/jpg");
+        contentType.put("jpeg", "image/jpeg");
+        contentType.put("gif", "image/gif");
+        contentType.put("txt", "text/plain");
+        contentType.put("audio", "audio/mpeg");
+        contentType.put("mp4", "audio/mp4");
+        contentType.put("mpeg", "video/mpeg");
+        contentType.put("csv", "text/csv");
+        contentType.put("ico", "image/x-icon");
 
     }
 
 
     public FileResources(String uri) {
-
         super(rootPath + uri);
-
         url = uri;
-
     }
 
 
-
-
-    /*
-     *ファイル拡張子によってContentTypeのセット
+    /**
+     *
+     * @param statusCode
+     * @return Content-typを返す、拡張子がみつからなかった場合はデフォルトのContent-Typeを返す
      */
 
     public String getContentType(int statusCode) {
-
-
         String extension = "";
-
         if (url != null && !"".equals(url) && statusCode == StatusLine.OK) {
-
             for (String key : contentType.keySet()) {
-
                 if (url.endsWith(key)) {
-
-                    extension = key;        // ファイル拡張子と一致するキーを獲得
-
+                    extension = key;
                     break;
                 }
             }
         }
 
-        /*
-         * 獲得したキーの値(Content-Type)を返す,一致しなかったらdefaultValueの値を返す
-         */
-
-        return contentType.getOrDefault(extension, "Content-Type: text/html; charset=utf-8\n");
+        return contentType.getOrDefault(extension, "application/octet-stream");
     }
-
-
 }

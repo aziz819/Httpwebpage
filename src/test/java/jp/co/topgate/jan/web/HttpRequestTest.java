@@ -49,8 +49,8 @@ public class HttpRequestTest {
             assertThat(req.getMethod(), is("GET"));
             assertThat(req.getURL(), is("/index.html"));
             assertThat(req.getVersion(), is("HTTP/1.1"));
-            assertThat(req.getGetparameter("title"), is("yudetamago"));
-            assertThat(req.getGetparameter("name"), is("kinnikuman"));
+            assertThat(req.getGetParameter("title"), is("yudetamago"));
+            assertThat(req.getGetParameter("name"), is("kinnikuman"));
 
         }
 
@@ -85,7 +85,7 @@ public class HttpRequestTest {
 
     }
 
-    public static class リクエスト行の読み込み確認 {
+    public static class リクエスト行の読み込み確認テスト {
         HttpRequest req;
 
         @Before

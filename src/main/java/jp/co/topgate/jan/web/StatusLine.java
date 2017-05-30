@@ -3,10 +3,12 @@ package jp.co.topgate.jan.web;
 import java.util.HashMap;
 import java.util.Map;
 
-/* ステータスコードの確認してコード説明をセット
+/**
+ * ステータスコードの確認してコード説明をセット
  * Created by aizijiang.aerken on 2017/05/10.
+ *
+ * @author jan
  */
-
 
 public class StatusLine {
 
@@ -36,11 +38,13 @@ public class StatusLine {
 
     }
 
-    /*
-     *ステータスコードの確認
+    /**
+     *
+     * @param statusCode
+     * @return ステータスコードを確認後返す
      */
 
-    public int statusCodeCheck(int statusCode) {
+    public int CheckStatusCode(int statusCode) {
         for (int code : codeDescription.keySet()) {
             if (statusCode == code) {
                 return statusCode;
@@ -50,8 +54,10 @@ public class StatusLine {
     }
 
 
-    /*
-     * ステータスコードによってコード説明を返す
+    /**
+     *
+     * @param statusCode
+     * @return コードの説明を返す
      */
 
     public String getCodeDescription(int statusCode) {

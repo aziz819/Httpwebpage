@@ -4,17 +4,16 @@ import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
 
-/* ボート番号8080で、クライアントからの接続要求を待ち
+/**
+ * ボート番号8080で、クライアントからの接続要求を待ち
  * Created by aizijiang.aerken on 2017/04/13.
+ *
+ * @author  jan
  */
 
 public class Server {
 
-    /*
-     * ポート番号8080
-     */
-
-    private static final int SERVER_PORT = 8080;
+    private static final int SERVER_PORT = 8080;           // ポート番号
 
 
     public static void main(String[] args) {
@@ -22,26 +21,23 @@ public class Server {
         Server server = new Server();
 
         try {
-
             server.startServer(SERVER_PORT);
-
         } catch (IOException e) {
-
             System.out.println("エラー:サーバ開始時にエラー発生しました:" + e.getMessage());
-
             e.printStackTrace();
         }
     }
 
 
-    /*
-     * クライアントからの接続要求をまち
+    /**
+     *
+     * @param serverPort       ポート番号8080
+     * @throws IOException     ServerSocketにエラーが発生しました。
      */
 
     private void startServer(int serverPort) throws IOException {
 
         ServerSocket serverSocket = new ServerSocket(serverPort);
-
         System.out.println("Server is started •••••••••\n");
 
         while (true) {
@@ -53,21 +49,13 @@ public class Server {
                  */
 
                 Socket clientSocket = serverSocket.accept();
-
-
                 ConnectionHandler connectionHandler = new ConnectionHandler(clientSocket.getInputStream(), clientSocket.getOutputStream());
 
                 /*
-                 * クライアントからのリクエストを解析
+                 * リクエストを解析しレスポンスを書き込む
                  */
 
-                connectionHandler.readRequest();
-
-                /*
-                 * クライアントにレスポンスを作って返す
-                 */
-
-                connectionHandler.createResponse();
+                connectionHandler.writeResponse();
 
 
                 /*
@@ -76,16 +64,11 @@ public class Server {
 
                 clientSocket.close();
 
-            } catch (IOException e){
-
+            } catch (IOException e) {
                 System.out.println("エラー:" + e.getMessage());
-
                 e.printStackTrace();
-
             } catch (RuntimeException e) {
-
                 System.out.println("エラー:" + e.getMessage());
-
                 e.printStackTrace();
             }
         }

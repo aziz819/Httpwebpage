@@ -29,51 +29,10 @@ public class ConnectionHandlerTest {
     }
 
 
-    public static class readRequestメソッド例外メッセージ確認テスト {
+    public static class writeResponseメソッド内でキャッチされる例外メッセージ確認テスト {
 
         @Test
-        public void コンストラクタ引数出力ストリームがnullの時の例外メッセージ() {
-            InputStream is = null;
-            try {
-                new HttpRequest(is);
-            } catch (NullPointerException e) {
-                assertEquals("入力ストリームはnullになっています。", e.getMessage());
-            }
-        }
-    }
-
-    public static class parseRequestメソッド例外メッセージ確認テスト {
-
-        @Test
-        public void リクエスト行がnullの例外メッセージ() {
-            HttpRequest httpRequest = null;
-            InputStream is = null;
-            try {
-                is = new FileInputStream(new File("./src/test/Testresources/emptyingRequestTest.txt"));
-                httpRequest = new HttpRequest(is);
-
-            } catch (FileNotFoundException e) {
-                e.printStackTrace();
-                fail("指定したファイルが見つかりません");
-            }
-
-
-            try {
-                httpRequest.parseRequest();
-            } catch (RequestParseException e) {
-                assertEquals("リクエスト行がnullになっています。", e.getMessage());
-
-            } finally {
-                try {
-                    if (is != null) is.close();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
-        }
-
-        @Test
-        public void ファイル存在しない時の例外メッセージ() {
+        public void ファイル存在しない時の投げられる例外メッセージ() {
             ConnectionHandler connectionHandler = null;
             InputStream is = null;
             OutputStream os = null;
@@ -93,7 +52,7 @@ public class ConnectionHandlerTest {
                 method = ConnectionHandler.class.getDeclaredMethod("checkFile", FileResources.class);
             } catch (NoSuchMethodException e) {
                 e.printStackTrace();
-                fail("テストしたいメソッドが存在しない");
+                fail("テスト対象メソッドが存在しない");
             }
             method.setAccessible(true);
             try {
@@ -117,7 +76,7 @@ public class ConnectionHandlerTest {
 
 
         @Test
-        public void 不正なリクエスト行の例外メッセージ() {
+        public void 不正なリクエスト行の時に投げられる例外メッセージ() {
             HttpRequest httpRequest = null;
             InputStream is = null;
             try {
@@ -145,7 +104,7 @@ public class ConnectionHandlerTest {
         }
 
         @Test
-        public void 不正なGETパラメーターの例外メッセージ() {
+        public void 不正なGETパラメーターの時に投げられる例外メッセージ() {
             HttpRequest httpRequest = null;
             InputStream is = null;
             try {
@@ -194,33 +153,6 @@ public class ConnectionHandlerTest {
             } finally {
                 try {
                     if (is != null) is.close();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                    fail("ストリームが閉じられていません");
-                }
-            }
-        }
-    }
-
-
-    public static class createResponseメソッド例外メッセージ {
-
-        FileResources fileResources = new FileResources("./src/main/resources/index.html");
-
-        OutputStream os = null;
-
-        @Test
-        public void コンストラクタ引数出力ストリームがnullの時の例外メッセージ() {
-            try {
-
-                new HttpResponse(os, fileResources);
-
-            } catch (NullPointerException e) {
-
-                assertEquals("出力ストリームがnullになっています", e.getMessage());
-            } finally {
-                try {
-                    if (os != null) os.close();
                 } catch (IOException e) {
                     e.printStackTrace();
                     fail("ストリームが閉じられていません");
