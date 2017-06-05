@@ -2,9 +2,10 @@ package jp.co.topgate.jan.web;
 
 import jp.co.topgate.jan.web.exception.RequestParseException;
 
-import java.io.FileNotFoundException;
+import java.io.File;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.Objects;
 
 /** HttpRequestからの解析結果によってHttpResponseに表示すべきものを渡しています
  * Created by aizijiang.aerken on 2017/04/13.
@@ -16,11 +17,9 @@ import java.io.OutputStream;
 public class ConnectionHandler {
 
     private int statusCode ;
-    private FileResources fileResources = null;
     private InputStream is = null;
     private OutputStream os = null;
-
-
+    File file = null;
     /**
      *
      * @param is        入力ストリーム
@@ -29,23 +28,21 @@ public class ConnectionHandler {
 
     public ConnectionHandler(InputStream is, OutputStream os) {
 
-        if (is == null || os == null) {
-            throw new NullPointerException("入力ストリームと出力ストリームどっちかnullになっています。");
-        }
-
-        this.is = is;
-        this.os = os;
+        this.is = Objects.requireNonNull(is, "入力ストリームがnullになっています");
+        this.os = Objects.requireNonNull(os, "出力ストリームがnullになっています");
     }
 
 
     public void writeResponse() {
 
-        HttpRequest httpRequest = null;
-        statusCode = StatusLine.OK;
+        boolean fileExist = false;
+
+        FileResource fileResource = new FileResource();
+
 
         try {
 
-            httpRequest = new HttpRequest(is);
+            HttpRequest httpRequest = new HttpRequest(is);
 
             httpRequest.parseRequest();
 
@@ -59,13 +56,12 @@ public class ConnectionHandler {
             } else if (!("HTTP/1.1".equals(version))) {
                 statusCode = StatusLine.HTTP_VERSION_NOT_SUPPORTED;
             } else {
-                try {
-                    fileResources = new FileResources(url);
-                    checkFile(fileResources);
-                } catch (FileNotFoundException e) {
-                    System.out.println("エラー:" + e.getMessage());
-                    e.printStackTrace();
+                if (!(fileResource.checkFile(url))) {
                     statusCode = StatusLine.NOT_FOUND;
+                } else {
+                    this.file = fileResource.getPath();
+                    statusCode = StatusLine.OK;
+                    fileExist = true;
                 }
             }
         } catch (RequestParseException e) {
@@ -75,29 +71,14 @@ public class ConnectionHandler {
         }
 
 
-        HttpResponse httpResponse = null;
-        try {
-            httpResponse = new HttpResponse(os, fileResources);
-        } catch (NullPointerException e) {
-            System.out.println("エラー:" + e.getMessage());
-            e.printStackTrace();
-        }
+        HttpResponse httpResponse = new HttpResponse(os, file, fileResource);
+
 
         /*
          * レスポンスを書き込む
          */
 
-        httpResponse.writeResponse(statusCode);
+        httpResponse.writeResponse(statusCode, fileExist);
     }
 
-
-    /*
-     *ファイル有無をチェックする
-     */
-
-    private static void checkFile(FileResources file) throws FileNotFoundException {
-        if (!(file.exists() && file.isFile())) {
-            throw new FileNotFoundException("ファイルは存在しないかファイルではありません");
-        }
-    }
 }

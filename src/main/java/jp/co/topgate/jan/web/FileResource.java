@@ -11,9 +11,11 @@ import java.util.Map;
  */
 
 
-public class FileResources extends File {
+public class FileResource {
 
     private static final String rootPath = "./src/main/resources";
+
+    private File file = null;
 
     private static String url;
 
@@ -39,21 +41,39 @@ public class FileResources extends File {
     }
 
 
-    public FileResources(String uri) {
-        super(rootPath + uri);
-        url = uri;
+    /**
+     * @param url
+     * @return ファイル存在すればtrueを存在しなければfalseを返す
+     */
+
+    public boolean checkFile(String url) {
+
+        file = new File(rootPath + url);
+        this.url = url;
+
+        if (file.exists() || file.isFile()) {
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * @return ファイルが存在した時にそのファイルパスを返す
+     */
+
+    public File getPath() {
+        return file;
     }
 
 
     /**
      *
-     * @param statusCode
      * @return Content-typを返す、拡張子がみつからなかった場合はデフォルトのContent-Typeを返す
      */
 
-    public String getContentType(int statusCode) {
+    public String getContentType() {
         String extension = "";
-        if (url != null && !"".equals(url) && statusCode == StatusLine.OK) {
+        if (url != null && !"".equals(url)) {
             for (String key : contentType.keySet()) {
                 if (url.endsWith(key)) {
                     extension = key;
@@ -63,5 +83,13 @@ public class FileResources extends File {
         }
 
         return contentType.getOrDefault(extension, "application/octet-stream");
+    }
+
+    /**
+     * @return エラーのメッセージボディのContent-Typeを返す
+     */
+
+    public String getErrorBodyContentType() {
+        return "text/html; charset=utf-8";
     }
 }

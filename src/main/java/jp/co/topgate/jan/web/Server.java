@@ -25,6 +25,7 @@ public class Server {
         } catch (IOException e) {
             System.out.println("エラー:サーバ開始時にエラー発生しました:" + e.getMessage());
             e.printStackTrace();
+            System.exit(-1);
         }
     }
 
@@ -38,7 +39,7 @@ public class Server {
     private void startServer(int serverPort) throws IOException {
 
         ServerSocket serverSocket = new ServerSocket(serverPort);
-        System.out.println("Server is started •••••••••\n");
+        System.out.println("Server is started •••••••••");
 
         while (true) {
 
@@ -56,7 +57,6 @@ public class Server {
                  */
 
                 connectionHandler.writeResponse();
-
 
                 /*
                  * ソケットを閉じる

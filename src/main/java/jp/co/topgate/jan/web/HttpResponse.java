@@ -1,6 +1,7 @@
 package jp.co.topgate.jan.web;
 
 import java.io.*;
+import java.util.Objects;
 
 /**
  * ステータス行とContent-Typeを組み立てストリームに書き込む
@@ -11,9 +12,9 @@ import java.io.*;
 
 public class HttpResponse {
 
-    private FileInputStream fileInputStream = null;
+    private InputStream is = null;
 
-    private FileResources fileResources = null;
+    private FileResource fileResource = null;
 
     private OutputStream os = null;
 
@@ -25,66 +26,62 @@ public class HttpResponse {
 
     private int statusCode;
 
+    private File file = null;
+
     /**
+     *
      * @param os            出力ストリーム
-     * @param fileResources FileResourcesのオブジエクト
+     * @param file          ファイルパス
+     * @param fileResource  FileResourceクラスのオブジェクト
      */
 
-    public HttpResponse(OutputStream os, FileResources fileResources) {
-        if(os == null) {
-            throw new NullPointerException("出力ストリームがnullになっています");
-        }
+    public HttpResponse(OutputStream os, File file, FileResource fileResource) {
         statusLine = new StatusLine();
         errorMessageBody = new ErrorMessageBody();
-        this.fileResources = fileResources;
-        this.os = os;
+        this.file = file;
+        this.fileResource = fileResource;
+        this.os = Objects.requireNonNull(os, "出力ストリームがnullになっています");
     }
 
 
     /**
      * レスポンスをストリームに書き込む
+     * ステータス行とContent-Typeを別クラスで組み立てさせてもらう
      *
      * @param statusCode  ステータスコード
+     * @param fileExist   ファイルが存在(true)場合にファイルを書き込む、存在しない(false)場合にエラーメッセージボディを書き込む
      */
 
-    public void writeResponse(int statusCode) {
-        statusCode = statusLine.CheckStatusCode(statusCode);
-        String codeDescription = statusLine.getCodeDescription(statusCode) + "\n";
-        responseMessage.append("HTTP/1.1 ").append(statusCode).append(" ").append(codeDescription);
+    public void writeResponse(int statusCode, boolean fileExist) {
 
         String contentType ;
+
+        String codeDescription = statusLine.getStatusLine(statusCode) + "\n";
+
         try {
-            if (statusCode != statusLine.OK) {
-                contentType = "Content-Type: text/html; charset=utf-8\n\n";
-                responseMessage.append(contentType);
-                responseMessage.append(errorMessageBody.getErrorMessageBody(statusCode));
-                System.out.println(responseMessage);
-                os.write(responseMessage.toString().getBytes());
-            } else {
-                contentType = fileResources.getContentType(statusCode) + "\n\n";
+
+
+            os.write(codeDescription.toString().getBytes());
+
+            if (fileExist) {
+                contentType = fileResource.getContentType() + "\n\n";
                 responseMessage.append("Content-Type: ").append(contentType);
                 os.write(responseMessage.toString().getBytes());
 
-                BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(new FileInputStream(fileResources)));
-                String line;
-                while ((line = bufferedReader.readLine()) != null) {
-                    responseMessage.append(line + "\n");
+                is = new FileInputStream(file);
+                int i;
+                while ((i = is.read()) != -1) {
+                    os.write(i);
                 }
-                System.out.println(responseMessage);
-
-                fileInputStream = new FileInputStream(fileResources);
-                byte[] bytes = new byte[1024];
-                while (true) {
-                    int r = fileInputStream.read(bytes);
-                    if (r == -1) {
-                        break;
-                    }
-                    os.write(bytes, 0, r);
-                }
+            } else {
+                contentType = fileResource.getErrorBodyContentType() + "\n\n";
+                responseMessage.append("Content-Type: ").append(contentType);
+                responseMessage.append(errorMessageBody.getErrorMessageBody(statusCode));
+                //System.out.println(responseMessage);
+                os.write(responseMessage.toString().getBytes());
             }
-
         } catch (IOException e) {
-            System.out.println("ファイルの読み書きに不具合が発生しました" + e.toString());
+            System.out.println("ファイルの読み書きに不具合が発生しました");
             e.printStackTrace();
         } finally {
             try {
@@ -92,9 +89,9 @@ public class HttpResponse {
             } catch (IOException e) {
                 e.printStackTrace();
             }
-            if (fileInputStream != null)
+            if (is != null)
                 try {
-                    fileInputStream.close();
+                    is.close();
                 } catch (IOException e) {
                     e.printStackTrace();
                 }

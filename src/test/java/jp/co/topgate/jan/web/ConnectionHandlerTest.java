@@ -4,8 +4,6 @@ import jp.co.topgate.jan.web.exception.RequestParseException;
 import org.junit.Test;
 
 import java.io.*;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 
 import static junit.framework.TestCase.fail;
 import static org.junit.Assert.assertEquals;
@@ -30,57 +28,14 @@ public class ConnectionHandlerTest {
 
 
     public static class writeResponseメソッド内でキャッチされる例外メッセージ確認テスト {
+        HttpRequest httpRequest = null;
+        InputStream is = null;
 
         @Test
-        public void ファイル存在しない時の投げられる例外メッセージ() {
-            ConnectionHandler connectionHandler = null;
-            InputStream is = null;
-            OutputStream os = null;
-            String url = "/yudetamago.html";
-            FileResources fileResources = new FileResources(url);
-            try {
-                is = new FileInputStream(new File("./src/test/Testresources/getTest.txt"));
-                os = new FileOutputStream(new File("./src/test/Testresources/ResponseMessage.txt"));
-                connectionHandler = new ConnectionHandler(is, os);
-            } catch (FileNotFoundException e) {
-                e.printStackTrace();
-                fail("指定したファイルが見つかりません");
-            }
-
-            Method method = null;
-            try {
-                method = ConnectionHandler.class.getDeclaredMethod("checkFile", FileResources.class);
-            } catch (NoSuchMethodException e) {
-                e.printStackTrace();
-                fail("テスト対象メソッドが存在しない");
-            }
-            method.setAccessible(true);
-            try {
-                method.invoke(connectionHandler, fileResources);
-            } catch (IllegalAccessException e) {
-                e.printStackTrace();
-                fail("テスト対象メソッドにアクセスできませんでした。");
-            } catch (InvocationTargetException e) {
-                assertEquals(e.getCause().getMessage(), "ファイルは存在しないかファイルではありません");
-            }
+        public void requestLineがnullの時に投げられる例外メッセージ(){
 
             try {
-                if (os != null) os.close();
-                if (is != null) is.close();
-            } catch (IOException e) {
-                e.printStackTrace();
-                fail("ストリームが閉じられていません");
-            }
-
-        }
-
-
-        @Test
-        public void 不正なリクエスト行の時に投げられる例外メッセージ() {
-            HttpRequest httpRequest = null;
-            InputStream is = null;
-            try {
-                is = new FileInputStream(new File("./src/test/Testresources/BadRequestLine.txt"));
+                is = new FileInputStream(new File("./src/test/Testresources/emptyingRequestTest.txt"));
                 httpRequest = new HttpRequest(is);
 
             } catch (FileNotFoundException e) {
@@ -88,10 +43,11 @@ public class ConnectionHandlerTest {
                 fail("指定したファイルが見つかりません");
             }
 
+
             try {
                 httpRequest.parseRequest();
             } catch (RequestParseException e) {
-                assertEquals("正しくないリクエストライン。", e.getMessage());
+                assertEquals("リクエスト行が空かnullになっています", e.getMessage());
             } finally {
                 try {
                     if (is != null) is.close();
@@ -100,13 +56,11 @@ public class ConnectionHandlerTest {
                     fail("ストリームが閉じられていません");
                 }
             }
-
         }
 
         @Test
         public void 不正なGETパラメーターの時に投げられる例外メッセージ() {
-            HttpRequest httpRequest = null;
-            InputStream is = null;
+
             try {
                 is = new FileInputStream(new File("./src/test/Testresources/getParameterTest.txt"));
                 httpRequest = new HttpRequest(is);
@@ -134,8 +88,6 @@ public class ConnectionHandlerTest {
 
         @Test
         public void 不正なPOSTパラメーターの例外メッセージ() {
-            HttpRequest httpRequest = null;
-            InputStream is = null;
             try {
                 is = new FileInputStream(new File("./src/test/Testresources/postParameterTest.txt"));
                 httpRequest = new HttpRequest(is);

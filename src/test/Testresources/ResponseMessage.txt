@@ -1,4 +1,22 @@
-HTTP/1.1 500 Internal Server exception
+HTTP/1.1 200 OK
 Content-Type: text/html; charset=utf-8
 
-<html><head><title>500 Internal Server exception</title></head><body><h1>Internal Server exception</h1><p>サーバー内部の不明なエラーにより表示できません。</p></body></html>
+<html>
+<meta charset="utf-8">
+<head>
+<title>my index</title>
+<script
+  src="https://code.jquery.com/jquery-3.2.1.js"
+  integrity="sha256-DZAnKJ/6XZ9si04Hgrsxu/8s717jcIzLy3oi35EouyE="
+  crossorigin="anonymous"></script>
+  <script src="./js/test.js"></script>
+  <link rel="stylesheet" href="./css/test.css" type="text/css" />
+</head>
+<body>
+  <div class="one">
+    <h2>Beautiful Natural</h2>
+    <img src="./image/natural1.jpg" height="350" width="390"> <img src="./image/natural2.jpg" height="350" width="390"> <img src="./image/natural3.gif" height="350" width="390"><br><br>
+    <button>hide</button>
+  </div>
+</body>
+</html>

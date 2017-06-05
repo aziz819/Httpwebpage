@@ -12,6 +12,8 @@ import static org.junit.Assert.assertThat;
 /**
  * Created by aizijiang.aerken on 2017/05/12.
  */
+
+
 public class HttpResponseTest {
 
 	public static class コンストラクタの引数出力ストリームがnullの時のテスト {
@@ -19,183 +21,18 @@ public class HttpResponseTest {
 		@Test(expected = NullPointerException.class)
 		public void キャッチされるか() {
 
-			FileResources fileResources = new FileResources("");
+			FileResource fileResource = new FileResource();
+			File file = new File("/index.html");
 
 			OutputStream os = null;
-			new HttpResponse(os, fileResources);
+			new HttpResponse(os, file, fileResource);
 
 		}
 
 	}
 
-	public static class エラーメッセージボディー書き込み確認テスト {
 
-		ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-
-		FileResources fileResources = new FileResources("");
-
-		@Before
-		public void setUpStrems() {
-			System.setOut(new PrintStream(byteArrayOutputStream));
-		}
-
-
-		@Test
-		public void ステータスコードが400の場合() {
-
-			OutputStream os = null;
-			try {
-				os = new FileOutputStream(new File("./src/test/Testresources/ResponseMessage.txt"));
-			} catch (FileNotFoundException e) {
-				e.printStackTrace();
-				fail("指定したファイルが見つかりません");
-			}
-
-			HttpResponse httpResponse = new HttpResponse(os, fileResources);
-
-			httpResponse.writeResponse(400);
-
-			assertThat(byteArrayOutputStream.toString(), is("HTTP/1.1 400 Bad Request\n" +
-					"Content-Type: text/html; charset=utf-8" + "\n\n" + "<html><head><title>400 Bad Request</title></head>" +
-					"<body><h1>Bad Request</h1>" +
-					"<p>リクエストは不正な構文であるために、サーバーに理解できませんでした。<br /></p></body></html>" + System.lineSeparator()));
-
-			try {
-				if(os != null)os.close();
-			} catch (IOException e) {
-				e.printStackTrace();
-				fail("ストリームクローズに不具合が発生しました。");
-			}
-		}
-
-		@Test
-		public void ステータスコードが404の場合() {
-
-			OutputStream os = null;
-			try {
-				os = new FileOutputStream(new File("./src/test/Testresources/ResponseMessage.txt"));
-			} catch (FileNotFoundException e) {
-				e.printStackTrace();
-				fail("エラー：指定したファイルが見つかりません");
-			}
-
-			HttpResponse httpResponse = new HttpResponse(os, fileResources);
-
-			httpResponse.writeResponse(404);
-
-			assertThat(byteArrayOutputStream.toString(), is("HTTP/1.1 404 Not Found\n" +
-					"Content-Type: text/html; charset=utf-8\n\n" +
-					"<html><head><title>404 Not Found</title></head>" +
-					"<body><h1>Not Found</h1>" +
-					"<p>サーバーは、リクエストURIと一致するものを見つけられませんでした。</p></body></html>" + System.lineSeparator()));
-
-
-			try {
-				if(os != null)os.close();
-			} catch (IOException e) {
-				e.printStackTrace();
-				fail("ストリームクローズに不具合が発生しました。");
-			}
-		}
-
-		@Test
-		public void ステータスコードが405の場合() {
-			OutputStream os = null;
-			try {
-				os = new FileOutputStream(new File("./src/test/Testresources/ResponseMessage.txt"));
-			} catch (FileNotFoundException e) {
-				e.printStackTrace();
-				fail("エラー：指定したファイルが見つかりません");
-			}
-
-			HttpResponse httpResponse = new HttpResponse(os, fileResources);
-
-			httpResponse.writeResponse(405);
-
-
-			assertThat(byteArrayOutputStream.toString(), is("HTTP/1.1 405 Method Not Allowed\n" +
-					"Content-Type: text/html; charset=utf-8\n\n" +
-					"<html><head><title>405 Method Not Allowed</title></head>" +
-					"<body><h1>Not Implemented</h1>" +
-					"<p>実装されていないサーバメソッドです。</p></body></html>" + System.lineSeparator()));
-
-
-			try {
-				if(os != null)os.close();
-			} catch (IOException e) {
-				e.printStackTrace();
-				fail("ストリームクローズに不具合が発生しました。");
-			}
-		}
-
-
-		@Test
-		public void ステータスコードが505の場合() {
-
-			OutputStream os = null;
-
-			try {
-				os = new FileOutputStream(new File("./src/test/Testresources/ResponseMessage.txt"));
-			} catch (FileNotFoundException e) {
-				e.printStackTrace();
-				fail("エラー：指定したファイルが見つかりません");
-			}
-
-			HttpResponse httpResponse = new HttpResponse(os, fileResources);
-
-			httpResponse.writeResponse(505);
-
-			assertThat(byteArrayOutputStream.toString(), is("HTTP/1.1 505 Version Not Supported\n" +
-					"Content-Type: text/html; charset=utf-8\n\n" +
-					"<html><head><title>505 HTTP Version Not Supported</title></head>" +
-					"<body><h1>HTTP Version Not Supported</h1>" +
-					"<p>サーバーは、リクエスト・メッセージで使用されたHTTPプロトコル・バージョンをサポートしていない、あるいはサポートを拒否している。</p> " +
-					"</body></html>" + System.lineSeparator()));
-
-
-			try {
-				if(os != null)os.close();
-			} catch (IOException e) {
-				e.printStackTrace();
-				fail("ストリームクローズに不具合が発生しました。");
-			}
-		}
-
-
-		@Test
-		public void ステータスコードが500の場合() {
-
-			OutputStream os = null;
-			try {
-				os = new FileOutputStream(new File("./src/test/Testresources/ResponseMessage.txt"));
-			} catch (FileNotFoundException e) {
-				e.printStackTrace();
-				fail("エラー：指定したファイルが見つかりませんでした");
-			}
-
-			HttpResponse httpResponse = new HttpResponse(os, fileResources);
-
-			httpResponse.writeResponse(500);
-
-			assertThat(byteArrayOutputStream.toString(), is("HTTP/1.1 500 Internal Server exception\n" +
-					"Content-Type: text/html; charset=utf-8\n\n" +
-					"<html><head><title>500 Internal Server exception</title></head>" +
-					"<body><h1>Internal Server exception</h1>" +
-					"<p>サーバー内部の不明なエラーにより表示できません。</p></body></html>" + System.lineSeparator()));
-
-
-			try {
-				if(os != null)os.close();
-			} catch (IOException e) {
-				e.printStackTrace();
-				fail("ストリームクローズに不具合が発生しました。");
-			}
-		}
-
-	}
-
-
-	public static class 想定外のステータスコードの時のレスポンスメッセージ確認テスト {
+	public static class サーバ内部エラー確認テスト {
 
 		HttpResponse httpResponse = null;
 
@@ -205,20 +42,17 @@ public class HttpResponseTest {
 			File file = new File("./src/test/Testresources/ResponseMessage.txt");
 			file.delete();
 
-			FileResources fileResources = null;
+			FileResource fileResource = new FileResource();
 
 			OutputStream os = null;
 
 			try {
 
-				fileResources = new FileResources("/index.html");
-
 				os = new FileOutputStream(new File("./src/test/Testresources/ResponseMessage.txt"));
 
-				httpResponse = new HttpResponse(os, fileResources);
+				httpResponse = new HttpResponse(os, file, fileResource);
 
-				httpResponse.writeResponse(900);
-
+				httpResponse.writeResponse(500, false);
 
 			} catch (FileNotFoundException e) {
 
@@ -253,7 +87,7 @@ public class HttpResponseTest {
 				BufferedReader bf = new BufferedReader(new InputStreamReader(is));
 
 				try {
-					assertThat(bf.readLine(), is("HTTP/1.1 500 Internal Server exception"));
+					assertThat(bf.readLine(), is("HTTP/1.1 500 Internal Server Error"));
 					assertThat(bf.readLine(), is("Content-Type: text/html; charset=utf-8"));
 				} catch (IOException e) {
 					e.printStackTrace();
@@ -273,31 +107,30 @@ public class HttpResponseTest {
 	}
 
 
-	public static class ファイル有りで200OKの時のレスポンスメッセージテスト {
+	public static class 正常処理200OKの時のレスポンスメッセージテスト {
 
 		HttpResponse httpResponse = null ;
 
 		@Before
 		public void OuputStreamとFileResourcesの初期化() {
+			File file = new File("./src/test/Testresources/ResponseMessage.txt");
 
-			File file = null;
+			file.delete();
 
-			FileResources fileResources = null;
+			new FileResource().checkFile("/index.html");
+
+			FileResource fileResource = new FileResource();
 
 			OutputStream os = null;
 
 			try {
-				file = new File("./src/test/Testresources/ResponseMessage.txt");
-
-				file.delete();
-
-				fileResources = new FileResources("/index.html");
+				file = new File("./src/main/resources/index.html");
 
 				os = new FileOutputStream(new File("./src/test/Testresources/ResponseMessage.txt"));
 
-				httpResponse = new HttpResponse(os, fileResources);
+				httpResponse = new HttpResponse(os, file, fileResource);
 
-				httpResponse.writeResponse(200);
+				httpResponse.writeResponse(200, true);
 
 
 			} catch (FileNotFoundException e) {
@@ -373,25 +206,22 @@ public class HttpResponseTest {
 
 		@Before
 		public void OuputStreamとFileResourcesの初期化() {
+			File file = new File("./src/test/Testresources/ResponseMessage.txt");
 
-			File file = null;
+			file.delete();
 
-			FileResources fileResources = null;
+			FileResource fileResource = new FileResource();
 
 			OutputStream os = null;
 
 			try {
-				file = new File("./src/test/Testresources/ResponseMessage.txt");
 
-				file.delete();
-
-				fileResources = new FileResources("/index.html");
 
 				os = new FileOutputStream(new File("./src/test/Testresources/ResponseMessage.txt"));
 
-				httpResponse = new HttpResponse(os, fileResources);
+				httpResponse = new HttpResponse(os, file, fileResource);
 
-				httpResponse.writeResponse(400);
+				httpResponse.writeResponse(400, false);
 
 			} catch (FileNotFoundException e) {
 
@@ -458,24 +288,22 @@ public class HttpResponseTest {
 		@Before
 		public void OuputStreamとFileResourcesの初期化() {
 
-			File file = null;
+			File file = new File("./src/test/Testresources/ResponseMessage.txt");
 
-			FileResources fileResources = null;
+			file.delete();
+
+			FileResource fileResource = new FileResource();
 
 			OutputStream os = null;
 
 			try {
-				file = new File("./src/test/Testresources/ResponseMessage.txt");
 
-				file.delete();
-
-				fileResources = new FileResources("/index.html");
 
 				os = new FileOutputStream(new File("./src/test/Testresources/ResponseMessage.txt"));
 
-				httpResponse = new HttpResponse(os, fileResources);
+				httpResponse = new HttpResponse(os, file, fileResource);
 
-				httpResponse.writeResponse(405);
+				httpResponse.writeResponse(405, false);
 
 			} catch (FileNotFoundException e) {
 
@@ -543,24 +371,21 @@ public class HttpResponseTest {
 		@Before
 		public void OuputStreamとFileResourcesの初期化() {
 
-			File file = null;
+			File file = new File("./src/test/Testresources/ResponseMessage.txt");
 
-			FileResources fileResources = null;
+			file.delete();
+
+			FileResource fileResource = new FileResource();
 
 			OutputStream os = null;
 
 			try {
-				file = new File("./src/test/Testresources/ResponseMessage.txt");
-
-				file.delete();
-
-				fileResources = new FileResources("/index.html");
 
 				os = new FileOutputStream(new File("./src/test/Testresources/ResponseMessage.txt"));
 
-				httpResponse = new HttpResponse(os, fileResources);
+				httpResponse = new HttpResponse(os, file, fileResource);
 
-				httpResponse.writeResponse(404);
+				httpResponse.writeResponse(404,false);
 
 			} catch (FileNotFoundException e) {
 

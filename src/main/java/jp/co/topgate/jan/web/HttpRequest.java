@@ -5,6 +5,7 @@ import jp.co.topgate.jan.web.exception.RequestParseException;
 import java.io.*;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 /**
  * Created by aizijiang.aerken on 2017/04/13.
@@ -50,14 +51,12 @@ public class HttpRequest {
 
     public HttpRequest(InputStream is) {
 
-        if(is == null){
-            throw new NullPointerException("入力ストリームがnullになっています");
-        }
+        Objects.requireNonNull(is, "入力ストリームがnullになっています");
+
         try {
             bufferedReader = new BufferedReader(new InputStreamReader(is, "UTF-8"));
         } catch (UnsupportedEncodingException e) {
-            System.out.println("文字のエンコーディングがサポートされていません");
-            throw new RequestParseException("エラー:" + e.toString());
+            throw new RequestParseException("文字のエンコーディングがサポートされていません");
         }
     }
 
@@ -97,16 +96,14 @@ public class HttpRequest {
         try {
             requestLine = bufferedReader.readLine();
         } catch (IOException e) {
-            System.out.println("リクエスト行の読み込みに不具合が発生しました");
-            e.printStackTrace();
-            throw new RequestParseException("エラー:" + e.toString());
+            throw new RequestParseException("リクエスト行の読み込みに不具合が発生しました");
         }
 
-        if (requestLine == null) {
-            throw new RequestParseException("リクエスト行がnullになっています。");
+        if (requestLine == null || requestLine.equals("")) {
+            throw new RequestParseException("リクエスト行が空かnullになっています");
         }
 
-        System.out.println(requestLine);
+        //System.out.println(requestLine);
 
         String[] requestLineElement = requestLine.split(REQUEST_LINE_SEPARATOR);                   // REQUEST_LINE_SEPARATOR == " " / 一行目を空白のところから三つに分ける
 
@@ -139,12 +136,10 @@ public class HttpRequest {
                     header[1] = header[1].trim();
                     headersMap.put(header[0], header[1]);
                 }
-                System.out.println(headerLine);
+                //System.out.println(headerLine);
             }
         } catch (IOException e) {
-            System.out.println("リクエストヘッダーの読み込みに不具合が発生しました");
-            e.printStackTrace();
-            throw new RequestParseException("エラー:" + e.toString());
+            throw new RequestParseException("リクエストヘッダーの読み込みに不具合が発生しました");
         }
     }
 
@@ -182,9 +177,7 @@ public class HttpRequest {
                     }
                 }
             } catch (IOException e) {
-                System.out.println("POSTメッセージボディ読み込みに不具合が発生しました");
-                e.printStackTrace();
-                throw new RequestParseException("エラー:" + e.toString());
+                throw new RequestParseException("POSTメッセージボディ読み込みに不具合が発生しました" + e.toString());
             }
         }
     }
@@ -224,7 +217,11 @@ public class HttpRequest {
 
 
     /**
-     * 下記はテスト確認時に使用
+     *  下記はテスト確認時に使用
+     */
+
+
+    /**
      *
      * @param name
      * @return      パラメーターの値を返す、一致しなかった場合はnullを返す
@@ -240,7 +237,6 @@ public class HttpRequest {
     }
 
     /**
-     * 下記はテスト確認時に使用
      *
      * @param name
      * @return      パラメーターの値を返す、一致しなかった場合はnullを返す
@@ -256,7 +252,14 @@ public class HttpRequest {
     }
 
     /**
-     * 下記はテスト確認時に使用
+     * @param requestLine requestLineにNULLをセットする
+     */
+
+    public void setRequestLine(String requestLine) {
+        this.requestLine = requestLine;
+    }
+
+    /**
      *
      * @return  リクエスト行を返す
      */

@@ -10,48 +10,38 @@ import static org.junit.Assert.assertThat;
  */
 public class StatusLineTest {
 
-    public static class ステータスコードとコード説明の確認 {
 
+    public static class ステータス行の作成位確認テスト {
         StatusLine statusLine = new StatusLine();
 
         @Test
-        public void ステータスコードの確認() {
-
-            int[] consistentNumber = new int[]{200, 400, 404, 405, 900, 505};       //　予期されていないコード900のような場合はコードの500が返される
-
-            int[] statusCode = new int[]{StatusLine.OK, StatusLine.BAD_REQUEST, StatusLine.NOT_FOUND, StatusLine.METHOD_NOT_ALLOWED, StatusLine.INTERNET_SERVER_ERROR, StatusLine.HTTP_VERSION_NOT_SUPPORTED};
-
-            int i = 0;
-
-            for (int statusNumber : consistentNumber) {
-
-                statusNumber = statusLine.CheckStatusCode(statusNumber);
-
-                assertThat(statusCode[i++], is(statusNumber));
-
-            }
+        public void コード200の場合(){
+            assertThat(statusLine.getStatusLine(200),is("HTTP/1.1 200 OK"));
         }
 
+        @Test
+        public void コード400の場合(){
+            assertThat(statusLine.getStatusLine(400),is("HTTP/1.1 400 Bad Request"));
+        }
 
         @Test
-        public void ステータスコードの正しい説明が返されるか() {
+        public void コード404の場合(){
+            assertThat(statusLine.getStatusLine(404),is("HTTP/1.1 404 Not Found"));
+        }
 
-            int[] consistentNumber = new int[]{200, 400, 404, 405, 500, 505};
+        @Test
+        public void コード405の場合(){
+            assertThat(statusLine.getStatusLine(405),is("HTTP/1.1 405 Method Not Allowed"));
+        }
 
-            String[] codeDescriptions = new String[]{"OK", "Bad Request", "Not Found", "Method Not Allowed", "Internal Server exception", "Version Not Supported"};
+        @Test
+        public void コード500の場合(){
+            assertThat(statusLine.getStatusLine(500),is("HTTP/1.1 500 Internal Server Error"));
+        }
 
-            int i = 0;
-
-            for (int statusNumber : consistentNumber) {
-
-                String codeDescription = statusLine.getCodeDescription(statusNumber);
-
-                if (codeDescription != null) {
-
-                    assertThat(codeDescriptions[i++], is(codeDescription));
-
-                }
-            }
+        @Test
+        public void コード505の場合(){
+            assertThat(statusLine.getStatusLine(505),is("HTTP/1.1 505 Http Version Not Supported"));
         }
     }
 }
