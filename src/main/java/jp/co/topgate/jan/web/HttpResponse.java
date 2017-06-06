@@ -1,87 +1,112 @@
 package jp.co.topgate.jan.web;
 
 import java.io.*;
+import java.util.Objects;
 
-/* 分析した最終結果をブラウザに表示する
+/**
+ * ステータス行とContent-Typeを組み立てストリームに書き込む
  * Created by aizijiang.aerken on 2017/04/13.
+ *
+ * @author jan
  */
 
 public class HttpResponse {
-    FileInputStream fileIn = null ;
 
-    public HttpResponse(int statusCode, OutputStream os, FileResources fileresources, StatusLine statusline) throws IOException {
+    private InputStream is = null;
 
-        if (os == null || fileresources == null) {
-            throw new NullPointerException("osかfileresourcesがnullになっています。");
-        }
+    private FileResource fileResource = null;
+
+    private OutputStream os = null;
+
+    private StatusLine statusLine = null;
+
+    private ErrorMessageBody errorMessageBody = null;
+
+    private int statusCode;
+
+    private File file = null;
+
+    /**
+     *
+     * @param os            出力ストリーム
+     * @param file          ファイルパス
+     * @param fileResource  FileResourceクラスのオブジェクト
+     */
+
+    public HttpResponse(OutputStream os, File file, FileResource fileResource) {
+        statusLine = new StatusLine();
+        errorMessageBody = new ErrorMessageBody();
+        this.file = file;
+        this.fileResource = fileResource;
+        this.os = Objects.requireNonNull(os, "出力ストリームがnullになっています");
+    }
+
+
+    /**
+     * レスポンスをストリームに書き込む
+     * ステータス行とContent-Typeを別クラスで組み立てさせてもらう
+     *
+     * @param statusCode  ステータスコード
+     * @param fileExist   ファイルが存在(true)場合にファイルを書き込む、存在しない(false)場合にエラーメッセージボディを書き込む
+     */
+
+    public void writeResponse(int statusCode, boolean fileExist) {
+
+        String contentType ;
+
+        String codeDescription = statusLine.getStatusLine(statusCode) + "\n";
 
         try {
 
-            /*
-             * 現在のステータスコードでコードによってステータス行のコードとコード説明をセットする
-             */
 
-            StringBuilder responseMessage = statusline.getStatusCode(statusCode);
+            os.write(codeDescription.toString().getBytes());
 
+            if (fileExist) {
+                contentType = "Content-Type: " + fileResource.getContentType() + "\n\n";
+                os.write(contentType.toString().getBytes());
 
-            /*
-             * ステータスコードによってエラーメッセージのContentTypeかセットしてあるのを取得
-             */
-
-            responseMessage.append(fileresources.getContenType(statusCode)).append("\n");
-
-            if (statusCode != statusline.OK) {
-
-                /*
-                 * ステータスコードによって表示するべきメッセージボディを選ぶ
-                 */
-
-                responseMessage.append(statusline.IncorrectStatusCode(statusCode));
-
-                System.out.println(responseMessage);
-
-                os.write(responseMessage.toString().getBytes());
-
+                is = new FileInputStream(file);
+                int i;
+                while ((i = is.read()) != -1) {
+                    os.write(i);
+                }
             } else {
-
-                os.write(responseMessage.toString().getBytes());
-
-                BufferedReader bfr = new BufferedReader(new InputStreamReader(new FileInputStream(fileresources)));
-
-                String line;
-
-                while ((line = bfr.readLine()) != null) {
-
-                    responseMessage.append(line + "\n");
-
-                }
-                System.out.println(responseMessage);
-
-                fileIn = new FileInputStream(fileresources);
-
-                byte[] bytes = new byte[1024];
-
-                while (true) {
-
-                    int r = fileIn.read(bytes);
-
-                    if (r == -1) {
-
-                        break;
-                    }
-
-                    os.write(bytes, 0, r);      //通信ソケットに送信するバイトストリームを取得(ブラウザーに表示)
-                }
-                os.flush();
+                contentType = "Content-Type: " + fileResource.getErrorBodyContentType() + "\n\n";
+                os.write(contentType.toString().getBytes());
+                os.write(errorMessageBody.getErrorMessageBody(statusCode).toString().getBytes());
             }
-        }finally {
-
-            if(fileIn != null) fileIn.close();
-
-            if (os != null) os.close();
-
+        } catch (IOException e) {
+            System.out.println("通信経路が切断されたかファイル書き込みの不具合");
+            e.printStackTrace();
+        } finally {
+            try {
+                os.flush();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            if (is != null)
+                try {
+                    is.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            if (os != null)
+                try {
+                    os.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
         }
+    }
 
+    /**
+     * 下記はテスト時に使用
+     *
+     * @param statusCode        statusCodeに値をセットする
+     */
+
+    public void setStatusCode(int statusCode) {
+        this.statusCode = statusCode;
     }
 
 }
