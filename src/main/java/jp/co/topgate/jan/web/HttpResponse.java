@@ -18,8 +18,6 @@ public class HttpResponse {
 
     private OutputStream os = null;
 
-    private StringBuilder responseMessage = new StringBuilder();
-
     private StatusLine statusLine = null;
 
     private ErrorMessageBody errorMessageBody = null;
@@ -64,9 +62,8 @@ public class HttpResponse {
             os.write(codeDescription.toString().getBytes());
 
             if (fileExist) {
-                contentType = fileResource.getContentType() + "\n\n";
-                responseMessage.append("Content-Type: ").append(contentType);
-                os.write(responseMessage.toString().getBytes());
+                contentType = "Content-Type: " + fileResource.getContentType() + "\n\n";
+                os.write(contentType.toString().getBytes());
 
                 is = new FileInputStream(file);
                 int i;
@@ -74,14 +71,12 @@ public class HttpResponse {
                     os.write(i);
                 }
             } else {
-                contentType = fileResource.getErrorBodyContentType() + "\n\n";
-                responseMessage.append("Content-Type: ").append(contentType);
-                responseMessage.append(errorMessageBody.getErrorMessageBody(statusCode));
-                //System.out.println(responseMessage);
-                os.write(responseMessage.toString().getBytes());
+                contentType = "Content-Type: " + fileResource.getErrorBodyContentType() + "\n\n";
+                os.write(contentType.toString().getBytes());
+                os.write(errorMessageBody.getErrorMessageBody(statusCode).toString().getBytes());
             }
         } catch (IOException e) {
-            System.out.println("ファイルの読み書きに不具合が発生しました");
+            System.out.println("通信経路が切断されたかファイル書き込みの不具合");
             e.printStackTrace();
         } finally {
             try {
