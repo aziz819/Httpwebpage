@@ -1,0 +1,2 @@
+HTTP/1.1 500 Internal Server exception
+<html><head><title>500 Internal Server exception</title></head><body><h1>Internal Server exception</h1><p>サーバー内部の不明なエラーにより表示できません。</p></body></html>
