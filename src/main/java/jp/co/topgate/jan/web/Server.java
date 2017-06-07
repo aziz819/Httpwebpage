@@ -25,7 +25,7 @@ public class Server {
         } catch (IOException e) {
             System.out.println("エラー:サーバ開始時にエラー発生しました:" + e.getMessage());
             e.printStackTrace();
-            System.exit(-1);
+            System.exit(1);
         }
     }
 

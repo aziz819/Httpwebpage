@@ -20,12 +20,8 @@ public class HttpResponseTest {
 
 		@Test(expected = NullPointerException.class)
 		public void キャッチされるか() {
-
-			FileResource fileResource = new FileResource();
-			File file = new File("/index.html");
-
 			OutputStream os = null;
-			new HttpResponse(os, file, fileResource);
+			new HttpResponse(os);
 
 		}
 
@@ -42,17 +38,15 @@ public class HttpResponseTest {
 			File file = new File("./src/test/Testresources/ResponseMessage.txt");
 			file.delete();
 
-			FileResource fileResource = new FileResource();
-
 			OutputStream os = null;
 
 			try {
 
 				os = new FileOutputStream(new File("./src/test/Testresources/ResponseMessage.txt"));
 
-				httpResponse = new HttpResponse(os, file, fileResource);
+				httpResponse = new HttpResponse(os);
 
-				httpResponse.writeResponse(500, false);
+				httpResponse.writeResponse(500, "", false, new FileResource(""));
 
 			} catch (FileNotFoundException e) {
 
@@ -110,6 +104,8 @@ public class HttpResponseTest {
 	public static class 正常処理200OKの時のレスポンスメッセージテスト {
 
 		HttpResponse httpResponse = null ;
+		String filePath = "./src/main/resorces/index.html";
+
 
 		@Before
 		public void OuputStreamとFileResourcesの初期化() {
@@ -117,21 +113,15 @@ public class HttpResponseTest {
 
 			file.delete();
 
-			new FileResource().checkFile("/index.html");
-
-			FileResource fileResource = new FileResource();
-
 			OutputStream os = null;
 
 			try {
-				file = new File("./src/main/resources/index.html");
 
 				os = new FileOutputStream(new File("./src/test/Testresources/ResponseMessage.txt"));
 
-				httpResponse = new HttpResponse(os, file, fileResource);
+				httpResponse = new HttpResponse(os);
 
-				httpResponse.writeResponse(200, true);
-
+				httpResponse.writeResponse(200, filePath, true, new FileResource(""));
 
 			} catch (FileNotFoundException e) {
 
@@ -210,8 +200,6 @@ public class HttpResponseTest {
 
 			file.delete();
 
-			FileResource fileResource = new FileResource();
-
 			OutputStream os = null;
 
 			try {
@@ -219,9 +207,9 @@ public class HttpResponseTest {
 
 				os = new FileOutputStream(new File("./src/test/Testresources/ResponseMessage.txt"));
 
-				httpResponse = new HttpResponse(os, file, fileResource);
+				httpResponse = new HttpResponse(os);
 
-				httpResponse.writeResponse(400, false);
+				httpResponse.writeResponse(400, "", false, new FileResource(""));
 
 			} catch (FileNotFoundException e) {
 
@@ -292,8 +280,6 @@ public class HttpResponseTest {
 
 			file.delete();
 
-			FileResource fileResource = new FileResource();
-
 			OutputStream os = null;
 
 			try {
@@ -301,9 +287,9 @@ public class HttpResponseTest {
 
 				os = new FileOutputStream(new File("./src/test/Testresources/ResponseMessage.txt"));
 
-				httpResponse = new HttpResponse(os, file, fileResource);
+				httpResponse = new HttpResponse(os);
 
-				httpResponse.writeResponse(405, false);
+				httpResponse.writeResponse(405, "", false, new FileResource(""));
 
 			} catch (FileNotFoundException e) {
 
@@ -375,7 +361,7 @@ public class HttpResponseTest {
 
 			file.delete();
 
-			FileResource fileResource = new FileResource();
+			FileResource fileResource = new FileResource("");
 
 			OutputStream os = null;
 
@@ -383,9 +369,9 @@ public class HttpResponseTest {
 
 				os = new FileOutputStream(new File("./src/test/Testresources/ResponseMessage.txt"));
 
-				httpResponse = new HttpResponse(os, file, fileResource);
+				httpResponse = new HttpResponse(os);
 
-				httpResponse.writeResponse(404,false);
+				httpResponse.writeResponse(404, "", false, fileResource);
 
 			} catch (FileNotFoundException e) {
 

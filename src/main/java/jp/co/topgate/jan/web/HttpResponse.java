@@ -1,6 +1,11 @@
 package jp.co.topgate.jan.web;
 
-import java.io.*;
+import com.sun.istack.internal.NotNull;
+
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.Objects;
 
 /**
@@ -24,20 +29,14 @@ public class HttpResponse {
 
     private int statusCode;
 
-    private File file = null;
-
     /**
      *
      * @param os            出力ストリーム
-     * @param file          ファイルパス
-     * @param fileResource  FileResourceクラスのオブジェクト
      */
 
-    public HttpResponse(OutputStream os, File file, FileResource fileResource) {
+    public HttpResponse(OutputStream os) {
         statusLine = new StatusLine();
         errorMessageBody = new ErrorMessageBody();
-        this.file = file;
-        this.fileResource = fileResource;
         this.os = Objects.requireNonNull(os, "出力ストリームがnullになっています");
     }
 
@@ -50,7 +49,10 @@ public class HttpResponse {
      * @param fileExist   ファイルが存在(true)場合にファイルを書き込む、存在しない(false)場合にエラーメッセージボディを書き込む
      */
 
-    public void writeResponse(int statusCode, boolean fileExist) {
+    @NotNull
+    public void writeResponse(int statusCode, String filePath, boolean fileExist, FileResource fileResource) {
+
+        Objects.requireNonNull(filePath);
 
         String contentType ;
 
@@ -65,7 +67,7 @@ public class HttpResponse {
                 contentType = "Content-Type: " + fileResource.getContentType() + "\n\n";
                 os.write(contentType.toString().getBytes());
 
-                is = new FileInputStream(file);
+                is = new FileInputStream(filePath);
                 int i;
                 while ((i = is.read()) != -1) {
                     os.write(i);

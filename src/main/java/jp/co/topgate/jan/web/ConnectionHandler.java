@@ -36,8 +36,8 @@ public class ConnectionHandler {
     public void writeResponse() {
 
         boolean fileExist = false;
-
-        FileResource fileResource = new FileResource();
+        FileResource fileResource = null;
+        String filePath = "";
 
 
         try {
@@ -47,19 +47,21 @@ public class ConnectionHandler {
             httpRequest.parseRequest();
 
             String method = httpRequest.getMethod();
-            String url = httpRequest.getURL();
+            String url = httpRequest.getUrl();
             String version = httpRequest.getVersion();
-
 
             if (!"GET".equals(method) && !"POST".equals(method)) {
                 statusCode = StatusLine.METHOD_NOT_ALLOWED;
             } else if (!("HTTP/1.1".equals(version))) {
                 statusCode = StatusLine.HTTP_VERSION_NOT_SUPPORTED;
             } else {
-                if (!(fileResource.checkFile(url))) {
+
+                fileResource = new FileResource(url);
+
+                if (!(fileResource.checkFile())) {
                     statusCode = StatusLine.NOT_FOUND;
                 } else {
-                    this.file = fileResource.getPath();
+                    filePath = fileResource.getPath();
                     statusCode = StatusLine.OK;
                     fileExist = true;
                 }
@@ -71,14 +73,13 @@ public class ConnectionHandler {
         }
 
 
-        HttpResponse httpResponse = new HttpResponse(os, file, fileResource);
-
+        HttpResponse httpResponse = new HttpResponse(os);
 
         /*
          * レスポンスを書き込む
          */
 
-        httpResponse.writeResponse(statusCode, fileExist);
+        httpResponse.writeResponse(statusCode, filePath, fileExist,fileResource);
     }
 
 }

@@ -47,7 +47,7 @@ public class HttpRequestTest {
         public void 正しく分割できるか() throws Exception {
 
             assertThat(req.getMethod(), is("GET"));
-            assertThat(req.getURL(), is("/index.html"));
+            assertThat(req.getUrl(), is("/index.html"));
             assertThat(req.getVersion(), is("HTTP/1.1"));
             assertThat(req.getGetParameter("title"), is("yudetamago"));
             assertThat(req.getGetParameter("name"), is("kinnikuman"));
@@ -76,7 +76,7 @@ public class HttpRequestTest {
         public void 正しく分割できるか() throws Exception {
 
             assertThat(req.getMethod(), is("POST"));
-            assertThat(req.getURL(), is("/index.html"));
+            assertThat(req.getUrl(), is("/index.html"));
             assertThat(req.getVersion(), is("HTTP/1.1"));
             assertThat(req.getPostparameter("title"), is("yudetamago"));
             assertThat(req.getPostparameter("name"), is("kinnikuman"));

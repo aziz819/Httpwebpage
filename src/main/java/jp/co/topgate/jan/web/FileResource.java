@@ -19,7 +19,7 @@ public class FileResource {
 
     private static String url;
 
-    static final Map<String, String> contentType = new HashMap<>();
+    private static final Map<String, String> contentType = new HashMap<>();
 
     static {
 
@@ -40,16 +40,23 @@ public class FileResource {
 
     }
 
-
     /**
-     * @param url
-     * @return ファイル存在すればtrueを存在しなければfalseを返す
+     *
+     * @param url  Fileクラスコンストラクタにパスを指定
      */
 
-    public boolean checkFile(String url) {
+    public FileResource(String url) {
 
         file = new File(rootPath + url);
         this.url = url;
+    }
+
+
+    /**
+     * @return ファイル存在すればtrueを存在しなければfalseを返す
+     */
+
+    public boolean checkFile() {
 
         if (file.exists() || file.isFile()) {
             return true;
@@ -61,8 +68,9 @@ public class FileResource {
      * @return ファイルが存在した時にそのファイルパスを返す
      */
 
-    public File getPath() {
-        return file;
+    public String getPath() {
+
+       return rootPath + url ;
     }
 
 

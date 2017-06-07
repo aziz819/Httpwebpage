@@ -40,8 +40,8 @@ public class StatusLineTest {
         }
 
         @Test
-        public void コード505の場合(){
-            assertThat(statusLine.getStatusLine(505),is("HTTP/1.1 505 Http Version Not Supported"));
+        public void コード505の場合() {
+            assertThat(statusLine.getStatusLine(505), is("HTTP/1.1 505 Http Version Not Supported"));
         }
     }
 }

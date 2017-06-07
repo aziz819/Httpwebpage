@@ -197,7 +197,7 @@ public class HttpRequest {
      * @return      URLを返す
      */
 
-    public String getURL() {
+    public String getUrl() {
 
        if (url.endsWith("/")) {
            url = url + "/index.html";
@@ -249,14 +249,6 @@ public class HttpRequest {
         }else{
             return null;
         }
-    }
-
-    /**
-     * @param requestLine requestLineにNULLをセットする
-     */
-
-    public void setRequestLine(String requestLine) {
-        this.requestLine = requestLine;
     }
 
     /**
