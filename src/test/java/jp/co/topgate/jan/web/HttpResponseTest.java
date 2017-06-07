@@ -104,14 +104,13 @@ public class HttpResponseTest {
 	public static class 正常処理200OKの時のレスポンスメッセージテスト {
 
 		HttpResponse httpResponse = null ;
-		String filePath = "./src/main/resorces/index.html";
 
 
 		@Before
 		public void OuputStreamとFileResourcesの初期化() {
 			File file = new File("./src/test/Testresources/ResponseMessage.txt");
-
 			file.delete();
+			String filePath = "./src/main/resources/index.html";
 
 			OutputStream os = null;
 
@@ -121,7 +120,7 @@ public class HttpResponseTest {
 
 				httpResponse = new HttpResponse(os);
 
-				httpResponse.writeResponse(200, filePath, true, new FileResource(""));
+				httpResponse.writeResponse(200, filePath, true, new FileResource("/index.html"));
 
 			} catch (FileNotFoundException e) {
 

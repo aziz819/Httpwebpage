@@ -1,7 +1,5 @@
 package jp.co.topgate.jan.web;
 
-import com.sun.istack.internal.NotNull;
-
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -49,7 +47,6 @@ public class HttpResponse {
      * @param fileExist   ファイルが存在(true)場合にファイルを書き込む、存在しない(false)場合にエラーメッセージボディを書き込む
      */
 
-    @NotNull
     public void writeResponse(int statusCode, String filePath, boolean fileExist, FileResource fileResource) {
 
         Objects.requireNonNull(filePath);
