@@ -6,6 +6,7 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
 /**
+ * FileResorceクラスのホワイトボックステスト
  * Created by aizijiang.aerken on 2017/05/15.
  */
 

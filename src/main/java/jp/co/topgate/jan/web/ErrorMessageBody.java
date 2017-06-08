@@ -10,8 +10,8 @@ public class ErrorMessageBody {
 
     /**
      *
-     * @param statusCode
-     * @return      エラーメッセージボディを返す
+     * @param statusCode  ステータスコード
+     * @return      　　　 エラーメッセージボディを返す
      */
 
     public String getErrorMessageBody(int statusCode) {

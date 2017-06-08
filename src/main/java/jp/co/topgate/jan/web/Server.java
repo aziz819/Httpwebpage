@@ -64,10 +64,7 @@ public class Server {
 
                 clientSocket.close();
 
-            } catch (IOException e) {
-                System.out.println("エラー:" + e.getMessage());
-                e.printStackTrace();
-            } catch (RuntimeException e) {
+            } catch (IOException | RuntimeException e) {
                 System.out.println("エラー:" + e.getMessage());
                 e.printStackTrace();
             }

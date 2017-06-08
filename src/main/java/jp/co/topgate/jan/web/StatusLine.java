@@ -42,8 +42,8 @@ public class StatusLine {
 
     /**
      *
-     * @param statusCode
-     * @return ステータスラインを作成して返す
+     * @param statusCode    ステータスコード
+     * @return              ステータスラインを作成して返す
      */
 
     public String getStatusLine(int statusCode) {

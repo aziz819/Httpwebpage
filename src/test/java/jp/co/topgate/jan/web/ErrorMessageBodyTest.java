@@ -6,8 +6,10 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
 /**
+ * ErrorMessageBodyクラスのホワイトボックステスト
  * Created by aizijiang.aerken on 2017/05/22.
  */
+
 public class ErrorMessageBodyTest {
 
     public static class ステータスコード200以外の時エラーメッセージボディ確認テスト {

@@ -2,12 +2,12 @@ package jp.co.topgate.jan.web;
 
 import jp.co.topgate.jan.web.exception.RequestParseException;
 
-import java.io.File;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Objects;
 
-/** HttpRequestからの解析結果によってHttpResponseに表示すべきものを渡しています
+/**
+ * HttpRequestからの解析結果によってHttpResponseに表示すべきものを渡しています
  * Created by aizijiang.aerken on 2017/04/13.
  *
  * @author  jan
@@ -16,10 +16,9 @@ import java.util.Objects;
 
 public class ConnectionHandler {
 
-    private int statusCode ;
     private InputStream is = null;
     private OutputStream os = null;
-    File file = null;
+
     /**
      *
      * @param is        入力ストリーム
@@ -35,9 +34,8 @@ public class ConnectionHandler {
 
     public void writeResponse() {
 
-        boolean fileExist = false;
         FileResource fileResource = null;
-        String filePath = "";
+        int statusCode = StatusLine.OK;
 
 
         try {
@@ -55,15 +53,9 @@ public class ConnectionHandler {
             } else if (!("HTTP/1.1".equals(version))) {
                 statusCode = StatusLine.HTTP_VERSION_NOT_SUPPORTED;
             } else {
-
                 fileResource = new FileResource(url);
-
                 if (!(fileResource.checkFile())) {
                     statusCode = StatusLine.NOT_FOUND;
-                } else {
-                    filePath = fileResource.getPath();
-                    statusCode = StatusLine.OK;
-                    fileExist = true;
                 }
             }
         } catch (RequestParseException e) {
@@ -79,7 +71,7 @@ public class ConnectionHandler {
          * レスポンスを書き込む
          */
 
-        httpResponse.writeResponse(statusCode, filePath, fileExist,fileResource);
+        httpResponse.writeResponse(statusCode, fileResource);
     }
 
 }

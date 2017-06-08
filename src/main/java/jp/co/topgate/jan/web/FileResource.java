@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
+ * ファイルパスを設定してファイルをチェックをして結果を返す
  * Created by aizijiang.aerken on 2017/05/10.
  *
  * @author jan
@@ -17,7 +18,7 @@ public class FileResource {
 
     private File file = null;
 
-    private static String url;
+    private String url;
 
     private static final Map<String, String> contentType = new HashMap<>();
 
@@ -58,7 +59,7 @@ public class FileResource {
 
     public boolean checkFile() {
 
-        if (file.exists() || file.isFile()) {
+        if (file.exists() && file.isFile()) {
             return true;
         }
         return false;

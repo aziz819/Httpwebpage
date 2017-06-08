@@ -10,6 +10,7 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
 /**
+ * HttpResponseクラスのホワイトボックステスト
  * Created by aizijiang.aerken on 2017/05/12.
  */
 
@@ -30,71 +31,29 @@ public class HttpResponseTest {
 
 	public static class サーバ内部エラー確認テスト {
 
-		HttpResponse httpResponse = null;
-
 		@Before
-		public void setUpOuputStreamとFileResources() {
+		public void setUpOuputStreamとFileResources() throws IOException {
 
 			File file = new File("./src/test/Testresources/ResponseMessage.txt");
 			file.delete();
 
-			OutputStream os = null;
+			try (OutputStream os = new FileOutputStream(new File("./src/test/Testresources/ResponseMessage.txt"));) {
 
-			try {
-
-				os = new FileOutputStream(new File("./src/test/Testresources/ResponseMessage.txt"));
-
-				httpResponse = new HttpResponse(os);
-
-				httpResponse.writeResponse(500, "", false, new FileResource(""));
-
-			} catch (FileNotFoundException e) {
-
-				e.printStackTrace();
-
-				fail("エラー：指定したファイルが見つかりませんでした。");
-
-			} finally {
-
-				try {
-					if(os != null)os.close();
-				} catch (IOException e) {
-					e.printStackTrace();
-					fail("ストリームクローズに不具合が発生しました。");
-				}
+				HttpResponse httpResponse = new HttpResponse(os);
+				httpResponse.writeResponse(500, new FileResource(""));
 			}
 		}
 
 		@Test
-		public void レスポンスメッセージ() {
+		public void レスポンスメッセージ() throws IOException {
 
-			InputStream is = null;
-
-			try {
-				try {
-					is = new FileInputStream(new File("./src/test/Testresources/ResponseMessage.txt"));
-				} catch (FileNotFoundException e) {
-					e.printStackTrace();
-					fail("指定したファイルが見つかりません");
-				}
+			try (InputStream is = new FileInputStream(new File("./src/test/Testresources/ResponseMessage.txt"));) {
 
 				BufferedReader bf = new BufferedReader(new InputStreamReader(is));
-
-				try {
-					assertThat(bf.readLine(), is("HTTP/1.1 500 Internal Server Error"));
-					assertThat(bf.readLine(), is("Content-Type: text/html; charset=utf-8"));
-				} catch (IOException e) {
-					e.printStackTrace();
-					fail("BufferedReader読み込みエラー");
-				}
-
-			} finally {
-				if (is != null) try {
-					is.close();
-				} catch (IOException e) {
-					e.printStackTrace();
-					fail("ストリームクローズに不具合が発生しました。");
-				}
+				assertThat(bf.readLine(), is("HTTP/1.1 500 Internal Server Error"));
+				assertThat(bf.readLine(), is("Content-Type: text/html; charset=utf-8"));
+			} catch (FileNotFoundException e) {
+				fail("読み込みたいのファイルが存在しない");
 			}
 		}
 
@@ -103,86 +62,44 @@ public class HttpResponseTest {
 
 	public static class 正常処理200OKの時のレスポンスメッセージテスト {
 
-		HttpResponse httpResponse = null ;
-
-
 		@Before
-		public void OuputStreamとFileResourcesの初期化() {
+		public void OuputStreamとFileResourcesの初期化() throws IOException {
+
 			File file = new File("./src/test/Testresources/ResponseMessage.txt");
 			file.delete();
-			String filePath = "./src/main/resources/index.html";
 
-			OutputStream os = null;
+			try (OutputStream os = new FileOutputStream(new File("./src/test/Testresources/ResponseMessage.txt"));) {
 
-			try {
-
-				os = new FileOutputStream(new File("./src/test/Testresources/ResponseMessage.txt"));
-
-				httpResponse = new HttpResponse(os);
-
-				httpResponse.writeResponse(200, filePath, true, new FileResource("/index.html"));
-
-			} catch (FileNotFoundException e) {
-
-				e.printStackTrace();
-
-				fail("エラー：指定したファイルが見つかりませんでした。");
-
-			} finally {
-
-				try {
-					if(os != null)os.close();
-				} catch (IOException e) {
-					e.printStackTrace();
-					fail("ストリームクローズに不具合が発生しました。");
-				}
+				HttpResponse httpResponse = new HttpResponse(os);
+				httpResponse.writeResponse(200, new FileResource("/index.html"));
 			}
 		}
 
 		@Test
 		public void レスポンスメッセージ() {
 
-			InputStream is = null;
-
-			try {
-				try {
-					is = new FileInputStream(new File("./src/test/Testresources/ResponseMessage.txt"));
-				} catch (FileNotFoundException e) {
-					e.printStackTrace();
-					fail("指定したファイルが見つかりません");
-				}
+			try (InputStream is = new FileInputStream(new File("./src/test/Testresources/ResponseMessage.txt"));) {
 
 				BufferedReader bf = new BufferedReader(new InputStreamReader(is));
 
-				try {
-					assertThat(bf.readLine(), is("HTTP/1.1 200 OK"));
+				assertThat(bf.readLine(), is("HTTP/1.1 200 OK"));
 
-					assertThat(bf.readLine(), is("Content-Type: text/html; charset=utf-8"));
+				assertThat(bf.readLine(), is("Content-Type: text/html; charset=utf-8"));
 
-					assertThat(bf.readLine(), is(""));
+				assertThat(bf.readLine(), is(""));
 
-					assertThat(bf.readLine(), is("<html>"));
+				assertThat(bf.readLine(), is("<html>"));
 
-					assertThat(bf.readLine(), is("<meta charset=\"utf-8\">"));
+				assertThat(bf.readLine(), is("<meta charset=\"utf-8\">"));
 
-					assertThat(bf.readLine(), is("<head>"));
+				assertThat(bf.readLine(), is("<head>"));
 
-					assertThat(bf.readLine(), is("<title>my index</title>"));
+				assertThat(bf.readLine(), is("<title>my index</title>"));
 
-				} catch (IOException e) {
-					e.printStackTrace();
-					fail("BuffredReader読み込みエラー");
-				}
-
-
-			} finally {
-				if (is != null) try {
-					is.close();
-				} catch (IOException e) {
-					e.printStackTrace();
-					fail("ストリームクローズに不具合が発生しました。");
-
-				}
+			} catch (FileNotFoundException e) {
+				fail("読み込みたいのファイルが存在しない");
+			} catch (IOException e) {
+				fail("BufferedReaderファイルの読み込みの不具合");
 			}
 		}
 
@@ -191,138 +108,58 @@ public class HttpResponseTest {
 
 	public static class BadRequestの時のレスポンスメッセージテスト {
 
-		HttpResponse httpResponse = null ;
-
 		@Before
-		public void OuputStreamとFileResourcesの初期化() {
-			File file = new File("./src/test/Testresources/ResponseMessage.txt");
+		public void OuputStreamとFileResourcesの初期化() throws IOException {
 
+			File file = new File("./src/test/Testresources/ResponseMessage.txt");
 			file.delete();
 
-			OutputStream os = null;
+			try (OutputStream os = new FileOutputStream(new File("./src/test/Testresources/ResponseMessage.txt"));) {
 
-			try {
-
-
-				os = new FileOutputStream(new File("./src/test/Testresources/ResponseMessage.txt"));
-
-				httpResponse = new HttpResponse(os);
-
-				httpResponse.writeResponse(400, "", false, new FileResource(""));
-
-			} catch (FileNotFoundException e) {
-
-				e.printStackTrace();
-
-				fail("エラー：指定したファイルが見つかりませんでした。");
-
-			} catch (NullPointerException e) {
-
-				e.printStackTrace();
-
-				fail("エラー：osがnullになっています。");
-			}finally{
-				if(os != null) try {
-					os.close();
-				} catch (IOException e) {
-					e.printStackTrace();
-					fail("ストリームクローズに不具合が発生しました。");
-				}
+				HttpResponse httpResponse = new HttpResponse(os);
+				httpResponse.writeResponse(400, new FileResource(""));
 			}
 		}
 
 		@Test
-		public void レスポンスメッセージ(){
+		public void レスポンスメッセージ() throws IOException {
 
-			InputStream is = null;
-
-			try {
-				try {
-					is = new FileInputStream(new File("./src/test/Testresources/ResponseMessage.txt"));
-				} catch (FileNotFoundException e) {
-					e.printStackTrace();
-					fail("指定したファイルが見つかりません");
-				}
+			try (InputStream is = new FileInputStream(new File("./src/test/Testresources/ResponseMessage.txt"));) {
 
 				BufferedReader bf = new BufferedReader(new InputStreamReader(is));
 
 				try {
 					assertThat(bf.readLine(), is("HTTP/1.1 400 Bad Request"));
 					assertThat(bf.readLine(), is("Content-Type: text/html; charset=utf-8"));
+				} catch (FileNotFoundException e) {
+					fail("読み込みたいのファイルが存在しない");
 				} catch (IOException e) {
-					e.printStackTrace();
-					fail("BufferedReader読み込みエラー");
-				}
-
-
-			} finally {
-				if (is != null) try {
-					is.close();
-				} catch (IOException e) {
-					e.printStackTrace();
-					fail("ストリームクローズに不具合が発生しました。");
+					fail("BufferedReaderファイルの読み込みの不具合");
 				}
 			}
 		}
-
 	}
 
 
 	public static class 実装されていないHttpメソッドの時のレスポンスメッセージテスト {
 
-		HttpResponse httpResponse = null ;
-
 		@Before
-		public void OuputStreamとFileResourcesの初期化() {
+		public void OuputStreamとFileResourcesの初期化() throws IOException {
 
 			File file = new File("./src/test/Testresources/ResponseMessage.txt");
-
 			file.delete();
 
-			OutputStream os = null;
+			try (OutputStream os = new FileOutputStream(new File("./src/test/Testresources/ResponseMessage.txt"));) {
 
-			try {
-
-
-				os = new FileOutputStream(new File("./src/test/Testresources/ResponseMessage.txt"));
-
-				httpResponse = new HttpResponse(os);
-
-				httpResponse.writeResponse(405, "", false, new FileResource(""));
-
-			} catch (FileNotFoundException e) {
-
-				e.printStackTrace();
-
-				fail("エラー：指定したファイルが見つかりませんでした。");
-
-			} catch (NullPointerException e) {
-
-				e.printStackTrace();
-
-				fail("エラー：osがnullになっています。");
-			}finally{
-				if(os != null) try {
-					os.close();
-				} catch (IOException e) {
-					e.printStackTrace();
-					fail("ストリームクローズに不具合が発生しました。");
-				}
+				HttpResponse httpResponse = new HttpResponse(os);
+				httpResponse.writeResponse(405, new FileResource(""));
 			}
 		}
 
 		@Test
-		public void レスポンスメッセージ(){
+		public void レスポンスメッセージ() throws IOException {
 
-			InputStream is = null;
-
-			try {
-				try {
-					is = new FileInputStream(new File("./src/test/Testresources/ResponseMessage.txt"));
-				} catch (FileNotFoundException e) {
-					e.printStackTrace();
-					fail("指定したファイルが見つかりません");
-				}
+			try (InputStream is = new FileInputStream(new File("./src/test/Testresources/ResponseMessage.txt"));) {
 
 				BufferedReader bf = new BufferedReader(new InputStreamReader(is));
 
@@ -330,99 +167,43 @@ public class HttpResponseTest {
 					assertThat(bf.readLine(), is("HTTP/1.1 405 Method Not Allowed"));
 					assertThat(bf.readLine(), is("Content-Type: text/html; charset=utf-8"));
 
-				} catch (IOException e) {
-					e.printStackTrace();
-					fail("BufferedReader読み込みエラー");
-				}
-
-
-			} finally {
-				if (is != null) try {
-					is.close();
-				} catch (IOException e) {
-					e.printStackTrace();
-					fail("ストリームクローズに不具合が発生しました。");
-				}
-			}
-		}
-
-	}
-
-
-	public static class ファイル存在しない時のレスポンスメッセージテスト {
-
-		HttpResponse httpResponse = null ;
-
-		@Before
-		public void OuputStreamとFileResourcesの初期化() {
-
-			File file = new File("./src/test/Testresources/ResponseMessage.txt");
-
-			file.delete();
-
-			FileResource fileResource = new FileResource("");
-
-			OutputStream os = null;
-
-			try {
-
-				os = new FileOutputStream(new File("./src/test/Testresources/ResponseMessage.txt"));
-
-				httpResponse = new HttpResponse(os);
-
-				httpResponse.writeResponse(404, "", false, fileResource);
-
-			} catch (FileNotFoundException e) {
-
-				e.printStackTrace();
-
-				fail("エラー：指定したファイルが見つかりませんでした。");
-
-			} catch (NullPointerException e) {
-
-				e.printStackTrace();
-
-				fail("エラー：osがnullになっています。");
-			}finally{
-				if(os != null) try {
-					os.close();
-				} catch (IOException e) {
-					e.printStackTrace();
-					fail("ストリームクローズに不具合が発生しました。");
-				}
-			}
-		}
-
-		@Test
-		public void レスポンスメッセージ(){
-
-			InputStream is = null;
-
-			try {
-				try {
-					is = new FileInputStream(new File("./src/test/Testresources/ResponseMessage.txt"));
 				} catch (FileNotFoundException e) {
-					e.printStackTrace();
-					fail("指定したファイルが見つかりません");
+					fail("読み込みたいのファイルが存在しない");
+				} catch (IOException e) {
+					fail("BufferedReaderファイルの読み込みの不具合");
 				}
+			}
+		}
 
-				BufferedReader bf = new BufferedReader(new InputStreamReader(is));
 
-				try {
+		public static class ファイル存在しない時のレスポンスメッセージテスト {
+
+			@Before
+			public void OuputStreamとFileResourcesの初期化() throws IOException {
+
+				File file = new File("./src/test/Testresources/ResponseMessage.txt");
+				file.delete();
+
+				try (OutputStream os = new FileOutputStream(new File("./src/test/Testresources/ResponseMessage.txt"));) {
+
+					HttpResponse httpResponse = new HttpResponse(os);
+					httpResponse.writeResponse(404, new FileResource(""));
+				}
+			}
+
+			@Test
+			public void レスポンスメッセージ() throws IOException {
+
+				try (InputStream is = new FileInputStream(new File("./src/test/Testresources/ResponseMessage.txt"));) {
+
+					BufferedReader bf = new BufferedReader(new InputStreamReader(is));
+
 					assertThat(bf.readLine(), is("HTTP/1.1 404 Not Found"));
 					assertThat(bf.readLine(), is("Content-Type: text/html; charset=utf-8"));
-
+				} catch (FileNotFoundException e) {
+					fail("読み込みたいのファイルが存在しない");
 				} catch (IOException e) {
-					e.printStackTrace();
-					fail("BufferedReader読み込みエラー");
-				}
-
-			} finally {
-				if (is != null) try {
-					is.close();
-				} catch (IOException e) {
-					e.printStackTrace();
-					fail("ストリームクローズに不具合が発生しました。");
+					fail("BufferedReaderファイルの読み込みの不具合");
 				}
 			}
 		}

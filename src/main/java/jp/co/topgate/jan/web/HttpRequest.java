@@ -8,8 +8,10 @@ import java.util.Map;
 import java.util.Objects;
 
 /**
+ *  リクエストを分析し、結果を返す
  * Created by aizijiang.aerken on 2017/04/13.
  */
+
 public class HttpRequest {
 
     private static final int REQUEST_LINE_SIZE = 3;                       // リクエストラインの分割結果3つか
@@ -27,8 +29,6 @@ public class HttpRequest {
     private static final String QUERIES_PARAMETERS_SEPARATE = "&";        // パラメーターとパラメーターを分割
 
     private static final String GET_QUERY_QUEASTION_SEPARATE = "\\?";     // uriとクエリーを分割
-
-    private static String headerLine;                                    // リクエストヘッダーを一行ずつ代入する一時的な変数
 
     private BufferedReader bufferedReader;
 
@@ -103,8 +103,6 @@ public class HttpRequest {
             throw new RequestParseException("リクエスト行が空かnullになっています");
         }
 
-        //System.out.println(requestLine);
-
         String[] requestLineElement = requestLine.split(REQUEST_LINE_SEPARATOR);                   // REQUEST_LINE_SEPARATOR == " " / 一行目を空白のところから三つに分ける
 
 
@@ -127,6 +125,8 @@ public class HttpRequest {
 
     private void parseRequestHeaders() {
 
+        String headerLine;
+
         try {
             while ((headerLine = bufferedReader.readLine()) != null && !headerLine.equals("")) {    // 二行目からヘッダーフィールドと値を読み取る
 
@@ -136,7 +136,6 @@ public class HttpRequest {
                     header[1] = header[1].trim();
                     headersMap.put(header[0], header[1]);
                 }
-                //System.out.println(headerLine);
             }
         } catch (IOException e) {
             throw new RequestParseException("リクエストヘッダーの読み込みに不具合が発生しました");
@@ -216,14 +215,10 @@ public class HttpRequest {
     }
 
 
-    /**
-     *  下記はテスト確認時に使用
-     */
-
 
     /**
      *
-     * @param name
+     * @param name 　パラメーター属性
      * @return      パラメーターの値を返す、一致しなかった場合はnullを返す
      */
 
@@ -238,7 +233,7 @@ public class HttpRequest {
 
     /**
      *
-     * @param name
+     * @param name  パラメーター属性
      * @return      パラメーターの値を返す、一致しなかった場合はnullを返す
      */
 

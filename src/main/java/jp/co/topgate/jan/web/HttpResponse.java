@@ -17,19 +17,15 @@ public class HttpResponse {
 
     private InputStream is = null;
 
-    private FileResource fileResource = null;
-
     private OutputStream os = null;
 
     private StatusLine statusLine = null;
 
     private ErrorMessageBody errorMessageBody = null;
 
-    private int statusCode;
-
     /**
      *
-     * @param os            出力ストリーム
+     * @param os  出力ストリーム
      */
 
     public HttpResponse(OutputStream os) {
@@ -44,12 +40,9 @@ public class HttpResponse {
      * ステータス行とContent-Typeを別クラスで組み立てさせてもらう
      *
      * @param statusCode  ステータスコード
-     * @param fileExist   ファイルが存在(true)場合にファイルを書き込む、存在しない(false)場合にエラーメッセージボディを書き込む
      */
 
-    public void writeResponse(int statusCode, String filePath, boolean fileExist, FileResource fileResource) {
-
-        Objects.requireNonNull(filePath);
+    public void writeResponse(int statusCode, FileResource fileResource) {
 
         String contentType ;
 
@@ -57,22 +50,21 @@ public class HttpResponse {
 
         try {
 
+            os.write(codeDescription.getBytes());
 
-            os.write(codeDescription.toString().getBytes());
-
-            if (fileExist) {
+            if (fileResource.checkFile()) {
                 contentType = "Content-Type: " + fileResource.getContentType() + "\n\n";
-                os.write(contentType.toString().getBytes());
+                os.write(contentType.getBytes());
 
-                is = new FileInputStream(filePath);
+                is = new FileInputStream(fileResource.getPath());
                 int i;
                 while ((i = is.read()) != -1) {
                     os.write(i);
                 }
             } else {
                 contentType = "Content-Type: " + fileResource.getErrorBodyContentType() + "\n\n";
-                os.write(contentType.toString().getBytes());
-                os.write(errorMessageBody.getErrorMessageBody(statusCode).toString().getBytes());
+                os.write(contentType.getBytes());
+                os.write(errorMessageBody.getErrorMessageBody(statusCode).getBytes());
             }
         } catch (IOException e) {
             System.out.println("通信経路が切断されたかファイル書き込みの不具合");
@@ -97,15 +89,4 @@ public class HttpResponse {
                 }
         }
     }
-
-    /**
-     * 下記はテスト時に使用
-     *
-     * @param statusCode        statusCodeに値をセットする
-     */
-
-    public void setStatusCode(int statusCode) {
-        this.statusCode = statusCode;
-    }
-
 }
