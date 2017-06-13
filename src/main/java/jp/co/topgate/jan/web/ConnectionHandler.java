@@ -48,7 +48,7 @@ public class ConnectionHandler {
             String url = httpRequest.getUrl();
             String version = httpRequest.getVersion();
 
-            if (!"GET".equals(method) && !"POST".equals(method)) {
+            if (!"GET".equals(method) || !"POST".equals(method)) {
                 statusCode = StatusLine.METHOD_NOT_ALLOWED;
             } else if (!("HTTP/1.1".equals(version))) {
                 statusCode = StatusLine.HTTP_VERSION_NOT_SUPPORTED;

@@ -59,10 +59,7 @@ public class FileResource {
 
     public boolean checkFile() {
 
-        if (file.exists() && file.isFile()) {
-            return true;
-        }
-        return false;
+        return (file.exists() && file.isFile());
     }
 
     /**
