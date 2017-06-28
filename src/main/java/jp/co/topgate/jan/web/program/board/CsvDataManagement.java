@@ -17,7 +17,7 @@ class CsvDataManagement {
     /**
      * Csvファイルの中身を一行ずつ読んでモデルにセットしている
      *
-     * @return DataModelの複数のオブジェクトを返す
+     * @return DataModelのオブジェクトを返す
      */
 
     static List<DataModel> getAllmessage() {
@@ -59,7 +59,7 @@ class CsvDataManagement {
     /**
      * 新しい投稿をcsvファイルに書き込む
      *
-     * @param newDataModel DataModelの複数のオブジェクトを持つList
+     * @param newDataModel DataModelの複数のオブジェクト
      */
 
     static void addNewDate(List<DataModel> newDataModel) {
@@ -146,6 +146,7 @@ class CsvDataManagement {
                 allMessage.remove(deleteMessage);
 
                 addNewDate(allMessage);
+                return;
             }
         }
     }
