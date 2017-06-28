@@ -50,6 +50,7 @@ public class Server {
                  */
 
                 Socket clientSocket = serverSocket.accept();
+
                 ConnectionHandler connectionHandler = new ConnectionHandler(clientSocket.getInputStream(), clientSocket.getOutputStream());
 
                 /*

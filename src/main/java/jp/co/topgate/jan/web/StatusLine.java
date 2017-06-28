@@ -10,7 +10,7 @@ import java.util.Map;
  * @author jan
  */
 
-public class StatusLine {
+public abstract class StatusLine {
 
     public static final int OK = 200 ;
 
@@ -29,15 +29,13 @@ public class StatusLine {
 
     static final Map<Integer, String> codeDescription = new HashMap<Integer,String>();
 
-    public StatusLine(){
-
+    static {
         codeDescription.put(OK, "OK");
         codeDescription.put(NOT_FOUND, "Not Found");
         codeDescription.put(BAD_REQUEST, "Bad Request");
         codeDescription.put(METHOD_NOT_ALLOWED, "Method Not Allowed");
         codeDescription.put(INTERNEL_SERVER_ERROR, "Internal Server Error");
         codeDescription.put(HTTP_VERSION_NOT_SUPPORTED, "Http Version Not Supported");
-
     }
 
     /**
@@ -46,7 +44,7 @@ public class StatusLine {
      * @return              ステータスラインを作成して返す
      */
 
-    public String getStatusLine(int statusCode) {
+    public static String getStatusLine(int statusCode) {
         String[] statusLine = {HTTP_VERSION, String.valueOf(statusCode), codeDescription.get(statusCode)};
         return String.join(" ", statusLine);
     }

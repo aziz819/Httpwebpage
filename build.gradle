@@ -23,9 +23,14 @@ dependencies {
     // This dependency is found on compile classpath of this component and consumers.
     compile 'com.google.guava:guava:20.0'
 
+    // https://mvnrepository.com/artifact/org.springframework.security/spring-security-crypto
+    compile group: 'org.springframework.security', name: 'spring-security-crypto', version: '3.1.0.RELEASE'
+
     // Use JUnit test framework
     testCompile 'junit:junit:4.12'
 }
+
+
 
 // Define the main class for the application
 //下面的意思就是，让gradle运行的packege里面的class

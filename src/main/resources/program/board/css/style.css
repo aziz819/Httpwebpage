@@ -1,0 +1,136 @@
+@charset "UTF-8";
+
+body {
+	background:#FFF url('../img/18.jpg') repeat;
+}
+h3{
+    letter-spacing: 0.5em;
+}
+#textmaru table{
+    font-size:30px;
+    border-style:none;
+    margin-bottom:10px;
+}
+#textmaru table tr th{
+    background-color:SandyBrown;
+    padding-left:10px;
+    padding-right:10px;
+    color:white;
+    width:5px;
+    height:5px;
+    -webkit-border-radius:50%;-moz-border-radius:50%;border-radius: 50%;
+}
+.ForFirstTimePosts{
+    width:500px;
+    border: 3px orange solid;
+    border-radius: 15%;
+    padding:15px 15px;
+    line-height: 2em;
+}
+.ForFirstTimePosts textarea, input[type=text] {
+    padding:5px;
+    border:2px solid SandyBrown;
+    background-color:transparent;
+    -webkit-border-radius: 5px;
+    border-radius: 5px;
+}
+
+.ForFirstTimePosts input[type=password]{
+    padding:5px;
+    border:2px solid SandyBrown;
+    background-color:transparent;
+    -webkit-border-radius: 5px;
+    border-radius: 5px;
+}
+
+.ForFirstTimePosts input[type=submit] {
+    padding:5px 15px;
+    background:SandyBrown;
+    border:0 none;
+    cursor:pointer;
+    -webkit-border-radius: 5px;
+    border-radius: 5px;
+}
+hr.besthr{
+  border: hidden;
+  margin:20px 20px;
+  height:2px;
+  border-top: 5px double SandyBrown;
+  text-align: center;
+}
+hr:after {
+  content: '\2665';
+  display: inline-block;
+  position: relative;
+  margin-bottom:-50px;
+  top: -17px;
+  background: transparent;
+  color: SandyBrown;
+  font-size: 18px;
+}
+/*hr.besthr {
+  border: 0;
+  height: 1px;
+  background-image: -webkit-linear-gradient(left, #f0f0f0, SandyBrown, #f0f0f0);
+  background-image: -moz-linear-gradient(left, #f0f0f0, SandyBrown, #f0f0f0);
+  background-image: -ms-linear-gradient(left, #f0f0f0, SandyBrown, #f0f0f0);
+  background-image: -o-linear-gradient(left, #f0f0f0, SandyBrown, #f0f0f0);
+}*/
+.form h3{
+    letter-spacing: 1em;
+}
+
+.outer {
+    width : 430px;
+    padding:10px 10px;
+}
+.in table{
+    width:100%;
+    padding:10px 10px;
+    table-layout:fixed;
+}
+.in td{
+    word-wrap: break-word;
+    border-radius: 10%;
+    text-align:center;
+}
+.in th {
+    width:100px;
+    text-align:center;
+    font-weight:bold;
+    font-family: "ＭＳ Ｐ明朝","ＭＳ 明朝",serif;
+}
+.in input[type=password]{
+    padding:5px;
+    border:2px solid CornflowerBlue;
+    background-color:transparent;
+    -webkit-border-radius: 5px;
+    border-radius: 5px;
+}
+
+.in input[type=submit] {
+    padding:5px 15px;
+    background:CornflowerBlue;
+    border:0 none;
+    cursor:pointer;
+    -webkit-border-radius: 5px;
+    border-radius: 5px;
+}
+#time{
+    text-align:center;
+}
+
+#maru table{
+    width:auto;
+    padding-left:35px;
+    border-style:none;
+}
+#maru table tr th{
+    background-color:CornflowerBlue;
+    color:white;
+    width:20px;
+    height:20px;
+    -webkit-border-radius:50%;-moz-border-radius:50%;border-radius: 50%;
+}
+
+

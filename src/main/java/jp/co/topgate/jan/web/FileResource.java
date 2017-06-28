@@ -1,6 +1,9 @@
 package jp.co.topgate.jan.web;
 
 import java.io.File;
+import java.io.IOException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -14,7 +17,11 @@ import java.util.Map;
 
 public class FileResource {
 
-    private static final String rootPath = "./src/main/resources";
+    private static final String ROOT_PATH = "./src/main/resources";
+
+    private static final String WEB_APP = "/program/board/";
+
+    private static final String FIRST_PAGE_NAME = "index.html";
 
     private File file = null;
 
@@ -43,13 +50,12 @@ public class FileResource {
 
     /**
      *
-     * @param url  Fileクラスコンストラクタにパスを指定
+     * @param uri  Fileクラスコンストラクタにパスを指定
      */
 
-    public FileResource(String url) {
-
-        file = new File(rootPath + url);
-        this.url = url;
+    FileResource(String uri) {
+        this.url = getFirstPagePath(getFirstPage(uri));
+        file = new File(url);
     }
 
 
@@ -68,7 +74,7 @@ public class FileResource {
 
     public String getPath() {
 
-       return rootPath + url ;
+        return url;
     }
 
 
@@ -92,10 +98,37 @@ public class FileResource {
     }
 
     /**
-     * @return エラーのメッセージボディのContent-Typeを返す
+     * @return htmlのContent-Typeを返す
      */
 
-    public String getErrorBodyContentType() {
+    public String fixedContentType() {
         return "text/html; charset=utf-8";
+    }
+
+
+    private String getFirstPage(String url) {
+
+        if (url.equals("/program/board/")) {
+            file = new File(ROOT_PATH + WEB_APP + FIRST_PAGE_NAME);
+            try {
+                file.createNewFile();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            return file.toString();
+        }
+
+        return ROOT_PATH + url;
+
+        /*if (!url.endsWith("/")) {
+            return url;
+        }
+        return url + FIRST_PAGE_NAME;*/
+    }
+
+    private String getFirstPagePath(String url) {
+        Path path = Paths.get(url).normalize();
+
+        return path.toString();
     }
 }

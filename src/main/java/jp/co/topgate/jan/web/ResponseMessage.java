@@ -1,5 +1,7 @@
 package jp.co.topgate.jan.web;
 
+import jp.co.topgate.jan.web.program.board.UrlHandler;
+
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -13,25 +15,31 @@ import java.util.Objects;
  * @author jan
  */
 
-public class HttpResponse {
+public class ResponseMessage extends UrlHandler {
 
     private InputStream is = null;
 
     private OutputStream os = null;
 
-    private StatusLine statusLine = null;
-
     private ErrorMessageBody errorMessageBody = null;
+
+    private RequestMessage requestMessage = null;
+
+    private int statucCode ;
+
+    private FileResource fileResource ;
 
     /**
      *
      * @param os  出力ストリーム
      */
 
-    public HttpResponse(OutputStream os) {
-        statusLine = new StatusLine();
+    public ResponseMessage(RequestMessage requestMessage,OutputStream os,int statusCode,FileResource fileResource) {
+        this.requestMessage = requestMessage ;
         errorMessageBody = new ErrorMessageBody();
         this.os = Objects.requireNonNull(os, "出力ストリームがnullになっています");
+        this.statucCode = statusCode ;
+        this.fileResource = fileResource;
     }
 
 
@@ -39,14 +47,14 @@ public class HttpResponse {
      * レスポンスをストリームに書き込む
      * ステータス行とContent-Typeを別クラスで組み立てさせてもらう
      *
-     * @param statusCode  ステータスコード
-     */
+     **/
 
-    public void writeResponse(int statusCode, FileResource fileResource) {
+    @Override
+    public void writeResponse() {
 
         String contentType ;
 
-        String codeDescription = statusLine.getStatusLine(statusCode) + "\n";
+        String codeDescription = StatusLine.getStatusLine(statucCode) + "\n";
 
         try {
 
@@ -62,9 +70,9 @@ public class HttpResponse {
                     os.write(i);
                 }
             } else {
-                contentType = "Content-Type: " + fileResource.getErrorBodyContentType() + "\n\n";
+                contentType = "Content-Type: " + fileResource.fixedContentType() + "\n\n";
                 os.write(contentType.getBytes());
-                os.write(errorMessageBody.getErrorMessageBody(statusCode).getBytes());
+                os.write(errorMessageBody.getErrorMessageBody(statucCode).getBytes());
             }
         } catch (IOException e) {
             System.out.println("通信経路が切断されたかファイル書き込みの不具合");

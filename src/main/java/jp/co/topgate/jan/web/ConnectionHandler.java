@@ -1,6 +1,7 @@
 package jp.co.topgate.jan.web;
 
 import jp.co.topgate.jan.web.exception.RequestParseException;
+import jp.co.topgate.jan.web.program.board.UrlHandler;
 
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -14,7 +15,7 @@ import java.util.Objects;
  */
 
 
-public class ConnectionHandler {
+class ConnectionHandler {
 
     private InputStream is = null;
     private OutputStream os = null;
@@ -25,30 +26,31 @@ public class ConnectionHandler {
      * @param os        出力ストリーム
      */
 
-    public ConnectionHandler(InputStream is, OutputStream os) {
+    ConnectionHandler(InputStream is, OutputStream os) {
 
         this.is = Objects.requireNonNull(is, "入力ストリームがnullになっています");
         this.os = Objects.requireNonNull(os, "出力ストリームがnullになっています");
     }
 
 
-    public void writeResponse() {
+    void writeResponse() {
 
         FileResource fileResource = null;
+
         int statusCode = StatusLine.OK;
 
+        RequestMessage requestMessage = null;
 
         try {
 
-            HttpRequest httpRequest = new HttpRequest(is);
+            requestMessage = RequestParser.parseRequest(is);  // リクエストを分析して結果をセット
 
-            httpRequest.parseRequest();
+            String method = requestMessage.getMethod();
+            String url = requestMessage.getUrl();
+            String version = requestMessage.getVersion();
 
-            String method = httpRequest.getMethod();
-            String url = httpRequest.getUrl();
-            String version = httpRequest.getVersion();
 
-            if (!"GET".equals(method) || !"POST".equals(method)) {
+            if (!("GET".equals(method) || "POST".equals(method))) {
                 statusCode = StatusLine.METHOD_NOT_ALLOWED;
             } else if (!("HTTP/1.1".equals(version))) {
                 statusCode = StatusLine.HTTP_VERSION_NOT_SUPPORTED;
@@ -64,14 +66,9 @@ public class ConnectionHandler {
             statusCode = StatusLine.BAD_REQUEST;
         }
 
+        UrlHandler urlHandler = UrlHandler.judgeURL(requestMessage, os, statusCode, fileResource);
+        urlHandler.writeResponse();
 
-        HttpResponse httpResponse = new HttpResponse(os);
-
-        /*
-         * レスポンスを書き込む
-         */
-
-        httpResponse.writeResponse(statusCode, fileResource);
     }
 
 }

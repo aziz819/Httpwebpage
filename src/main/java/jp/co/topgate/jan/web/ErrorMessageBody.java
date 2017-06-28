@@ -27,7 +27,7 @@ public class ErrorMessageBody {
                 break;
 
             case StatusLine.NOT_FOUND:
-                m = "<html><head><title>404 Not Found</title></head>" +
+                m = "<html><head><title>404 Not Found</title>" +
                         "<body><h1>Not Found</h1>" +
                         "<p>サーバーは、リクエストURIと一致するものを見つけられませんでした。</p></body></html>";
                 break;

@@ -22,7 +22,7 @@ public class HttpResponseTest {
 		@Test(expected = NullPointerException.class)
 		public void キャッチされるか() {
 			OutputStream os = null;
-			new HttpResponse(os);
+			new ResponseMessage(os);
 
 		}
 
@@ -39,8 +39,8 @@ public class HttpResponseTest {
 
 			try (OutputStream os = new FileOutputStream(new File("./src/test/Testresources/ResponseMessage.txt"))) {
 
-				HttpResponse httpResponse = new HttpResponse(os);
-				httpResponse.writeResponse(500, new FileResource(""));
+				ResponseMessage responseMessage = new ResponseMessage(os);
+				responseMessage.writeResponse(500, new FileResource(""));
 			}
 		}
 
@@ -72,8 +72,8 @@ public class HttpResponseTest {
 
 			try (OutputStream os = new FileOutputStream(new File("./src/test/Testresources/ResponseMessage.txt"))) {
 
-				HttpResponse httpResponse = new HttpResponse(os);
-				httpResponse.writeResponse(200, new FileResource("/index.html"));
+				ResponseMessage responseMessage = new ResponseMessage(os);
+				responseMessage.writeResponse(200, new FileResource("/index.html"));
 			}
 		}
 
@@ -118,8 +118,8 @@ public class HttpResponseTest {
 
 			try (OutputStream os = new FileOutputStream(new File("./src/test/Testresources/ResponseMessage.txt"))) {
 
-				HttpResponse httpResponse = new HttpResponse(os);
-				httpResponse.writeResponse(400, new FileResource(""));
+				ResponseMessage responseMessage = new ResponseMessage(os);
+				responseMessage.writeResponse(400, new FileResource(""));
 			}
 		}
 
@@ -153,8 +153,8 @@ public class HttpResponseTest {
 
 			try (OutputStream os = new FileOutputStream(new File("./src/test/Testresources/ResponseMessage.txt"))) {
 
-				HttpResponse httpResponse = new HttpResponse(os);
-				httpResponse.writeResponse(405, new FileResource(""));
+				ResponseMessage responseMessage = new ResponseMessage(os);
+				responseMessage.writeResponse(405, new FileResource(""));
 			}
 		}
 
@@ -187,8 +187,8 @@ public class HttpResponseTest {
 
 			try (OutputStream os = new FileOutputStream(new File("./src/test/Testresources/ResponseMessage.txt"))) {
 
-				HttpResponse httpResponse = new HttpResponse(os);
-				httpResponse.writeResponse(404, new FileResource(""));
+				ResponseMessage responseMessage = new ResponseMessage(os);
+				responseMessage.writeResponse(404, new FileResource(""));
 			}
 		}
 

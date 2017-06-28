@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+<meta charset="utf-8">
+<head>
+    <title>JANの掲示板</title>
+    <link rel="stylesheet" href="./css/style.css" type="text/css"/>
+</head>
+
+<body>
+<center>
+    <div class="board">
+        <h2>自由書き込み掲示板</h2>
+        <div class="ForFirstTimePosts">
+            <form action="/program/board/" method="post">
+                名前:<input type="text" name="name" required><br>
+                タイトル:<input type="text" name="title" required>
+                <h3>メッセージ欄</h3>
+                <textarea name="text" rows="5" cols="42" maxlength="200" required></textarea>
+                <br>
+                パスワード:<input type="password" name="pass" min="3" max="6">
+                <br>
+                <input type="submit" name="send" value="send">
+            </form>
+            <hr style="height:1px;border:none;border-top:1px dashed #0066CC;" />
+            <form action="/program/board/" method="GET">
+                名前で検索:<input type="text" name="name" required>
+                <input type="hidden" name="search" value="">
+                <input type="submit" name="send" value="検索">
+            </form>
+        </div>
+        <div class="IndividualManagement">
+            <form>
+                <table border="1" width="430">
+                    <tr>
+                        <th colspan="2">title</th>
+                    </tr>
+                    <tr align="center">
+                        <td width="100">name</td>
+                        <td>content</td>
+                    </tr>
+                    <tr align="center">
+                        <td colspan="2">password:<input type="password" name="pass"><input type="submit" value="delete">
+                        </td>
+                    </tr>
+                </table>
+            </form>
+        </div>
+    </div>
+</center>
+</body>
+
+</html>
