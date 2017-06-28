@@ -144,7 +144,7 @@ public class DynamicHandler extends UrlHandler {
 
     private void redirect() {
         try {
-            os.write("HTTP/1.1 302 FOUNT\r\n".getBytes());
+            os.write("HTTP/1.1 302 Found\r\n".getBytes());
             os.write("Location: /program/board/\r\n".getBytes());
         } catch (IOException e) {
             e.printStackTrace();
