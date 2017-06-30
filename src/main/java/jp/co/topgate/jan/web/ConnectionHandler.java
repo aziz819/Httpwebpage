@@ -19,6 +19,10 @@ class ConnectionHandler {
 
     private InputStream is = null;
     private OutputStream os = null;
+    private static final String GET = "GET";
+    private static final String POST = "POST";
+    private static final String HTTP_VERSION = "HTTP/1.1";
+
 
     /**
      *
@@ -35,8 +39,6 @@ class ConnectionHandler {
 
     void writeResponse() {
 
-        FileResource fileResource = null;
-
         int statusCode = StatusLine.OK;
 
         RequestMessage requestMessage = null;
@@ -50,13 +52,13 @@ class ConnectionHandler {
             String version = requestMessage.getVersion();
 
 
-            if (!("GET".equals(method) || "POST".equals(method))) {
+            if (!(GET.equals(method) || POST.equals(method))) {
                 statusCode = StatusLine.METHOD_NOT_ALLOWED;
-            } else if (!("HTTP/1.1".equals(version))) {
+            } else if (!(HTTP_VERSION.equals(version))) {
                 statusCode = StatusLine.HTTP_VERSION_NOT_SUPPORTED;
             } else {
-                fileResource = new FileResource(url);
-                if (!(fileResource.checkFile())) {
+                new FileResource(url);
+                if (!(FileResource.checkFile())) {
                     statusCode = StatusLine.NOT_FOUND;
                 }
             }
@@ -66,7 +68,7 @@ class ConnectionHandler {
             statusCode = StatusLine.BAD_REQUEST;
         }
 
-        UrlHandler urlHandler = UrlHandler.judgeURL(requestMessage, os, statusCode, fileResource);
+        UrlHandler urlHandler = UrlHandler.judgeURL(requestMessage, os, statusCode);
         urlHandler.writeResponse();
 
     }

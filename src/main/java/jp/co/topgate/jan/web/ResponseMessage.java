@@ -21,25 +21,19 @@ public class ResponseMessage extends UrlHandler {
 
     private OutputStream os = null;
 
-    private ErrorMessageBody errorMessageBody = null;
+    private static int statucCode;
 
-    private RequestMessage requestMessage = null;
-
-    private int statucCode ;
-
-    private FileResource fileResource ;
+    private static final String CONTENT_TYPE = "Content-Type: ";
 
     /**
      *
      * @param os  出力ストリーム
+     * @param statusCode　ステータスコード
      */
 
-    public ResponseMessage(RequestMessage requestMessage,OutputStream os,int statusCode,FileResource fileResource) {
-        this.requestMessage = requestMessage ;
-        errorMessageBody = new ErrorMessageBody();
+    public ResponseMessage(OutputStream os, int statusCode) {
         this.os = Objects.requireNonNull(os, "出力ストリームがnullになっています");
-        this.statucCode = statusCode ;
-        this.fileResource = fileResource;
+        statucCode = statusCode;
     }
 
 
@@ -60,19 +54,19 @@ public class ResponseMessage extends UrlHandler {
 
             os.write(codeDescription.getBytes());
 
-            if (fileResource.checkFile()) {
-                contentType = "Content-Type: " + fileResource.getContentType() + "\n\n";
+            if (FileResource.checkFile()) {
+                contentType = CONTENT_TYPE + FileResource.getContentType() + "\n\n";
                 os.write(contentType.getBytes());
 
-                is = new FileInputStream(fileResource.getPath());
+                is = new FileInputStream(FileResource.getPath());
                 int i;
                 while ((i = is.read()) != -1) {
                     os.write(i);
                 }
             } else {
-                contentType = "Content-Type: " + fileResource.fixedContentType() + "\n\n";
+                contentType = CONTENT_TYPE + FileResource.fixedContentType() + "\n\n";
                 os.write(contentType.getBytes());
-                os.write(errorMessageBody.getErrorMessageBody(statucCode).getBytes());
+                os.write(ErrorMessageBody.getErrorMessageBody(statucCode).getBytes());
             }
         } catch (IOException e) {
             System.out.println("通信経路が切断されたかファイル書き込みの不具合");
@@ -96,5 +90,33 @@ public class ResponseMessage extends UrlHandler {
                     e.printStackTrace();
                 }
         }
+    }
+
+    /**
+     * ステータスコードによってレスポンス行を組み立てる
+     *
+     * @return レスポンス行を返す
+     */
+    public static String setStatusLine() {
+        return StatusLine.getStatusLine(statucCode) + "\n";
+    }
+
+    /**
+     * Content-Typeを組み立てる
+     *
+     * @return Content-Typeを返す
+     */
+    public static String setNormalContentType() {
+        return CONTENT_TYPE + FileResource.getContentType() + "\n\n";
+    }
+
+    /**
+     * エラーメッセージボディのContent-Typeを組み立てる
+     *
+     * @return Content-Typeを返す
+     */
+    public static String setErrorMessageBodyContentType() {
+        return CONTENT_TYPE + FileResource.fixedContentType() + "\n\n";
+
     }
 }

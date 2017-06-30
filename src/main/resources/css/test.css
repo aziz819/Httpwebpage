@@ -1,13 +1,22 @@
 @charset "UTF-8";
 
+body {
+	background:#FFF url('../program/board/img/18.jpg') repeat;
+}
 .one{
   text-align: center;
 }
 .one img{
   border-radius: 20%;
 }
-.one p{
-  margin-left: 10px;
-  font-weight: bold;
+.one p,button{
+  padding:5px 15px;
+  background:SandyBrown;
+  border:0 none;
+  cursor:pointer;
+  -webkit-border-radius: 5px;
+  border-radius: 5px;
+  font-weight:bold;
+  font-family: "ＭＳ Ｐ明朝","ＭＳ 明朝",serif;
 }
 .three{}

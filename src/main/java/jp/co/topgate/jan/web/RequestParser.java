@@ -16,34 +16,26 @@ import java.util.Objects;
 public class RequestParser {
 
     private static final int REQUEST_LINE_SIZE = 3;                       // リクエストラインの分割結果3つか
-
     private static final int PARAMETER_SIZE = 2;                          // パラメーターの分割結果２つか
-
     private static final int HEADERS_SIZE = 2;                            // ヘッダーをコロンから分割して２つか
-
     private static final String REQUEST_LINE_SEPARATOR = " ";             // リクエスト行を空白の所から分割
-
     private static final String HEADERS_SEPARATOR = ":";                  // リクエストヘッダーのフィールドと値を分割
-
     private static final String QUERIES_SEPARATOR = "=";                  // リクエスト行でのパラメーターの属性と値を分割
-
     private static final String QUERIES_PARAMETERS_SEPARATE = "&";        // パラメーターとパラメーターを分割
-
     private static final String GET_QUERY_QUEASTION_SEPARATE = "\\?";     // uriとクエリーを分割
-
     private static String method;
-
     private static String url;
-
     private static String version;
-
-    private static String requestLine = null;                                  // リクエスト行格納、テスト用のためクラスメンバにしました。
-
-    private static Map<String, String> requestHeaders = new HashMap<>();             // リクエストヘッダーのフィールドと値を扱う
-
+    private static String requestLine = null;                             // リクエスト行格納、テスト用のためクラスメンバにしました。
+    private static Map<String, String> requestHeaders = new HashMap<>();  // リクエストヘッダーのフィールドと値を扱う
     private static Map<String, String> requestParameters = null;          // ポストクエリーを扱う
-
     private static int HeadersLength;
+    private static final String GET = "GET";
+    private static final String UTF8 = "UTF-8";
+    private static final String SLASH = "/";
+    private static final String INDEX_HTML = "/index.html";
+    private static final String CONTENT_LENGTH = "Content-Length";
+
 
     /*
      *  リクエスト行　＆　メッセージ・ヘッダー　＆　パラメーターを部分ごとに各メソッドで処理する
@@ -107,7 +99,7 @@ public class RequestParser {
         String requestLine;
 
         try {
-            BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(is, "UTF-8"));
+            BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(is, UTF8));
             requestLine = bufferedReader.readLine();
         } catch (IOException e) {
             throw new RequestParseException("リクエスト行の読み込みに不具合が発生しました");
@@ -132,7 +124,7 @@ public class RequestParser {
         StringBuilder builder = new StringBuilder();
 
         try {
-            BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(is, "UTF-8"));
+            BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(is, UTF8));
             headers = bufferedReader.readLine();
             builder.append(headers).append("\r\n");
 
@@ -164,9 +156,9 @@ public class RequestParser {
 
         requestParameters = new HashMap<>();
 
-        String contentLength = requestHeaders.get("Content-Length");
+        String contentLength = requestHeaders.get(CONTENT_LENGTH);
 
-        if (method.equals("GET")) {
+        if (method.equals(GET)) {
             if (url.matches(".*" + GET_QUERY_QUEASTION_SEPARATE + ".*")) {                        // GET_QUERY_QUEASTION_SEPARATE == "?"疑問符があるかどうかの判断
                 String[] parameterAcquisition = url.split(GET_QUERY_QUEASTION_SEPARATE, 2);
                 url = parameterAcquisition[0];                                                          // url
@@ -220,7 +212,7 @@ public class RequestParser {
         String stringpostParameter = new String(byteContentLength);
 
         try {
-            stringpostParameter = URLDecoder.decode(stringpostParameter, "UTF-8");
+            stringpostParameter = URLDecoder.decode(stringpostParameter, UTF8);
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
         }
@@ -247,8 +239,8 @@ public class RequestParser {
 
     public String getUrl() {
 
-       if (url.endsWith("/")) {
-           url = url + "/index.html";
+        if (url.endsWith(SLASH)) {
+            url = url + INDEX_HTML;
        }
         return url;
     }

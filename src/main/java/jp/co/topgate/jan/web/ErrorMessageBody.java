@@ -14,7 +14,7 @@ public class ErrorMessageBody {
      * @return      　　　 エラーメッセージボディを返す
      */
 
-    public String getErrorMessageBody(int statusCode) {
+    public static String getErrorMessageBody(int statusCode) {
 
         String m;
 

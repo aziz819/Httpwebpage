@@ -42,6 +42,7 @@ class HtmlEditor {
         htmlLayer.append("            </form>\n");
         htmlLayer.append("            <form action=\"/program/board/\" method=\"GET\">\n");
         htmlLayer.append("                名前で検索:<input type=\"text\" name=\"name\" required>\n");
+        htmlLayer.append("                <input type=\"hidden\" name=\"instruction\" value=\"search\">\n");
         htmlLayer.append("                <input type=\"submit\" name=\"send\" value=\"検索\">\n");
         htmlLayer.append("            </form>\n");
         htmlLayer.append("        </div>\n");
@@ -51,7 +52,7 @@ class HtmlEditor {
             htmlLayer.append("            <div class=\"in\">\n");
             htmlLayer.append("                <table border=\"1\">\n");
             htmlLayer.append("                    <tr>\n");
-            htmlLayer.append("                        <th id=\"maru\"><table border=\"1\"><tr><th>").append(dataModel.getCountNum()).append("</th></tr></table></th>\n");
+            htmlLayer.append("                        <th class=\"circle\"><table border=\"1\"><tr><th>").append(dataModel.getCountNum()).append("</th></tr></table></th>\n");
             htmlLayer.append("                        <td>").append(dataModel.getTitle()).append("</td>\n");
             htmlLayer.append("                    </tr>\n");
             htmlLayer.append("                    <tr>\n");
@@ -68,7 +69,7 @@ class HtmlEditor {
             htmlLayer.append("                    <tr>\n");
             htmlLayer.append("                        <th colspan=\"2\">\n");
             htmlLayer.append("                           <form action=\"/program/board/\" method=\"POST\">\n");
-            htmlLayer.append("                              <input type=\"hidden\" name=\"delete\" value=\"deleteData\">\n");
+            htmlLayer.append("                              <input type=\"hidden\" name=\"instruction\" value=\"delete\">\n");
             htmlLayer.append("                              <input type=\"hidden\" name=\"countNum\" value=\"").append(dataModel.getCountNum()).append("\">\n");
             htmlLayer.append("                              password:<input type=\"password\" name=\"pass\" min=\"3\" max=\"6\" required>\n");
             htmlLayer.append("                              <input type=\"submit\" value=\"削除\">\n");
@@ -76,7 +77,7 @@ class HtmlEditor {
             htmlLayer.append("                        </th>\n");
             htmlLayer.append("                    </tr>\n");
             htmlLayer.append("                </table>\n");
-            htmlLayer.append("             </div>");
+            htmlLayer.append("             </div>\n");
             htmlLayer.append("        </div>\n");
         }
         htmlLayer.append("</center>\n");
@@ -120,7 +121,7 @@ class HtmlEditor {
         htmlLayer.append("            </form>\n");
         htmlLayer.append("            <form action=\"/program/board/\" method=\"GET\">\n");
         htmlLayer.append("                名前で検索:<input type=\"text\" name=\"name\" required>\n");
-        htmlLayer.append("                <input type=\"hidden\" name=\"search\" value=\"userName\">\n");
+        htmlLayer.append("                <input type=\"hidden\" name=\"instruction\" value=\"search\">\n");
         htmlLayer.append("                <input type=\"submit\" name=\"send\" value=\"検索\">\n");
         htmlLayer.append("            </form>\n");
         htmlLayer.append("        </div>\n");
@@ -136,7 +137,7 @@ class HtmlEditor {
                 htmlLayer.append("            <div class=\"in\">\n");
                 htmlLayer.append("                <table border=\"1\">\n");
                 htmlLayer.append("                    <tr>\n");
-                htmlLayer.append("                        <th id=\"maru\"><table border=\"1\"><tr><th>").append(dataModel.getCountNum()).append("</th></tr></table></th>\n");
+                htmlLayer.append("                        <th class=\"circle\"><table border=\"1\"><tr><th>").append(dataModel.getCountNum()).append("</th></tr></table></th>\n");
                 htmlLayer.append("                        <td>").append(dataModel.getTitle()).append("</td>\n");
                 htmlLayer.append("                    </tr>\n");
                 htmlLayer.append("                    <tr>\n");
@@ -153,8 +154,8 @@ class HtmlEditor {
                 htmlLayer.append("                    <tr>\n");
                 htmlLayer.append("                        <th colspan=\"2\">\n");
                 htmlLayer.append("                           <form action=\"/program/board/\" method=\"POST\">\n");
-                htmlLayer.append("                              <input type=\"hidden\" name=\"delete\" value=\"deleteData\">\n");
-                htmlLayer.append("                              <input type=\"hidden\" name=\"countNum\" value=\"").append(dataModel.getCountNum()).append("\">\n");
+                htmlLayer.append("                              <input type=\"hidden\" name=\"instruction\" value=\"delete\">\n");
+                htmlLayer.append("                              <input type=\"hidden\" name=\"countNum\" value=\"").append(dataModel.getCountNum()).append(">\n");
                 htmlLayer.append("                              password:<input type=\"password\" name=\"pass\" min=\"3\" max=\"6\">\n");
                 htmlLayer.append("                              <input type=\"submit\" value=\"削除\">\n");
                 htmlLayer.append("                           </form>\n");

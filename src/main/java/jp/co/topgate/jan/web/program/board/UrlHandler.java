@@ -1,6 +1,5 @@
 package jp.co.topgate.jan.web.program.board;
 
-import jp.co.topgate.jan.web.FileResource;
 import jp.co.topgate.jan.web.RequestMessage;
 import jp.co.topgate.jan.web.ResponseMessage;
 
@@ -12,6 +11,7 @@ import java.io.OutputStream;
  */
 public abstract class UrlHandler {
 
+    private static final String PROGRAM_BOARD = "/program/board/";
 
     /**
      * 動的なページへか静的なページへかで行き道が違う
@@ -19,17 +19,15 @@ public abstract class UrlHandler {
      * @param requestMessage リクエスト分析結果を持つオブジェクト
      * @param os             出力ストリーム
      * @param statusCode     ステータスコード
-     * @param fileResource   ファイルチェック、パス作成などを行うFileResourceのオブジェクト
      * @return               条件によって動的なページを作るクラスを返すか静的なページを作るクラスを返す
      */
-
-    public static UrlHandler judgeURL(RequestMessage requestMessage, OutputStream os, int statusCode, FileResource fileResource) {
+    public static UrlHandler judgeURL(RequestMessage requestMessage, OutputStream os, int statusCode) {
         String url = requestMessage.getUrl();
 
-        if (url.startsWith("/program/board/")) {
-            return new DynamicHandler(requestMessage, os, statusCode, fileResource);
+        if (url.startsWith(PROGRAM_BOARD)) {
+            return new DynamicHandler(requestMessage, os, statusCode);
         }
-        return new ResponseMessage(requestMessage, os, statusCode, fileResource);
+        return new ResponseMessage(os, statusCode);
     }
 
     public abstract void writeResponse();

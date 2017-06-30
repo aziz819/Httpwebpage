@@ -14,6 +14,7 @@ import java.net.Socket;
 public class Server {
 
     private static final int SERVER_PORT = 8080;           // ポート番号
+    private static final String SERVER_START_MESSAGE = "Server is started •••••••••";
 
 
     public static void main(String[] args) {
@@ -39,7 +40,7 @@ public class Server {
     private void startServer(int serverPort) throws IOException {
 
         ServerSocket serverSocket = new ServerSocket(serverPort);
-        System.out.println("Server is started •••••••••");
+        System.out.println(SERVER_START_MESSAGE);
 
         while (true) {
 
