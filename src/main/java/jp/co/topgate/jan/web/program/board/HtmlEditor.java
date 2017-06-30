@@ -7,7 +7,7 @@ import java.io.OutputStream;
 import java.util.List;
 
 /**
- * Htmlを作る
+ * Htmlを作ってindex.htmlに書き込む
  * Created by aizijiang.aerken on 2017/06/20.
  */
 class HtmlEditor {
@@ -16,7 +16,6 @@ class HtmlEditor {
      * 最初のアクセスの際に作る
      *
      * @param allmessage DataModelの複数のオブジェクトをもつList
-     * @return 全てのデータをhtmlで立てて返す
      */
 
     static void showAllData(List<DataModel> allmessage) {
@@ -60,7 +59,7 @@ class HtmlEditor {
             htmlLayer.append("            <div class=\"in\">\n");
             htmlLayer.append("                <table border=\"1\">\n");
             htmlLayer.append("                    <tr>\n");
-            htmlLayer.append("                        <th id=\"maru\"><table border=\"1\"><tr><th>").append(dataModel.getCountNum()).append("</th></tr></table></th>\n");
+            htmlLayer.append("                        <th class=\"count\"><table border=\"1\"><tr><th>").append(dataModel.getCountNum()).append("</th></tr></table></th>\n");
             htmlLayer.append("                        <td>").append(dataModel.getTitle()).append("</td>\n");
             htmlLayer.append("                    </tr>\n");
             htmlLayer.append("                    <tr>\n");
@@ -72,7 +71,7 @@ class HtmlEditor {
             htmlLayer.append("                    </tr>\n");
             htmlLayer.append("                    <tr>\n");
             htmlLayer.append("                        <th>投稿日</th>\n");
-            htmlLayer.append("                        <td id=\"time\">").append(dataModel.getPostDate()).append("</td>\n");
+            htmlLayer.append("                        <td class=\"date\">").append(dataModel.getPostDate()).append("</td>\n");
             htmlLayer.append("                    </tr>\n");
             htmlLayer.append("                    <tr>\n");
             htmlLayer.append("                        <th colspan=\"2\">\n");
@@ -85,7 +84,7 @@ class HtmlEditor {
             htmlLayer.append("                        </th>\n");
             htmlLayer.append("                    </tr>\n");
             htmlLayer.append("                </table>\n");
-            htmlLayer.append("             </div>");
+            htmlLayer.append("             </div>\n");
             htmlLayer.append("        </div>\n");
         }
         htmlLayer.append("</center>\n");
@@ -97,14 +96,12 @@ class HtmlEditor {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        //return htmlLayer.toString();
     }
 
     /**
      * 大小文字区別せずに名前で検索した際に検索結果を作る
-     *
+     * Htmlを作ってindex.htmlに書き込む
      * @param dataSearched 　DataModelの複数のオブジェクトもつList
-     * @return 検索結果を立てて返す
      */
 
     static void showScannedData(List<DataModel> dataSearched) {
@@ -156,7 +153,7 @@ class HtmlEditor {
                 htmlLayer.append("            <div class=\"in\">\n");
                 htmlLayer.append("                <table border=\"1\">\n");
                 htmlLayer.append("                    <tr>\n");
-                htmlLayer.append("                        <th id=\"maru\"><table border=\"1\"><tr><th>").append(dataModel.getCountNum()).append("</th></tr></table></th>\n");
+                htmlLayer.append("                        <th class=\"count\"><table border=\"1\"><tr><th>").append(dataModel.getCountNum()).append("</th></tr></table></th>\n");
                 htmlLayer.append("                        <td>").append(dataModel.getTitle()).append("</td>\n");
                 htmlLayer.append("                    </tr>\n");
                 htmlLayer.append("                    <tr>\n");
@@ -168,7 +165,7 @@ class HtmlEditor {
                 htmlLayer.append("                    </tr>\n");
                 htmlLayer.append("                    <tr>\n");
                 htmlLayer.append("                        <th>投稿日</th>\n");
-                htmlLayer.append("                        <td id=\"time\">").append(dataModel.getPostDate()).append("</td>\n");
+                htmlLayer.append("                        <td class=\"date\">").append(dataModel.getPostDate()).append("</td>\n");
                 htmlLayer.append("                    </tr>\n");
                 htmlLayer.append("                    <tr>\n");
                 htmlLayer.append("                        <th colspan=\"2\">\n");
@@ -195,7 +192,5 @@ class HtmlEditor {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        //return htmlLayer.toString();
     }
-
 }

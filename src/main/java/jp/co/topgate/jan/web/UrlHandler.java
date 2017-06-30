@@ -21,7 +21,7 @@ public abstract class UrlHandler {
      * @return               条件によって動的なページを作るクラスを返すか静的なページを作るクラスを返す
      */
 
-    public static UrlHandler judgeURL(RequestMessage requestMessage, OutputStream os, int statusCode, FileResource fileResource) {
+    static UrlHandler judgeURL(RequestMessage requestMessage, OutputStream os, int statusCode, FileResource fileResource) {
         String url = requestMessage.getUrl();
 
         if (url.startsWith("/program/board/")) {

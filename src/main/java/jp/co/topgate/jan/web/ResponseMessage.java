@@ -25,6 +25,8 @@ public class ResponseMessage extends UrlHandler {
 
     private FileResource fileResource ;
 
+    private static final String CONTENT_TYPE = "Content-Type: ";
+
     /**
      *
      * @param os  出力ストリーム
@@ -53,7 +55,7 @@ public class ResponseMessage extends UrlHandler {
             os.write(codeDescription.getBytes());
 
             if (fileResource.checkFile()) {
-                contentType = "Content-Type: " + fileResource.getContentType() + "\n\n";
+                contentType = CONTENT_TYPE + fileResource.getContentType() + "\n\n";
                 os.write(contentType.getBytes());
 
                 is = new FileInputStream(fileResource.getPath());
@@ -62,7 +64,7 @@ public class ResponseMessage extends UrlHandler {
                     os.write(i);
                 }
             } else {
-                contentType = "Content-Type: " + fileResource.fixedContentType() + "\n\n";
+                contentType = CONTENT_TYPE + fileResource.fixedContentType() + "\n\n";
                 os.write(contentType.getBytes());
                 os.write(errorMessageBody.getErrorMessageBody(statucCode).getBytes());
             }
@@ -87,33 +89,6 @@ public class ResponseMessage extends UrlHandler {
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
-        }
-    }
-
-    public void setStatusLine(String statusLine) {
-        statusLine = statusLine + "\n";
-        try {
-            os.write(statusLine.getBytes());
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-    public void setContentType() {
-        String contentType = "Content-Type: " + fileResource.getContentType() + "\n\n";
-        try {
-            os.write(contentType.getBytes());
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-    public void setErrorContentType(int statusCode) {
-        String ContentType = "Content-Type: " + fileResource.fixedContentType() + "\n\n";
-        try {
-            os.write(ContentType.getBytes());
-        } catch (IOException e) {
-            e.printStackTrace();
         }
     }
 }

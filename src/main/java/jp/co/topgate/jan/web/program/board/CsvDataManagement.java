@@ -13,6 +13,7 @@ import java.util.List;
 
 class CsvDataManagement {
     private static final String csvFilePath = "./src/main/resources/program/board/clientInformation.csv";
+    private static final String COMMA = ",";
 
     /**
      * Csvファイルの中身を一行ずつ読んでモデルにセットしている
@@ -37,7 +38,7 @@ class CsvDataManagement {
             String csvLine;
             while ((csvLine = bufferedReader.readLine()) != null) {
 
-                String[] csvData = csvLine.split(",");
+                String[] csvData = csvLine.split(COMMA);
 
                 DataModel dataModel = new DataModel();
                 dataModel.setCountNum(Integer.parseInt(csvData[0]));
@@ -78,7 +79,7 @@ class CsvDataManagement {
 
                     String[] dataTable = {countNum, name, title, pass, content, dateAndWeek};
 
-                    String dataLine = String.join(",", dataTable) + "\n";
+                    String dataLine = String.join(COMMA, dataTable) + "\n";
 
                     outputStream.write(dataLine.getBytes());
                 }
@@ -104,7 +105,7 @@ class CsvDataManagement {
             String csvLine;
             while ((csvLine = bufferedReader.readLine()) != null) {
 
-                String[] csvData = csvLine.split(",");
+                String[] csvData = csvLine.split(COMMA);
 
                 if (csvData[1].equalsIgnoreCase(name)) {
 
@@ -146,7 +147,7 @@ class CsvDataManagement {
                 allMessage.remove(deleteMessage);
 
                 addNewDate(allMessage);
-                return;
+                break;
             }
         }
     }

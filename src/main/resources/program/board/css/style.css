@@ -116,16 +116,16 @@ hr:after {
     -webkit-border-radius: 5px;
     border-radius: 5px;
 }
-#time{
+.date{
     text-align:center;
 }
 
-#maru table{
+.count table{
     width:auto;
     padding-left:35px;
     border-style:none;
 }
-#maru table tr th{
+.count table tr th{
     background-color:CornflowerBlue;
     color:white;
     width:20px;

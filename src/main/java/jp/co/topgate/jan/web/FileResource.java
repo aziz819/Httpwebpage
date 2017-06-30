@@ -26,6 +26,12 @@ public class FileResource {
 
     private String url;
 
+    private static final String DYNAMIC_URL = "/program/board/";
+
+    private static final String HTML_CONTENT = "text/html; charset=utf-8";
+
+    private static final String DEFAULT_CONTENT = "application/octet-stream";
+
     private static final Map<String, String> contentType = new HashMap<>();
 
     static {
@@ -61,7 +67,7 @@ public class FileResource {
      *
      * @return ファイル存在すればtrueを存在しなければfalseを返す
      */
-    public boolean checkFile() {
+    boolean checkFile() {
         return (file.exists() && file.isFile());
     }
 
@@ -69,7 +75,7 @@ public class FileResource {
     /**
      * @return パスを返す
      */
-    public String getPath() {
+    String getPath() {
 
         return url;
     }
@@ -80,7 +86,7 @@ public class FileResource {
      *
      * @return Content-typを返す
      */
-    public String getContentType() {
+    String getContentType() {
         String extension = "";
         if (url != null && !"".equals(url)) {
             for (String key : contentType.keySet()) {
@@ -90,7 +96,7 @@ public class FileResource {
                 }
             }
         }
-        return contentType.getOrDefault(extension, "application/octet-stream");
+        return contentType.getOrDefault(extension, DEFAULT_CONTENT);
     }
 
     /**
@@ -98,8 +104,8 @@ public class FileResource {
      *
      * @return Content-Typeを返す
      */
-    public String fixedContentType() {
-        return "text/html; charset=utf-8";
+    String fixedContentType() {
+        return HTML_CONTENT;
     }
 
 
@@ -111,7 +117,7 @@ public class FileResource {
      */
     private String getFirstPage(String url) {
 
-        if (url.equals("/program/board/")) {
+        if (url.equals(DYNAMIC_URL)) {
             file = new File(ROOT_PATH + WEB_APP + FIRST_PAGE_NAME);
             try {
                 file.createNewFile();

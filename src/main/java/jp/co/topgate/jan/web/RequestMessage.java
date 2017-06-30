@@ -11,22 +11,19 @@ public class RequestMessage {
     private String method;
     private String url;
     private String version;
-    private Map<String, String> requestHeaders;
     private Map<String, String> parameters;
 
     /**
      * @param method         HTTPメソッド
      * @param url            　URL
      * @param version        HTTPバージョン
-     * @param requestHedears リクエストヘッダー
      * @param parameters     　リクエストパラメータ
      */
 
-    RequestMessage(String method, String url, String version, Map<String, String> requestHedears, Map<String, String> parameters) {
+    RequestMessage(String method, String url, String version, Map<String, String> parameters) {
         this.method = method;
         this.url = url;
         this.version = version;
-        this.requestHeaders = requestHedears;
         this.parameters = parameters;
     }
 
@@ -42,7 +39,7 @@ public class RequestMessage {
      * @return URLを返す
      */
 
-    public String getUrl() {
+    String getUrl() {
         return this.url;
     }
 
@@ -50,16 +47,8 @@ public class RequestMessage {
      * @return HTTPバージョンを返す
      */
 
-    public String getVersion() {
+    String getVersion() {
         return this.version;
-    }
-
-    /**
-     * @return リクエストヘッダーを返す
-     */
-
-    public Map<String, String> getRequestHeaders() {
-        return requestHeaders;
     }
 
     /**

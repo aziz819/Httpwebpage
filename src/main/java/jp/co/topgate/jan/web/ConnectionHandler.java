@@ -18,6 +18,9 @@ class ConnectionHandler {
 
     private InputStream is = null;
     private OutputStream os = null;
+    private static final String GET = "GET";
+    private static final String POST ="POST";
+    private static final String HTTP_VERSION = "HTTP/1.1";
 
     /**
      *
@@ -49,9 +52,9 @@ class ConnectionHandler {
             String version = requestMessage.getVersion();
 
 
-            if (!("GET".equals(method) || "POST".equals(method))) {
+            if (!(GET.equals(method) || POST.equals(method))) {
                 statusCode = StatusLine.METHOD_NOT_ALLOWED;
-            } else if (!("HTTP/1.1".equals(version))) {
+            } else if (!(HTTP_VERSION.equals(version))) {
                 statusCode = StatusLine.HTTP_VERSION_NOT_SUPPORTED;
             } else {
                 fileResource = new FileResource(url);

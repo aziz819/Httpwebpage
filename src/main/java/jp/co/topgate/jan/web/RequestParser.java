@@ -43,6 +43,10 @@ public class RequestParser {
 
     private static final String HEADERS_LENGTH = "headersLength";
 
+    private static final String CONTENT_LENGTH ="Content-Length";
+
+    private static final String GET = "GET";
+
 
     /**
      * リクエスト行　＆　メッセージ・ヘッダー　＆　パラメーターを部分ごとに各メソッドで処理する
@@ -95,7 +99,7 @@ public class RequestParser {
          */
         requestParameters = parseParameter(bufIn, requestHeaders);
 
-        return new RequestMessage(method, url, version, requestHeaders, requestParameters);
+        return new RequestMessage(method, url, version, requestParameters);
 
     }
 
@@ -174,7 +178,7 @@ public class RequestParser {
         String[] attributeAndValue;
         Map<String, String> parseRequestParameters = new HashMap<>();
 
-        if (method.equals("GET")) {
+        if (method.equals(GET)) {
             if (url.matches(".*" + GET_QUERY_QUEASTION_SEPARATE + ".*")) {
                 String[] parameterAcquisition = url.split(GET_QUERY_QUEASTION_SEPARATE, 2);
                 url = parameterAcquisition[0];
@@ -212,7 +216,7 @@ public class RequestParser {
     private static String convertingParameterLengthToString(InputStream is, Map<String, String> requestHeaders) {
 
         int HeadersLength = Integer.parseInt(requestHeaders.get(HEADERS_LENGTH));
-        int integerParameter = Integer.parseInt(requestHeaders.get("Content-Length"));
+        int integerParameter = Integer.parseInt(requestHeaders.get(CONTENT_LENGTH));
 
         try {
             long loadedPart = is.skip(HeadersLength); // リクエストの長さでボディメッセージまでをスキップする
