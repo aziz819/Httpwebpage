@@ -8,20 +8,19 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * ファイルパスを設定してファイルをチェックをして結果を返す
+ * 実際受け取ったurlでパスを作り、ファイルチェックの処理を行う
  * Created by aizijiang.aerken on 2017/05/10.
  *
  * @author jan
  */
 
-
 public class FileResource {
 
-    private static final String ROOT_PATH = "./src/main/resources";
+    private static final String ROOT_PATH = "./src/main/resources/";
 
     private static final String WEB_APP = "/program/board/";
 
-    private static final String FIRST_PAGE_NAME = "index.html";
+    private static final String FIRST_PAGE_NAME = "/index.html";
 
     private File file = null;
 
@@ -49,10 +48,8 @@ public class FileResource {
     }
 
     /**
-     *
-     * @param uri  Fileクラスコンストラクタにパスを指定
+     * @param uri  実際のurl
      */
-
     FileResource(String uri) {
         this.url = getFirstPagePath(getFirstPage(uri));
         file = new File(url);
@@ -60,18 +57,18 @@ public class FileResource {
 
 
     /**
+     * ファイル有無チェック
+     *
      * @return ファイル存在すればtrueを存在しなければfalseを返す
      */
-
     public boolean checkFile() {
-
         return (file.exists() && file.isFile());
     }
 
-    /**
-     * @return ファイルが存在した時にそのファイルパスを返す
-     */
 
+    /**
+     * @return パスを返す
+     */
     public String getPath() {
 
         return url;
@@ -79,10 +76,10 @@ public class FileResource {
 
 
     /**
+     * ファイル拡張子を確定する、拡張子がみつからなかった場合はデフォルトのapplication/octet-streamを返す
      *
-     * @return Content-typを返す、拡張子がみつからなかった場合はデフォルトのContent-Typeを返す
+     * @return Content-typを返す
      */
-
     public String getContentType() {
         String extension = "";
         if (url != null && !"".equals(url)) {
@@ -93,19 +90,25 @@ public class FileResource {
                 }
             }
         }
-
         return contentType.getOrDefault(extension, "application/octet-stream");
     }
 
     /**
-     * @return htmlのContent-Typeを返す
+     * エラーメッセージボディの場合に呼び出される
+     *
+     * @return Content-Typeを返す
      */
-
     public String fixedContentType() {
         return "text/html; charset=utf-8";
     }
 
 
+    /**
+     * 実際のurlによってパスを組む
+     *
+     * @param url 実際のurl
+     * @return パスを組んで返す
+     */
     private String getFirstPage(String url) {
 
         if (url.equals("/program/board/")) {
@@ -116,19 +119,20 @@ public class FileResource {
                 e.printStackTrace();
             }
             return file.toString();
+        } else if (url.length() <= 1) {
+            return ROOT_PATH + FIRST_PAGE_NAME;
         }
-
         return ROOT_PATH + url;
-
-        /*if (!url.endsWith("/")) {
-            return url;
-        }
-        return url + FIRST_PAGE_NAME;*/
     }
 
+    /**
+     * 組み立てたパスから冗長な要素を消し、正規化する
+     *
+     * @param url 組み立てたパス
+     * @return 正規化されたパスを返す
+     */
     private String getFirstPagePath(String url) {
         Path path = Paths.get(url).normalize();
-
         return path.toString();
     }
 }

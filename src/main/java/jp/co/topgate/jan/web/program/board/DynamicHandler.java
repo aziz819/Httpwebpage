@@ -1,11 +1,9 @@
 package jp.co.topgate.jan.web.program.board;
 
-import jp.co.topgate.jan.web.ErrorMessageBody;
-import jp.co.topgate.jan.web.FileResource;
-import jp.co.topgate.jan.web.RequestMessage;
-import jp.co.topgate.jan.web.StatusLine;
+import jp.co.topgate.jan.web.*;
 
-import java.io.*;
+import java.io.IOException;
+import java.io.OutputStream;
 
 /**
  * 動的なファイルの処理を行う
@@ -25,21 +23,18 @@ public class DynamicHandler extends UrlHandler {
      * @param statusCode     ステータスコード
      * @param fileResource   ファイルチェック、パス作成などを行うFileResourceのオブジェクト
      */
-
-    DynamicHandler(RequestMessage requestMessage, OutputStream os, int statusCode, FileResource fileResource) {
-
+    public DynamicHandler(RequestMessage requestMessage, OutputStream os, int statusCode, FileResource fileResource) {
         this.requestMessage = requestMessage;
         this.os = os;
         this.statusCode = statusCode;
         this.fileResource = fileResource;
         this.errorMessageBody = new ErrorMessageBody();
-
     }
+
 
     /**
      * httpメソッドがGETかPOSTかで処理が違う
      */
-
     @Override
     public void writeResponse() {
         String method = requestMessage.getMethod();
@@ -50,28 +45,32 @@ public class DynamicHandler extends UrlHandler {
         }
     }
 
+
     /**
      * 全てのデータの表示と
      * 名前で検索した際の処理をする
      */
-
     private void doGet() {
-
-
         String contentType;
+        if (requestMessage.getParameters().get("instruction") != null) {
+            HtmlEditor.showScannedData(CsvDataManagement.searchFromName(requestMessage.getParameters().get("name"))); // 既存の全てのデータを読んできてhtml立てる
+
+        } else {
+            HtmlEditor.showAllData(CsvDataManagement.getAllmessage()); // 検索されたデータを読んできてhtml立てる
+        }
+
+        ResponseMessage responseMessage = new ResponseMessage(os, statusCode, fileResource);
+        responseMessage.writeResponse();
+        /*responseMessage.setStatusLine(StatusLine.getStatusLine(statusCode));
+        String statusLine = StatusLine.getStatusLine(statusCode) + "\n";
 
         try {
-            String statusLine = StatusLine.getStatusLine(statusCode) + "\n";
-            contentType = "Content-Type: " + fileResource.getContentType() + "\n\n";
-            os.write(statusLine.getBytes());
+            //contentType = "Content-Type: " + fileResource.getContentType() + "\n\n";
+           // os.write(statusLine.getBytes());
 
-            String searchHint = requestMessage.getParameters().get("name");
-
-            /*
-             * ファイルが見つからなかった際にステータスコードに合ったエラーメッセージボディ書き込む
-             */
             if (fileResource.checkFile()) {
-                os.write(contentType.getBytes());
+                responseMessage.setContentType();
+                //os.write(contentType.getBytes());
                 if (!fileResource.getPath().endsWith("html")) {  // ローカルファイルの読み込み
                     InputStream is = null;
                     try {
@@ -88,8 +87,8 @@ public class DynamicHandler extends UrlHandler {
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
-                } else if (requestMessage.getParameters().get("name") != null) {
-                    String htmlAllDataMessageBody = HtmlEditor.showScannedData(CsvDataManagement.searchFromName(searchHint)); // 既存の全てのデータを読んできてhtml立てる
+                } else if (requestMessage.getParameters().get("instruction") != null) {
+                    String htmlAllDataMessageBody = HtmlEditor.showScannedData(CsvDataManagement.searchFromName(requestMessage.getParameters().get("name"))); // 既存の全てのデータを読んできてhtml立てる
                     os.write(htmlAllDataMessageBody.getBytes());
 
                 } else {
@@ -97,14 +96,15 @@ public class DynamicHandler extends UrlHandler {
                     os.write(htmlScannedDataMessageBody.getBytes());
                 }
             } else {
-                contentType = "Content-Type: " + fileResource.fixedContentType() + "\n\n";
-                os.write(contentType.getBytes());
                 os.write(errorMessageBody.getErrorMessageBody(statusCode).getBytes());
+                *//*contentType = "Content-Type: " + fileResource.fixedContentType() + "\n\n";
+                os.write(contentType.getBytes());
+                os.write(errorMessageBody.getErrorMessageBody(statusCode).getBytes());*//*
             }
 
         } catch (IOException e) {
             e.printStackTrace();
-        }
+        }*/
     }
 
 
@@ -112,10 +112,9 @@ public class DynamicHandler extends UrlHandler {
      * 新投稿の書き込みと
      * 削除対象のデータの処理を行う
      */
-
     private void doPost() {
 
-        String deletionHint = requestMessage.getParameters().get("delete");
+        String deletionHint = requestMessage.getParameters().get("instruction");
         if (deletionHint != null) {
             delete();
             return;
@@ -131,6 +130,9 @@ public class DynamicHandler extends UrlHandler {
     }
 
 
+    /**
+     * 削除対象者のカウンター番号とパスワードで削除処理を行う
+     */
     private void delete() {
         String countNum = requestMessage.getParameters().get("countNum");
         String pass = requestMessage.getParameters().get("pass");
@@ -138,10 +140,10 @@ public class DynamicHandler extends UrlHandler {
         redirect(); // 投稿を削除してからリダイレクト
     }
 
+
     /**
      * 新投稿の処理と投稿削除処理の後リダイレクト
      */
-
     private void redirect() {
         try {
             os.write("HTTP/1.1 302 Found\r\n".getBytes());

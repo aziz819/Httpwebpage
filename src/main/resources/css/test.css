@@ -1,5 +1,8 @@
 @charset "UTF-8";
 
+body {
+	background:#FFF url('../program/board/img/18.jpg') repeat;
+}
 .one{
   text-align: center;
 }

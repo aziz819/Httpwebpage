@@ -37,72 +37,75 @@ public class RequestParser {
 
     private static String version;
 
-    private static String requestLine = null;                                  // リクエスト行格納、テスト用のためクラスメンバにしました。
-
-    private static Map<String, String> requestHeaders = new HashMap<>();             // リクエストヘッダーのフィールドと値を扱う
+    private static String requestLine = null;                             // リクエスト行格納、テスト用のためクラスメンバにしました。
 
     private static Map<String, String> requestParameters = null;          // ポストクエリーを扱う
 
-    private static int HeadersLength;
+    private static final String HEADERS_LENGTH = "headersLength";
 
-    /*
-     *  リクエスト行　＆　メッセージ・ヘッダー　＆　パラメーターを部分ごとに各メソッドで処理する
+
+    /**
+     * リクエスト行　＆　メッセージ・ヘッダー　＆　パラメーターを部分ごとに各メソッドで処理する
+     * 分析結果をRequestMessageのコンストラクタに格納する
+     *
+     * @param is 入力ストリーム
+     * @return RequestMessageのコンストラクタを返す
      */
-
-    public static RequestMessage parseRequest(InputStream is) {
+    static RequestMessage parseRequest(InputStream is) {
 
         Objects.requireNonNull(is, "入力ストリームがnullになっています");
 
-        BufferedInputStream bufIn = new BufferedInputStream(is);  // 主要是打个标签再次读度过的部分
+        BufferedInputStream bufIn = new BufferedInputStream(is);
 
         try {
-            bufIn.mark(bufIn.available()); // 确保整个收到的数据的长度，并且打个记号
+            bufIn.mark(bufIn.available());
         } catch (IOException e) {
             e.printStackTrace();
         }
 
-        /*
-         * リクエスト行の解析
-         */
 
+        /*
+         * リクエスト行の分析結果を受け取る
+         */
         String[] requestLineElement = parseRequestLine(bufIn);
 
         method = requestLineElement[0];
         url = requestLineElement[1];
         version = requestLineElement[2];
 
+        try {
+            bufIn.reset();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
         /*
-         * リクエストヘッダーの解析
+         * リクエストヘッダーの分析結果を受け取る
          */
+        Map<String, String> requestHeaders = parseRequestHeaders(bufIn);
 
         try {
             bufIn.reset();
         } catch (IOException e) {
             e.printStackTrace();
         }
-        parseRequestHeaders(bufIn);
 
         /*
-         * パラメーターの解析
+         * パラメーター分析結果を受け取る
          */
-
-        try {
-            bufIn.reset();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        parseParameter(bufIn);
-
+        requestParameters = parseParameter(bufIn, requestHeaders);
 
         return new RequestMessage(method, url, version, requestHeaders, requestParameters);
 
     }
 
 
-    /*
-     * リクエスト行の確認　＆　分割処理
+    /**
+     *　リクエストラインを分割する
+     *
+     * @param is 入力ストリーム
+     * @return リクエストライン要素を返す
      */
-
     private static String[] parseRequestLine(InputStream is) {
         String requestLine;
 
@@ -117,18 +120,20 @@ public class RequestParser {
             throw new RequestParseException("リクエスト行が空かnullになっています");
         }
 
-        return requestLine.split(REQUEST_LINE_SEPARATOR);                   // REQUEST_LINE_SEPARATOR == " " / 一行目を空白のところから三つに分ける
+        return requestLine.split(REQUEST_LINE_SEPARATOR);
 
     }
 
 
-    /*
-     * リクエストヘッダーの確認　＆　分割処理
+    /**
+     *　リクエストヘッダーを分割してマップに格納する
+     *
+     * @param is　入力ストリーム
+     * @return マップオブジェクトparseRequestHeadersを返す
      */
-
-    private static void parseRequestHeaders(InputStream is) {
+    private static Map<String, String> parseRequestHeaders(InputStream is) {
         String headers;
-
+        Map<String, String> parseRequestHeaders = new HashMap<>();
         StringBuilder builder = new StringBuilder();
 
         try {
@@ -136,78 +141,84 @@ public class RequestParser {
             headers = bufferedReader.readLine();
             builder.append(headers).append("\r\n");
 
-            while ((headers = bufferedReader.readLine()) != null && !headers.equals("")) {    // 二行目からヘッダーフィールドと値を読み取る
+            while ((headers = bufferedReader.readLine()) != null && !headers.equals("")) {
                 builder.append(headers).append("\r\n");
 
-                String[] header = headers.split(HEADERS_SEPARATOR, 2);                      // HEADERS_SEPARATOR  == ":"
+                String[] header = headers.split(HEADERS_SEPARATOR, 2);
 
-                if (header.length == HEADERS_SIZE) {                                               // HEADER_ATTRIBUTE_VALUE == 2
+                if (header.length == HEADERS_SIZE) {
                     header[1] = header[1].trim();
-                    requestHeaders.put(header[0], header[1]);
+                    parseRequestHeaders.put(header[0], header[1]);
                 }
             }
             builder.append("\r\n");
         } catch (IOException e) {
             throw new RequestParseException("リクエストヘッダーの読み込みに不具合が発生しました");
         }
-        HeadersLength = builder.toString().length(); // リクエストの長さ
+        String stringContentLength = String.valueOf(builder.toString().length()); // リクエストの長さ
+        parseRequestHeaders.put(HEADERS_LENGTH, stringContentLength);
+
+        return parseRequestHeaders;
     }
 
 
-    /*
-     * パラメーターの確認　＆　分割処理
+    /**
+     *　パラメーターを分割してマップに格納
+     *
+     * @param bufIn バッファー入力ストリーム
+     * @param requestHeaders　リクエストヘッダー情報をもつマップ
+     * @return マップオブジェクトparseRequestParametersを返す
      */
-
-    private static void parseParameter(BufferedInputStream bufIn) {
+    private static Map<String, String> parseParameter(BufferedInputStream bufIn, Map<String, String> requestHeaders) {
 
         String[] attributeAndValue;
-
-        requestParameters = new HashMap<>();
-
-        String contentLength = requestHeaders.get("Content-Length");
+        Map<String, String> parseRequestParameters = new HashMap<>();
 
         if (method.equals("GET")) {
-            if (url.matches(".*" + GET_QUERY_QUEASTION_SEPARATE + ".*")) {                        // GET_QUERY_QUEASTION_SEPARATE == "?"疑問符があるかどうかの判断
+            if (url.matches(".*" + GET_QUERY_QUEASTION_SEPARATE + ".*")) {
                 String[] parameterAcquisition = url.split(GET_QUERY_QUEASTION_SEPARATE, 2);
-                url = parameterAcquisition[0];                                                          // url
-                for (String parameters : parameterAcquisition[1].split(QUERIES_PARAMETERS_SEPARATE)) {  // QUERY_PARAMETER_SEPARATE == "&"
-                    attributeAndValue = parameters.split(QUERIES_SEPARATOR, 2);                  // QUERIES__SEPARATOR == "="
-                    if (attributeAndValue.length != PARAMETER_SIZE) {                                 // PARAMETER_ATTRIBUTE_VALUE == 2
+                url = parameterAcquisition[0];
+                for (String parameters : parameterAcquisition[1].split(QUERIES_PARAMETERS_SEPARATE)) {
+                    attributeAndValue = parameters.split(QUERIES_SEPARATOR, 2);
+                    if (attributeAndValue.length != PARAMETER_SIZE) {
                         throw new RequestParseException("正しくないGETパラメーター:" + parameters);
                     }
-                    requestParameters.put(attributeAndValue[0], attributeAndValue[1]);
+                    parseRequestParameters.put(attributeAndValue[0], attributeAndValue[1]);
                 }
             }
         } else {
 
-            String stringParameter = convertingParameterLengthToString(bufIn, contentLength);    // パラメーターを取得
+            String stringParameter = convertingParameterLengthToString(bufIn, requestHeaders);
 
             for (String parameters : stringParameter.split(QUERIES_PARAMETERS_SEPARATE)) {
                 attributeAndValue = parameters.split(QUERIES_SEPARATOR, 2);
                 if (attributeAndValue.length != PARAMETER_SIZE) {
                     throw new RequestParseException("正しくないPOSTパラメーター:" + parameters);
                 }
-                requestParameters.put(attributeAndValue[0], attributeAndValue[1]);
+                parseRequestParameters.put(attributeAndValue[0], attributeAndValue[1]);
             }
         }
+
+        return parseRequestParameters;
     }
 
     /**
-     * パラメータの長さをまずバイト型に変換して、それをまた文字列に変換する
+     * リクエストの長さをスキップしてコンテントの長さでメッセージボディでのパラメータを読み込む
      *
-     * @param parameter Content-Lengthパラメータの長さ
-     * @return パラメータを文字列に変換して返す
+     * @param is 入力ストリーム
+     * @param requestHeaders　リクエストの情報を持っているマップ
+     * @return パラメータを返す
      */
+    private static String convertingParameterLengthToString(InputStream is, Map<String, String> requestHeaders) {
 
-    private static String convertingParameterLengthToString(InputStream is, String parameter) {
+        int HeadersLength = Integer.parseInt(requestHeaders.get(HEADERS_LENGTH));
+        int integerParameter = Integer.parseInt(requestHeaders.get("Content-Length"));
 
         try {
             long loadedPart = is.skip(HeadersLength); // リクエストの長さでボディメッセージまでをスキップする
         } catch (IOException e) {
             e.printStackTrace();
         }
-
-        int integerParameter = Integer.parseInt(parameter);
 
         byte[] byteContentLength = new byte[integerParameter];
 
@@ -217,24 +228,23 @@ public class RequestParser {
             e.printStackTrace();
         }
 
-        String stringpostParameter = new String(byteContentLength);
+        String stringPostParameter = new String(byteContentLength);
 
         try {
-            stringpostParameter = URLDecoder.decode(stringpostParameter, "UTF-8");
+            stringPostParameter = URLDecoder.decode(stringPostParameter, "UTF-8");
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
         }
 
-        return stringpostParameter;
+        return stringPostParameter;
 
     }
 
 
     /**
      *
-     * @return      Httpメソッドを返す
+     * @return Httpメソッドを返す
      */
-
     public String getMethod() {
 
         return method;
@@ -242,9 +252,8 @@ public class RequestParser {
 
     /**
      *
-     * @return      URLを返す
+     * @return URLを返す
      */
-
     public String getUrl() {
 
        if (url.endsWith("/")) {
@@ -256,9 +265,8 @@ public class RequestParser {
 
     /**
      *
-     * @return   Httpバージョンを返す
+     * @return Httpバージョンを返す
      */
-
     public String getVersion() {
         return version;
     }
@@ -267,10 +275,9 @@ public class RequestParser {
 
     /**
      *
-     * @param name 　パラメーター属性
-     * @return      パラメーターの値を返す、一致しなかった場合はnullを返す
+     * @param name パラメーター属性
+     * @return パラメーターの値を返す、一致しなかった場合はnullを返す
      */
-
     public String getGetParameter(String name){
         if(name != null){
             name = requestParameters.get(name);
@@ -283,10 +290,9 @@ public class RequestParser {
     /**
      *
      * @param name  パラメーター属性
-     * @return      パラメーターの値を返す、一致しなかった場合はnullを返す
+     * @return パラメーターの値を返す、一致しなかった場合はnullを返す
      */
-
-    public String getPostparameter(String name){
+    public String getPostParameter(String name) {
         if(name != null){
             name = requestParameters.get(name);
             return name ;
@@ -297,9 +303,8 @@ public class RequestParser {
 
     /**
      *
-     * @return  リクエスト行を返す
+     * @return リクエスト行を返す
      */
-
     public String getRequestLine(){
         return requestLine;
     }

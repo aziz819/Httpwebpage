@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html>
+<meta charset="utf-8">
+<head>
+    <title>JANの掲示板</title>
+    <link rel="stylesheet" href="./css/style.css" type="text/css"/>
+</head>
+<body>
+<center>
+<div id="textmaru">
+<table>
+<tr>
+<th>自</th>
+<th>由</th>
+<th>書</th>
+<th>き</th>
+<th>込</th>
+<th>み</th>
+<th>掲</th>
+<th>示</th>
+<th>板</th>
+</tr>
+</table>
+</div>
+        <div class="ForFirstTimePosts">
+            <form action="/program/board/" method="POST">
+                &emsp;&emsp;名前:<input type="text" name="name" required><br>
+                タイトル:<input type="text" name="title" required>
+                <h3>メッセージ欄</h3>
+                <textarea name="content" rows="5" cols="35" maxlength="200" required></textarea>
+                <br>
+                パスワード:<input type="password" name="pass" min="3" max="6" required>
+                <input type="submit" value="投稿">
+            <hr class="besthr"/>
+            </form>
+            <form action="/program/board/" method="GET">
+                名前で検索:<input type="text" name="name" required>
+                <input type="hidden" name="instruction" value="search">
+                <input type="submit" name="send" value="検索">
+            </form>
+        </div>
+         <h4>全件：10 件</h4>
+        <div class="outer">
+            <div class="in">
+                <table border="1">
+                    <tr>
+                        <th id="maru"><table border="1"><tr><th>2</th></tr></table></th>
+                        <td>utuk</td>
+                    </tr>
+                    <tr>
+                        <th>投稿者名</th>
+                        <td>azizjan</td>
+                    <tr>
+                        <th>投稿内容</th>
+                        <td>galbasening</td>
+                    </tr>
+                    <tr>
+                        <th>投稿日</th>
+                        <td id="time">2017年6月28日(水曜日)</td>
+                    </tr>
+                    <tr>
+                        <th colspan="2">
+                           <form action="/program/board/" method="POST">
+                              <input type="hidden" name="instruction" value="delete">
+                              <input type="hidden" name="countNum" value="2">
+                              password:<input type="password" name="pass" min="3" max="6" required>
+                              <input type="submit" value="削除">
+                           </form>
+                        </th>
+                    </tr>
+                </table>
+             </div>        </div>
+        <div class="outer">
+            <div class="in">
+                <table border="1">
+                    <tr>
+                        <th id="maru"><table border="1"><tr><th>3</th></tr></table></th>
+                        <td>kilalayman</td>
+                    </tr>
+                    <tr>
+                        <th>投稿者名</th>
+                        <td>azizjan</td>
+                    <tr>
+                        <th>投稿内容</th>
+                        <td>googlegakiralaysan</td>
+                    </tr>
+                    <tr>
+                        <th>投稿日</th>
+                        <td id="time">2017年6月28日(水曜日)</td>
+                    </tr>
+                    <tr>
+                        <th colspan="2">
+                           <form action="/program/board/" method="POST">
+                              <input type="hidden" name="instruction" value="delete">
+                              <input type="hidden" name="countNum" value="3">
+                              password:<input type="password" name="pass" min="3" max="6" required>
+                              <input type="submit" value="削除">
+                           </form>
+                        </th>
+                    </tr>
+                </table>
+             </div>        </div>
+        <div class="outer">
+            <div class="in">
+                <table border="1">
+                    <tr>
+                        <th id="maru"><table border="1"><tr><th>4</th></tr></table></th>
+                        <td>kilalayman</td>
+                    </tr>
+                    <tr>
+                        <th>投稿者名</th>
+                        <td>azizjan</td>
+                    <tr>
+                        <th>投稿内容</th>
+                        <td>qweqwe</td>
+                    </tr>
+                    <tr>
+                        <th>投稿日</th>
+                        <td id="time">2017年6月29日(木曜日)</td>
+                    </tr>
+                    <tr>
+                        <th colspan="2">
+                           <form action="/program/board/" method="POST">
+                              <input type="hidden" name="instruction" value="delete">
+                              <input type="hidden" name="countNum" value="4">
+                              password:<input type="password" name="pass" min="3" max="6" required>
+                              <input type="submit" value="削除">
+                           </form>
+                        </th>
+                    </tr>
+                </table>
+             </div>        </div>
+        <div class="outer">
+            <div class="in">
+                <table border="1">
+                    <tr>
+                        <th id="maru"><table border="1"><tr><th>5</th></tr></table></th>
+                        <td>asdasd</td>
+                    </tr>
+                    <tr>
+                        <th>投稿者名</th>
+                        <td>azizjan</td>
+                    <tr>
+                        <th>投稿内容</th>
+                        <td>qweqwe</td>
+                    </tr>
+                    <tr>
+                        <th>投稿日</th>
+                        <td id="time">2017年6月29日(木曜日)</td>
+                    </tr>
+                    <tr>
+                        <th colspan="2">
+                           <form action="/program/board/" method="POST">
+                              <input type="hidden" name="instruction" value="delete">
+                              <input type="hidden" name="countNum" value="5">
+                              password:<input type="password" name="pass" min="3" max="6" required>
+                              <input type="submit" value="削除">
+                           </form>
+                        </th>
+                    </tr>
+                </table>
+             </div>        </div>
+        <div class="outer">
+            <div class="in">
+                <table border="1">
+                    <tr>
+                        <th id="maru"><table border="1"><tr><th>6</th></tr></table></th>
+                        <td>kilalayman</td>
+                    </tr>
+                    <tr>
+                        <th>投稿者名</th>
+                        <td>xamxikamar</td>
+                    <tr>
+                        <th>投稿内容</th>
+                        <td>qweqwe</td>
+                    </tr>
+                    <tr>
+                        <th>投稿日</th>
+                        <td id="time">2017年6月29日(木曜日)</td>
+                    </tr>
+                    <tr>
+                        <th colspan="2">
+                           <form action="/program/board/" method="POST">
+                              <input type="hidden" name="instruction" value="delete">
+                              <input type="hidden" name="countNum" value="6">
+                              password:<input type="password" name="pass" min="3" max="6" required>
+                              <input type="submit" value="削除">
+                           </form>
+                        </th>
+                    </tr>
+                </table>
+             </div>        </div>
+        <div class="outer">
+            <div class="in">
+                <table border="1">
+                    <tr>
+                        <th id="maru"><table border="1"><tr><th>7</th></tr></table></th>
+                        <td>qweqwe</td>
+                    </tr>
+                    <tr>
+                        <th>投稿者名</th>
+                        <td>xamxikamar</td>
+                    <tr>
+                        <th>投稿内容</th>
+                        <td>qwe</td>
+                    </tr>
+                    <tr>
+                        <th>投稿日</th>
+                        <td id="time">2017年6月29日(木曜日)</td>
+                    </tr>
+                    <tr>
+                        <th colspan="2">
+                           <form action="/program/board/" method="POST">
+                              <input type="hidden" name="instruction" value="delete">
+                              <input type="hidden" name="countNum" value="7">
+                              password:<input type="password" name="pass" min="3" max="6" required>
+                              <input type="submit" value="削除">
+                           </form>
+                        </th>
+                    </tr>
+                </table>
+             </div>        </div>
+        <div class="outer">
+            <div class="in">
+                <table border="1">
+                    <tr>
+                        <th id="maru"><table border="1"><tr><th>8</th></tr></table></th>
+                        <td>kilalayman</td>
+                    </tr>
+                    <tr>
+                        <th>投稿者名</th>
+                        <td>xamxikamar</td>
+                    <tr>
+                        <th>投稿内容</th>
+                        <td>qweqwe</td>
+                    </tr>
+                    <tr>
+                        <th>投稿日</th>
+                        <td id="time">2017年6月29日(木曜日)</td>
+                    </tr>
+                    <tr>
+                        <th colspan="2">
+                           <form action="/program/board/" method="POST">
+                              <input type="hidden" name="instruction" value="delete">
+                              <input type="hidden" name="countNum" value="8">
+                              password:<input type="password" name="pass" min="3" max="6" required>
+                              <input type="submit" value="削除">
+                           </form>
+                        </th>
+                    </tr>
+                </table>
+             </div>        </div>
+        <div class="outer">
+            <div class="in">
+                <table border="1">
+                    <tr>
+                        <th id="maru"><table border="1"><tr><th>9</th></tr></table></th>
+                        <td>kilalayman</td>
+                    </tr>
+                    <tr>
+                        <th>投稿者名</th>
+                        <td>arkin</td>
+                    <tr>
+                        <th>投稿内容</th>
+                        <td>qweqwe</td>
+                    </tr>
+                    <tr>
+                        <th>投稿日</th>
+                        <td id="time">2017年6月29日(木曜日)</td>
+                    </tr>
+                    <tr>
+                        <th colspan="2">
+                           <form action="/program/board/" method="POST">
+                              <input type="hidden" name="instruction" value="delete">
+                              <input type="hidden" name="countNum" value="9">
+                              password:<input type="password" name="pass" min="3" max="6" required>
+                              <input type="submit" value="削除">
+                           </form>
+                        </th>
+                    </tr>
+                </table>
+             </div>        </div>
+        <div class="outer">
+            <div class="in">
+                <table border="1">
+                    <tr>
+                        <th id="maru"><table border="1"><tr><th>10</th></tr></table></th>
+                        <td>kilalayman</td>
+                    </tr>
+                    <tr>
+                        <th>投稿者名</th>
+                        <td>arkin</td>
+                    <tr>
+                        <th>投稿内容</th>
+                        <td>qweqwe</td>
+                    </tr>
+                    <tr>
+                        <th>投稿日</th>
+                        <td id="time">2017年6月29日(木曜日)</td>
+                    </tr>
+                    <tr>
+                        <th colspan="2">
+                           <form action="/program/board/" method="POST">
+                              <input type="hidden" name="instruction" value="delete">
+                              <input type="hidden" name="countNum" value="10">
+                              password:<input type="password" name="pass" min="3" max="6" required>
+                              <input type="submit" value="削除">
+                           </form>
+                        </th>
+                    </tr>
+                </table>
+             </div>        </div>
+        <div class="outer">
+            <div class="in">
+                <table border="1">
+                    <tr>
+                        <th id="maru"><table border="1"><tr><th>12</th></tr></table></th>
+                        <td>kilalayman</td>
+                    </tr>
+                    <tr>
+                        <th>投稿者名</th>
+                        <td>azizjan</td>
+                    <tr>
+                        <th>投稿内容</th>
+                        <td>qwe</td>
+                    </tr>
+                    <tr>
+                        <th>投稿日</th>
+                        <td id="time">2017年6月29日(木曜日)</td>
+                    </tr>
+                    <tr>
+                        <th colspan="2">
+                           <form action="/program/board/" method="POST">
+                              <input type="hidden" name="instruction" value="delete">
+                              <input type="hidden" name="countNum" value="12">
+                              password:<input type="password" name="pass" min="3" max="6" required>
+                              <input type="submit" value="削除">
+                           </form>
+                        </th>
+                    </tr>
+                </table>
+             </div>        </div>
+</center>
+</body>
+</html>

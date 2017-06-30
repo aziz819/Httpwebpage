@@ -1,8 +1,6 @@
-package jp.co.topgate.jan.web.program.board;
+package jp.co.topgate.jan.web;
 
-import jp.co.topgate.jan.web.FileResource;
-import jp.co.topgate.jan.web.RequestMessage;
-import jp.co.topgate.jan.web.ResponseMessage;
+import jp.co.topgate.jan.web.program.board.DynamicHandler;
 
 import java.io.OutputStream;
 
@@ -29,7 +27,7 @@ public abstract class UrlHandler {
         if (url.startsWith("/program/board/")) {
             return new DynamicHandler(requestMessage, os, statusCode, fileResource);
         }
-        return new ResponseMessage(requestMessage, os, statusCode, fileResource);
+        return new ResponseMessage(os, statusCode, fileResource);
     }
 
     public abstract void writeResponse();

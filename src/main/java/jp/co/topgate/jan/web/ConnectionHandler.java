@@ -1,7 +1,6 @@
 package jp.co.topgate.jan.web;
 
 import jp.co.topgate.jan.web.exception.RequestParseException;
-import jp.co.topgate.jan.web.program.board.UrlHandler;
 
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -68,7 +67,6 @@ class ConnectionHandler {
 
         UrlHandler urlHandler = UrlHandler.judgeURL(requestMessage, os, statusCode, fileResource);
         urlHandler.writeResponse();
-
     }
 
 }

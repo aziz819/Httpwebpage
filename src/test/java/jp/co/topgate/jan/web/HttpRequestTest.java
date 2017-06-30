@@ -75,8 +75,8 @@ public class HttpRequestTest {
             assertThat(requestParser.getMethod(), is("POST"));
             assertThat(requestParser.getUrl(), is("/index.html"));
             assertThat(requestParser.getVersion(), is("HTTP/1.1"));
-            assertThat(requestParser.getPostparameter("title"), is("yudetamago"));
-            assertThat(requestParser.getPostparameter("name"), is("kinnikuman"));
+            assertThat(requestParser.getPostParameter("title"), is("yudetamago"));
+            assertThat(requestParser.getPostParameter("name"), is("kinnikuman"));
 
         }
 

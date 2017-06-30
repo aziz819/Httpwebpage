@@ -1,7 +1,5 @@
 package jp.co.topgate.jan.web;
 
-import jp.co.topgate.jan.web.program.board.UrlHandler;
-
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -23,8 +21,6 @@ public class ResponseMessage extends UrlHandler {
 
     private ErrorMessageBody errorMessageBody = null;
 
-    private RequestMessage requestMessage = null;
-
     private int statucCode ;
 
     private FileResource fileResource ;
@@ -33,9 +29,7 @@ public class ResponseMessage extends UrlHandler {
      *
      * @param os  出力ストリーム
      */
-
-    public ResponseMessage(RequestMessage requestMessage,OutputStream os,int statusCode,FileResource fileResource) {
-        this.requestMessage = requestMessage ;
+    public ResponseMessage(OutputStream os, int statusCode, FileResource fileResource) {
         errorMessageBody = new ErrorMessageBody();
         this.os = Objects.requireNonNull(os, "出力ストリームがnullになっています");
         this.statucCode = statusCode ;
@@ -48,10 +42,8 @@ public class ResponseMessage extends UrlHandler {
      * ステータス行とContent-Typeを別クラスで組み立てさせてもらう
      *
      **/
-
     @Override
     public void writeResponse() {
-
         String contentType ;
 
         String codeDescription = StatusLine.getStatusLine(statucCode) + "\n";
@@ -95,6 +87,33 @@ public class ResponseMessage extends UrlHandler {
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
+        }
+    }
+
+    public void setStatusLine(String statusLine) {
+        statusLine = statusLine + "\n";
+        try {
+            os.write(statusLine.getBytes());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void setContentType() {
+        String contentType = "Content-Type: " + fileResource.getContentType() + "\n\n";
+        try {
+            os.write(contentType.getBytes());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void setErrorContentType(int statusCode) {
+        String ContentType = "Content-Type: " + fileResource.fixedContentType() + "\n\n";
+        try {
+            os.write(ContentType.getBytes());
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 }

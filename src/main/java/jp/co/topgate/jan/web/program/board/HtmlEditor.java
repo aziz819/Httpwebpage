@@ -1,5 +1,9 @@
 package jp.co.topgate.jan.web.program.board;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStream;
 import java.util.List;
 
 /**
@@ -8,7 +12,6 @@ import java.util.List;
  */
 class HtmlEditor {
 
-
     /**
      * 最初のアクセスの際に作る
      *
@@ -16,8 +19,13 @@ class HtmlEditor {
      * @return 全てのデータをhtmlで立てて返す
      */
 
-    static String showAllData(List<DataModel> allmessage) {
-
+    static void showAllData(List<DataModel> allmessage) {
+        OutputStream outputStream = null;
+        try {
+            outputStream = new FileOutputStream(new File("./src/main/resources/program/board/index.html"));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
         StringBuilder htmlLayer = new StringBuilder();
         htmlLayer.append("<!DOCTYPE html>\n");
         htmlLayer.append("<html>\n");
@@ -42,6 +50,7 @@ class HtmlEditor {
         htmlLayer.append("            </form>\n");
         htmlLayer.append("            <form action=\"/program/board/\" method=\"GET\">\n");
         htmlLayer.append("                名前で検索:<input type=\"text\" name=\"name\" required>\n");
+        htmlLayer.append("                <input type=\"hidden\" name=\"instruction\" value=\"search\">\n");
         htmlLayer.append("                <input type=\"submit\" name=\"send\" value=\"検索\">\n");
         htmlLayer.append("            </form>\n");
         htmlLayer.append("        </div>\n");
@@ -68,7 +77,7 @@ class HtmlEditor {
             htmlLayer.append("                    <tr>\n");
             htmlLayer.append("                        <th colspan=\"2\">\n");
             htmlLayer.append("                           <form action=\"/program/board/\" method=\"POST\">\n");
-            htmlLayer.append("                              <input type=\"hidden\" name=\"delete\" value=\"deleteData\">\n");
+            htmlLayer.append("                              <input type=\"hidden\" name=\"instruction\" value=\"delete\">\n");
             htmlLayer.append("                              <input type=\"hidden\" name=\"countNum\" value=\"").append(dataModel.getCountNum()).append("\">\n");
             htmlLayer.append("                              password:<input type=\"password\" name=\"pass\" min=\"3\" max=\"6\" required>\n");
             htmlLayer.append("                              <input type=\"submit\" value=\"削除\">\n");
@@ -82,7 +91,13 @@ class HtmlEditor {
         htmlLayer.append("</center>\n");
         htmlLayer.append("</body>\n");
         htmlLayer.append("</html>");
-        return htmlLayer.toString();
+        try {
+            assert outputStream != null;
+            outputStream.write(htmlLayer.toString().getBytes());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        //return htmlLayer.toString();
     }
 
     /**
@@ -92,8 +107,13 @@ class HtmlEditor {
      * @return 検索結果を立てて返す
      */
 
-    static String showScannedData(List<DataModel> dataSearched) {
-
+    static void showScannedData(List<DataModel> dataSearched) {
+        OutputStream outputStream = null;
+        try {
+            outputStream = new FileOutputStream(new File("./src/main/resources/program/board/index.html"));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
         StringBuilder htmlLayer = new StringBuilder();
 
         htmlLayer.append("<!DOCTYPE html>\n");
@@ -120,7 +140,7 @@ class HtmlEditor {
         htmlLayer.append("            </form>\n");
         htmlLayer.append("            <form action=\"/program/board/\" method=\"GET\">\n");
         htmlLayer.append("                名前で検索:<input type=\"text\" name=\"name\" required>\n");
-        htmlLayer.append("                <input type=\"hidden\" name=\"search\" value=\"userName\">\n");
+        htmlLayer.append("                <input type=\"hidden\" name=\"instruction\" value=\"search\">\n");
         htmlLayer.append("                <input type=\"submit\" name=\"send\" value=\"検索\">\n");
         htmlLayer.append("            </form>\n");
         htmlLayer.append("        </div>\n");
@@ -153,7 +173,7 @@ class HtmlEditor {
                 htmlLayer.append("                    <tr>\n");
                 htmlLayer.append("                        <th colspan=\"2\">\n");
                 htmlLayer.append("                           <form action=\"/program/board/\" method=\"POST\">\n");
-                htmlLayer.append("                              <input type=\"hidden\" name=\"delete\" value=\"deleteData\">\n");
+                htmlLayer.append("                              <input type=\"hidden\" name=\"instruction\" value=\"delete\">\n");
                 htmlLayer.append("                              <input type=\"hidden\" name=\"countNum\" value=\"").append(dataModel.getCountNum()).append("\">\n");
                 htmlLayer.append("                              password:<input type=\"password\" name=\"pass\" min=\"3\" max=\"6\">\n");
                 htmlLayer.append("                              <input type=\"submit\" value=\"削除\">\n");
@@ -169,7 +189,13 @@ class HtmlEditor {
         htmlLayer.append("</center>\n");
         htmlLayer.append("</body>\n");
         htmlLayer.append("</html>");
-        return htmlLayer.toString();
+        try {
+            assert outputStream != null;
+            outputStream.write(htmlLayer.toString().getBytes());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        //return htmlLayer.toString();
     }
 
 }
